@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  personalProjectFilters,
+  projectStatusFilters,
+  projects,
+} from "../../data/site";
+import "../../styles/global.css";
+
+const featuredProjects = projects.slice(0, 6);
+---
+
+<BaseLayout
+  title="Personal Projects"
+  description="Project archive for Alex Burton organized by project, with filters for domain and status."
+>
+  <section class="section hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Personal projects</p>
+      <h1>Projects organized by project name first, not by tool category.</h1>
+      <p class="hero-text">
+        Each project has one main home here. Hardware, software, AI, infrastructure, and documentation appear as filters and labels layered on top.
+      </p>
+    </div>
+    <div class="interface-shell tilt-card reveal">
+      <div class="interface-topbar"><span></span><span></span><span></span></div>
+      <div class="hero-panel-grid">
+        <article class="hero-stat-card"><span class="label">Active</span><strong>{projects.filter((item) => item.status === "active").length}</strong></article>
+        <article class="hero-stat-card"><span class="label">Building</span><strong>{projects.filter((item) => item.status === "building").length}</strong></article>
+        <article class="hero-stat-card"><span class="label">Planning</span><strong>{projects.filter((item) => item.status === "planning").length}</strong></article>
+        <article class="hero-stat-card"><span class="label">Collections</span><strong>{projects.filter((item) => item.type === "collection").length}</strong></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="featured-projects">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Featured projects</p>
+      <h2>The primary personal builds and systems worth opening first.</h2>
+    </div>
+    <div class="card-grid">
+      {featuredProjects.map((project) => (
+        <a class="story-card tilt-card reveal" href={`/projects/${project.slug}/`}>
+          <span class="feature-kicker">{project.status}</span>
+          <h3>{project.title}</h3>
+          <p>{project.summary}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="filters">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Filters</p>
+      <h2>Topic and status filters for browsing the full archive.</h2>
+    </div>
+    <div class="filters-shell reveal" data-filter-group data-target-list="projects">
+      <div class="filter-row">
+        <button class="filter-pill is-active" type="button" data-filter-button data-topic="all">All topics</button>
+        {personalProjectFilters.map((filter) => (
+          <button class="filter-pill" type="button" data-filter-button data-topic={filter}>{filter}</button>
+        ))}
+      </div>
+      <div class="filter-row">
+        <button class="filter-pill is-active" type="button" data-filter-button data-status="all">All statuses</button>
+        {projectStatusFilters.map((filter) => (
+          <button class="filter-pill" type="button" data-filter-button data-status={filter.toLowerCase()}>{filter}</button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="all-projects">
+    <div class="section-heading reveal">
+      <p class="eyebrow">All projects</p>
+      <h2>Featured work, collections, and older utility systems in one browsable grid.</h2>
+    </div>
+    <div class="card-grid">
+      {projects.map((project) => (
+        <a
+          class="project-list-card tilt-card reveal"
+          href={`/projects/${project.slug}/`}
+          data-filter-card="projects"
+          data-topics={project.labels.join("|")}
+          data-status={project.status}
+        >
+          <div class="project-card-top">
+            <span class="feature-kicker">{project.type}</span>
+            <span class="status-pill">{project.status}</span>
+          </div>
+          <h3>{project.title}</h3>
+          <p>{project.summary}</p>
+          <div class="tag-row">
+            {project.labels.map((label) => <span class="tag">{label}</span>)}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

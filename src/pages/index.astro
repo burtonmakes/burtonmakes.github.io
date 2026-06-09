@@ -1,20 +1,115 @@
 ---
-import LandingPage from "../components/LandingPage.jsx";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import {
+  featuredWork,
+  navigation,
+  publications,
+  recruiterFastPath,
+  siteMeta,
+} from "../data/site";
 import "../styles/global.css";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Burton Makes is a futuristic concept archive for hardware, systems, and experimental tools."
-    />
-    <title>Burton Makes</title>
-  </head>
-  <body>
-    <LandingPage client:load />
-  </body>
-</html>
+<BaseLayout title={siteMeta.siteTitle} description={siteMeta.siteDescription}>
+  <section class="section hero-grid hero-home">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Recruiter-first public front door</p>
+      <h1>{siteMeta.personName}</h1>
+      <p class="hero-subtitle">{siteMeta.brandName} is the public archive brand for engineering work, systems thinking, and future-facing projects.</p>
+      <p class="hero-text">
+        Medical device engineer building wearable systems, hardware prototypes, AI tools, and self-hosted infrastructure.
+      </p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/recruiter-overview/">Recruiter Overview</a>
+        <a class="button button-secondary" href="/personal-projects/">Personal Projects</a>
+        <a class="button button-tertiary" href={siteMeta.links.github}>GitHub</a>
+        <a class="button button-tertiary" href={siteMeta.links.linkedin}>LinkedIn</a>
+      </div>
+    </div>
+
+    <div class="hero-panel interface-shell tilt-card reveal">
+      <div class="interface-topbar"><span></span><span></span><span></span></div>
+      <div class="hero-panel-grid">
+        <article class="hero-stat-card">
+          <span class="label">Core domain</span>
+          <strong>Wearable and implantable medical devices</strong>
+        </article>
+        <article class="hero-stat-card">
+          <span class="label">Coverage</span>
+          <strong>Hardware, software, AI, infrastructure</strong>
+        </article>
+        <article class="hero-stat-card hero-stat-accent">
+          <span class="label">Fast path</span>
+          <strong>Structured evidence for recruiters</strong>
+        </article>
+        <article class="hero-stat-card">
+          <span class="label">Public-safe rule</span>
+          <strong>Confidential details omitted by design</strong>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Recruiter fast path</p>
+      <h2>High-signal entry points built for quick scanning.</h2>
+    </div>
+    <div class="card-grid recruiter-grid">
+      {recruiterFastPath.map((item) => (
+        <a class="feature-card tilt-card reveal" href={item.href}>
+          <span class="feature-kicker">Fast path</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Featured work</p>
+      <h2>Selected evidence from professional work, projects, and research directions.</h2>
+    </div>
+    <div class="card-grid feature-work-grid">
+      {featuredWork.map((item) => (
+        <a class="story-card tilt-card reveal" href={item.href}>
+          <span class="feature-kicker">{item.eyebrow}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Publications / patents</p>
+      <h2>Compact placeholders with room for external references later.</h2>
+    </div>
+    <div class="compact-stack">
+      {publications.map((item) => (
+        <a class="publication-card reveal" href={item.href}>
+          <span>{item.year}</span>
+          <strong>{item.title}</strong>
+          <p>{item.role}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Explore everything</p>
+      <h2>Secondary navigation for deeper browsing beyond the recruiter path.</h2>
+    </div>
+    <div class="explore-grid">
+      {navigation.filter((item) => item.href !== "/").map((item) => (
+        <a class="explore-link reveal" href={item.href}>
+          <span>{item.label}</span>
+          <small>Open section</small>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
