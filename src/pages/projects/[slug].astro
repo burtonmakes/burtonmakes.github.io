@@ -1,0 +1,134 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projects } from "../../data/site";
+import "../../styles/global.css";
+
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const relatedProjects = projects.filter((item) => item.slug !== project.slug).slice(0, 3);
+---
+
+<BaseLayout title={project.title} description={project.summary}>
+  <section class="section hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">{project.type}</p>
+      <h1>{project.title}</h1>
+      <p class="hero-subtitle">{project.summary}</p>
+      <div class="tag-row">
+        <span class="tag tag-strong">{project.status}</span>
+        <span class="tag">{project.timeline}</span>
+        <span class="tag">{project.section}</span>
+      </div>
+    </div>
+    <div class="interface-shell tilt-card reveal">
+      <div class="interface-topbar"><span></span><span></span><span></span></div>
+      <div class="profile-list">
+        <div><span>Type</span><strong>{project.type}</strong></div>
+        <div><span>Labels</span><strong>{project.labels.join(", ")}</strong></div>
+        <div><span>Skill labels</span><strong>{project.skills.join(", ")}</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Top summary</p>
+      <h2>Why it exists, what it became, and what it taught.</h2>
+    </div>
+    <div class="summary-blocks">
+      <article class="feature-card reveal"><h3>Why I built it</h3><p>{project.why}</p></article>
+      <article class="feature-card reveal"><h3>What I built</h3><p>{project.built}</p></article>
+      <article class="feature-card reveal"><h3>What worked</h3><p>{project.worked}</p></article>
+      <article class="feature-card reveal"><h3>What failed</h3><p>{project.failed}</p></article>
+      <article class="feature-card reveal"><h3>What I learned</h3><p>{project.learned}</p></article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Technical details</p>
+      <h2>Architecture, constraints, and implementation framing.</h2>
+    </div>
+    <div class="card-grid">
+      <article class="feature-card reveal">
+        <h3>Architecture</h3>
+        <p>Placeholder structure for system architecture, design layers, and component boundaries.</p>
+      </article>
+      <article class="feature-card reveal">
+        <h3>Stack</h3>
+        <div class="tag-row">
+          {project.stack.map((item) => <span class="tag">{item}</span>)}
+        </div>
+      </article>
+      <article class="feature-card reveal">
+        <h3>Constraints</h3>
+        <p>Public-safe notes about tradeoffs, scope, privacy, hardware limits, or operational boundaries.</p>
+      </article>
+      <article class="feature-card reveal">
+        <h3>Implementation notes</h3>
+        <p>Placeholder for iteration notes, useful decisions, and lessons worth preserving.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Media</p>
+      <h2>Placeholder visual slots for screenshots, diagrams, photos, and demos.</h2>
+    </div>
+    <div class="media-grid">
+      <article class="gallery-card reveal"><span>01</span><h3>Screenshot placeholder</h3></article>
+      <article class="gallery-card reveal"><span>02</span><h3>Diagram placeholder</h3></article>
+      <article class="gallery-card reveal"><span>03</span><h3>Video placeholder</h3></article>
+    </div>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Links and related work</p>
+      <h2>Project links, related projects, and next steps.</h2>
+    </div>
+    <div class="compact-stack">
+      {project.links.length > 0 ? project.links.map((item) => (
+        <a class="publication-card reveal" href={item.href}>
+          <span>Link</span>
+          <strong>{item.label}</strong>
+          <p>{item.href}</p>
+        </a>
+      )) : (
+        <article class="publication-card reveal">
+          <span>Links</span>
+          <strong>Public links coming later</strong>
+          <p>This project does not have a dedicated public link yet.</p>
+        </article>
+      )}
+      <article class="publication-card reveal">
+        <span>Next steps</span>
+        <strong>Future build direction</strong>
+        <p>{project.nextSteps}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Related work</p>
+      <h2>Other projects that belong in the same neighborhood.</h2>
+    </div>
+    <div class="card-grid">
+      {relatedProjects.map((item) => (
+        <a class="story-card reveal" href={`/projects/${item.slug}/`}>
+          <span class="feature-kicker">{item.status}</span>
+          <h3>{item.title}</h3>
+          <p>{item.summary}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

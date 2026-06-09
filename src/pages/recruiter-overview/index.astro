@@ -1,0 +1,158 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  coreStrengths,
+  professionalHighlights,
+  projects,
+  publications,
+  recruiterSummaryVariants,
+  siteMeta,
+  skillMap,
+} from "../../data/site";
+import "../../styles/global.css";
+
+const selectedProjects = projects.slice(0, 6);
+---
+
+<BaseLayout
+  title="Recruiter Overview"
+  description="Curated hiring overview for Alex Burton across medical devices, wearables, hardware, software, AI, and systems work."
+>
+  <section class="section hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Recruiter overview</p>
+      <h1>{siteMeta.personName}</h1>
+      <p class="hero-subtitle">Curated hiring overview for wearable and implantable medical-device work, hardware systems, software tooling, AI workflows, and infrastructure thinking.</p>
+    </div>
+
+    <div class="snapshot-panel interface-shell tilt-card reveal">
+      <div class="interface-topbar"><span></span><span></span><span></span></div>
+      <div class="profile-list">
+        <div><span>Name</span><strong>{siteMeta.personName}</strong></div>
+        <div><span>Core domain</span><strong>Wearable and implantable medical devices</strong></div>
+        <div><span>Supporting domains</span><strong>Hardware, electronics, sensing, software, data, AI, infrastructure, automation</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Recruiter summary</p>
+      <h2>Multiple hiring angles without locking the story into one narrow title.</h2>
+    </div>
+    <div class="card-grid summary-grid">
+      {recruiterSummaryVariants.map((item) => (
+        <article class="feature-card reveal" id={item.title === "General engineering summary" ? "profile-snapshot" : undefined}>
+          <span class="feature-kicker">{item.title}</span>
+          <p>{item.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="core-strengths">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Core strengths</p>
+      <h2>Clickable capability areas tied to evidence, not generic skill dumping.</h2>
+    </div>
+    <div class="card-grid">
+      {coreStrengths.map((item) => (
+        <a class="feature-card tilt-card reveal" href={item.href}>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Skill map</p>
+      <h2>Credible experience levels linked to proof surfaces.</h2>
+    </div>
+    <div class="skill-map">
+      {skillMap.map(([skill, level, href]) => (
+        <a class="skill-row reveal" href={href}>
+          <span>{skill}</span>
+          <strong>{level}</strong>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="selected-highlights">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Selected professional highlights</p>
+      <h2>Metric-driven placeholders framed with public-safe boundaries.</h2>
+    </div>
+    <div class="card-grid">
+      {professionalHighlights.map((item) => (
+        <article class="story-card reveal">
+          <span class="feature-kicker">{item.metric}</span>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+          <small>Public-safe summary. Confidential details omitted.</small>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Selected projects</p>
+      <h2>Cross-section examples recruiters can open immediately.</h2>
+    </div>
+    <div class="card-grid feature-work-grid">
+      {selectedProjects.map((project) => (
+        <a class="story-card tilt-card reveal" href={`/projects/${project.slug}/`}>
+          <span class="feature-kicker">{project.status}</span>
+          <h3>{project.title}</h3>
+          <p>{project.summary}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Publications / patents</p>
+      <h2>Placeholder structure with scholar access point.</h2>
+    </div>
+    <div class="compact-stack">
+      {publications.map((item) => (
+        <a class="publication-card reveal" href={item.href}>
+          <span>{item.year}</span>
+          <strong>{item.title}</strong>
+          <p>{item.role}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="links">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Links</p>
+      <h2>Clear exits for review materials and public profiles.</h2>
+    </div>
+    <div class="explore-grid">
+      <a class="explore-link reveal" href={siteMeta.links.resume}><span>Resume</span><small>Placeholder for future public link</small></a>
+      <a class="explore-link reveal" href={siteMeta.links.github}><span>GitHub</span><small>{siteMeta.links.github.replace("https://", "")}</small></a>
+      <a class="explore-link reveal" href={siteMeta.links.linkedin}><span>LinkedIn</span><small>{siteMeta.links.linkedin.replace("https://", "")}</small></a>
+      <a class="explore-link reveal" href={siteMeta.links.scholar}><span>Google Scholar</span><small>Public publications profile</small></a>
+      <a class="explore-link reveal" href={siteMeta.links.contact}><span>Contact</span><small>Placeholder for future public contact path</small></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="card-grid">
+      <article class="notice-card reveal" id="resume-placeholder">
+        <h3>Resume placeholder</h3>
+        <p>A public resume link can be added later when there is a version intended for broad public access.</p>
+      </article>
+      <article class="notice-card reveal" id="contact-placeholder">
+        <h3>Contact placeholder</h3>
+        <p>No public email is listed right now. LinkedIn and GitHub are the current public contact surfaces.</p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

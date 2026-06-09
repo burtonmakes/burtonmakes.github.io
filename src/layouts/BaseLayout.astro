@@ -1,0 +1,85 @@
+---
+import GlobalEffects from "../components/GlobalEffects.jsx";
+import { navigation, siteMeta } from "../data/site";
+
+interface Props {
+  title: string;
+  description?: string;
+  eyebrow?: string;
+}
+
+const { title, description = siteMeta.siteDescription, eyebrow } = Astro.props;
+const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.siteTitle}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <GlobalEffects client:load />
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="Primary navigation">
+        <a class="brand" href="/" aria-label={`${siteMeta.brandName} home`}>
+          <span class="brand-mark"></span>
+          <span class="brand-stack">
+            <span class="brand-site">{siteMeta.brandName}</span>
+            <span class="brand-person">{siteMeta.personName}</span>
+          </span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="nav-links" data-mobile-nav data-site-nav>
+          {navigation.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))}
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      {eyebrow && (
+        <section class="page-intro">
+          <div class="section">
+            <p class="eyebrow reveal">{eyebrow}</p>
+          </div>
+        </section>
+      )}
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <div>
+          <a class="brand brand-footer" href="/">
+            <span class="brand-mark"></span>
+            <span class="brand-stack">
+              <span class="brand-site">{siteMeta.brandName}</span>
+              <span class="brand-person">{siteMeta.personName}</span>
+            </span>
+          </a>
+          <p class="footer-copy">
+            Recruiter-first engineering portfolio and public archive covering professional work, personal systems, and future research directions.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <a href={siteMeta.links.github}>GitHub</a>
+          <a href={siteMeta.links.linkedin}>LinkedIn</a>
+          <a href={siteMeta.links.scholar}>Google Scholar</a>
+          <a href="/private/">Private</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
