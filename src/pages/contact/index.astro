@@ -8,34 +8,46 @@ import "../../styles/global.css";
   title="Contact"
   description="Contact links for Alex Burton."
 >
-  <section class="section hero-grid">
+  <section class="section contact-hero contact-hero-compact">
     <div class="hero-copy reveal">
       <p class="eyebrow">Contact</p>
-      <h1>Best places to reach me.</h1>
+      <h1>Simple public links.</h1>
       <p class="hero-text">
-        I'm interested in medical device, wearable hardware, sensing, AI tooling,
-        and engineering systems roles.
+        Public surfaces for recruiting, collaboration, technical review, and research context.
+        These open in a new tab so the portfolio stays available.
       </p>
 
       <div class="hero-actions">
-        <a class="button button-primary" href={siteMeta.links.linkedin}>LinkedIn</a>
-        <a class="button button-secondary" href={siteMeta.links.github}>GitHub</a>
-        <a class="button button-tertiary" href={siteMeta.links.scholar}>Google Scholar</a>
+        <a class="button button-primary" href={siteMeta.links.linkedin} target="_blank" rel="noreferrer noopener">LinkedIn</a>
+        <a class="button button-secondary" href={siteMeta.links.github} target="_blank" rel="noreferrer noopener">GitHub</a>
+        <a class="button button-tertiary" href={siteMeta.links.scholar} target="_blank" rel="noreferrer noopener">Google Scholar</a>
       </div>
     </div>
 
-    <div class="interface-shell tilt-card reveal">
-      <div class="interface-topbar"><span></span><span></span><span></span></div>
-      <div class="profile-list">
-        <div>
-          <span>Work interests</span>
-          <strong>Medical devices, wearable sensing, hardware systems, AI tools</strong>
-        </div>
-        <div>
-          <span>Location</span>
-          <strong>Chicago, open to western U.S. opportunities</strong>
-        </div>
-      </div>
+    <div class="contact-link-grid reveal" aria-label="Public contact links">
+      <a class="publication-card tilt-card" href={siteMeta.links.linkedin} target="_blank" rel="noreferrer noopener">
+        <span>LinkedIn</span>
+        <strong>Profile and message surface</strong>
+        <p>Best for recruiter outreach and job conversation.</p>
+      </a>
+
+      <a class="publication-card tilt-card" href={siteMeta.links.github} target="_blank" rel="noreferrer noopener">
+        <span>GitHub</span>
+        <strong>Code and project history</strong>
+        <p>Best for reviewing technical work and active repositories.</p>
+      </a>
+
+      <a class="publication-card tilt-card" href={siteMeta.links.scholar} target="_blank" rel="noreferrer noopener">
+        <span>Google Scholar</span>
+        <strong>Publication and citation record</strong>
+        <p>Best for research and publication context.</p>
+      </a>
+
+      <a class="publication-card tilt-card" href="/projects/">
+        <span>Projects</span>
+        <strong>Work and home project index</strong>
+        <p>Best for seeing professional builds separated from personal systems.</p>
+      </a>
     </div>
   </section>
 </BaseLayout>
