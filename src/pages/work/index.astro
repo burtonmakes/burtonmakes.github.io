@@ -1,0 +1,116 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  skillsDemonstrated,
+  siteMeta,
+  workHistory,
+  workMetrics,
+} from "../../data/site";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+  title="Work"
+  description="Professional engineering work by Alex Burton across medical devices, wearable sensing, hardware, validation, data workflows, and AI tools."
+>
+  <section class="section hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Professional work</p>
+      <h1>Medical-device engineering with range across hardware, sensing, data, and validation.</h1>
+      <p class="hero-text">
+        My professional work centers on wearable and implantable sensing systems,
+        device reliability, clinical and home monitoring workflows, sensor integration,
+        testing, documentation, and cross-functional execution.
+      </p>
+      <div class="hero-actions">
+        <a class="button button-primary" href={siteMeta.links.linkedin}>LinkedIn</a>
+        <a class="button button-secondary" href={siteMeta.links.github}>GitHub</a>
+        <a class="button button-tertiary" href="/contact/">Contact</a>
+      </div>
+    </div>
+
+    <div class="interface-shell tilt-card reveal">
+      <div class="interface-topbar"><span></span><span></span><span></span></div>
+      <div class="profile-list">
+        <div>
+          <span>Primary domain</span>
+          <strong>Medical devices and wearable sensing</strong>
+        </div>
+        <div>
+          <span>Practical range</span>
+          <strong>Hardware, validation, data, documentation, and systems execution</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Work history</p>
+      <h2>Roles, responsibilities, and outcomes.</h2>
+    </div>
+
+    <div class="timeline-stack">
+      {workHistory.map((role) => (
+        <article class="timeline-card reveal">
+          <div class="timeline-top">
+            <div>
+              <h3>{role.title}</h3>
+              <p class="muted">{role.company} · {role.dates}</p>
+            </div>
+          </div>
+
+          <p>{role.context}</p>
+          <p>{role.summary}</p>
+
+          <div class="dual-list">
+            <div>
+              <strong>Responsibilities</strong>
+              <ul>
+                {role.responsibilities.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+
+            <div>
+              <strong>Accomplishments</strong>
+              <ul>
+                {role.accomplishments.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          <div class="tag-row">
+            {role.skills.map((skill) => <span class="tag">{skill}</span>)}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Metrics</p>
+      <h2>Public proof points from engineering work.</h2>
+    </div>
+
+    <div class="card-grid metrics-card-grid">
+      {workMetrics.map(([label, value]) => (
+        <article class="metric-card reveal">
+          <strong>{label}</strong>
+          <p>{value}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Capabilities</p>
+      <h2>Skills demonstrated through the work.</h2>
+    </div>
+
+    <div class="tag-panel reveal">
+      {skillsDemonstrated.map((item) => <span class="tag tag-large">{item}</span>)}
+    </div>
+  </section>
+</BaseLayout>

@@ -14,8 +14,7 @@ export default function GlobalEffects() {
     const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
     const pointer = { x: 0, y: 0 };
     const cleanup = [];
-
-    gsap.set(".reveal", { autoAlpha: 0, y: 24 });
+    gsap.set(".reveal", { autoAlpha: 0, y: 18 });
     gsap.utils.toArray(".reveal").forEach((element, index) => {
       const tween = gsap.to(element, {
         autoAlpha: 1,
@@ -129,11 +128,14 @@ export default function GlobalEffects() {
       pointer.y = (event.clientY / window.innerHeight - 0.5) * 2;
 
       if (spotlightRef.current) {
+        const diameter = 560;
+        spotlightRef.current.style.setProperty("--spot-x", `${event.clientX}px`);
+        spotlightRef.current.style.setProperty("--spot-y", `${event.clientY}px`);
+        spotlightRef.current.style.width = `${diameter}px`;
+        spotlightRef.current.style.height = `${diameter}px`;
         gsap.to(spotlightRef.current, {
-          x: event.clientX - 260,
-          y: event.clientY - 260,
           opacity: 1,
-          duration: 0.24,
+          duration: 0.12,
           overwrite: true,
         });
       }
@@ -141,6 +143,7 @@ export default function GlobalEffects() {
 
     if (hasFinePointer) {
       window.addEventListener("pointermove", onPointerMove);
+      onPointerMove({ clientX: window.innerWidth * 0.52, clientY: window.innerHeight * 0.3 });
       cleanup.push(() => window.removeEventListener("pointermove", onPointerMove));
     }
 
@@ -184,10 +187,10 @@ export default function GlobalEffects() {
     const group = new THREE.Group();
     scene.add(group);
 
-    const particleCount = window.innerWidth < 640 ? 520 : window.innerWidth < 960 ? 760 : 1100;
+    const particleCount = window.innerWidth < 640 ? 360 : window.innerWidth < 960 ? 560 : 820;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
-    const palette = [new THREE.Color("#63f4ff"), new THREE.Color("#7ef7c2"), new THREE.Color("#ff936b")];
+    const palette = [new THREE.Color("#4c8dff"), new THREE.Color("#6fd3ff"), new THREE.Color("#e86f4e")];
 
     for (let i = 0; i < particleCount; i += 1) {
       const i3 = i * 3;
@@ -213,7 +216,7 @@ export default function GlobalEffects() {
       new THREE.PointsMaterial({
         size: 0.036,
         transparent: true,
-        opacity: 0.78,
+        opacity: 0.82,
         vertexColors: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
@@ -223,21 +226,10 @@ export default function GlobalEffects() {
 
     const ring = new THREE.Mesh(
       new THREE.TorusKnotGeometry(1.46, 0.008, 240, 12, 2, 5),
-      new THREE.MeshBasicMaterial({ color: 0x63f4ff, transparent: true, opacity: 0.38 })
+      new THREE.MeshBasicMaterial({ color: 0x4c8dff, transparent: true, opacity: 0.45 })
     );
     ring.position.set(2.4, 0.22, -0.9);
     group.add(ring);
-
-    const beam = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(-4.2, -1.5, -1.8),
-        new THREE.Vector3(-1.6, 0.7, -1.1),
-        new THREE.Vector3(0.4, -0.3, -1.0),
-        new THREE.Vector3(3.7, 1.4, -1.5),
-      ]),
-      new THREE.LineBasicMaterial({ color: 0x7ef7c2, transparent: true, opacity: 0.18 })
-    );
-    group.add(beam);
 
     const resize = () => {
       const width = window.innerWidth;
@@ -255,7 +247,6 @@ export default function GlobalEffects() {
       particles.rotation.z = elapsed * 0.42;
       ring.rotation.x = elapsed * 1.5;
       ring.rotation.y = elapsed * 1.1;
-      beam.position.x = Math.sin(elapsed * 1.5) * 0.18;
       renderer.render(scene, camera);
       frameId = window.requestAnimationFrame(render);
     };
@@ -276,8 +267,6 @@ export default function GlobalEffects() {
       particles.material.dispose();
       ring.geometry.dispose();
       ring.material.dispose();
-      beam.geometry.dispose();
-      beam.material.dispose();
       renderer.dispose();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     });

@@ -1,6 +1,6 @@
-# Burton Makes
+# Alex Burton / Burton Makes
 
-Recruiter-first portfolio and public project archive for Alex Burton.
+Personal engineering portfolio for Alex Burton.
 
 Live site:
 
@@ -8,70 +8,77 @@ Live site:
 
 ## Site purpose
 
-This site serves three audiences:
+This site is a focused public portfolio, not a full archive.
 
-- Recruiters and hiring managers who need a fast, high-signal overview.
-- Friends and visitors who want to browse projects and interests.
-- Alex as a public archive of professional work, personal projects, research directions, and older experiments.
+It focuses on:
 
-The top of the site is intentionally recruiter-first. Personal notes, archive items, and placeholders exist, but they do not lead the information hierarchy.
+- professional medical-device and wearable-sensing work
+- selected technical projects
+- AI tools and infrastructure systems
+- public contact/profile links
 
 ## Top-level navigation
 
+The public navigation should stay small:
+
 - `/`
-- `/recruiter-overview/`
-- `/professional-work/`
-- `/personal-projects/`
-- `/research-notes/`
-- `/personal-notes/`
-- `/archive/`
-- `/private/`
-- `/projects/[slug]/`
+- `/work/`
+- `/projects/`
+- `/contact/`
+
+Avoid adding archive, private, notes, or research sections to the main nav until the base site feels clean.
 
 ## Where to edit content
 
-Primary site content lives in [src/data/site.ts](/Users/alexburton/Documents/GitHub/burtonmakes.github.io/src/data/site.ts).
+Primary structured content lives in:
 
-That file contains:
-
-- brand metadata
-- external links
-- navigation
-- recruiter overview content
-- professional work placeholders
-- research areas
-- personal note sections
-- archive items
-- project metadata for cards and detail pages
+- `src/data/site.ts`
 
 Shared layout and site chrome live in:
 
-- [src/layouts/BaseLayout.astro](/Users/alexburton/Documents/GitHub/burtonmakes.github.io/src/layouts/BaseLayout.astro)
-- [src/components/GlobalEffects.jsx](/Users/alexburton/Documents/GitHub/burtonmakes.github.io/src/components/GlobalEffects.jsx)
-- [src/styles/global.css](/Users/alexburton/Documents/GitHub/burtonmakes.github.io/src/styles/global.css)
+- `src/layouts/BaseLayout.astro`
+- `src/components/GlobalEffects.jsx`
+- `src/styles/global.css`
 
-Routes live in `src/pages/`.
+Routes live in:
+
+- `src/pages/`
 
 ## How to add a project
 
-1. Add a new project object to `projects` in [src/data/site.ts](/Users/alexburton/Documents/GitHub/burtonmakes.github.io/src/data/site.ts).
+1. Add a new project object to `projects` in `src/data/site.ts`.
 2. Include:
-   `slug`, `title`, `section`, `type`, `status`, `timeline`, `summary`, `skills`, `labels`, `links`, `why`, `built`, `worked`, `failed`, `learned`, `stack`, and `nextSteps`.
+   - `slug`
+   - `title`
+   - `section`
+   - `type`
+   - `status`
+   - `timeline`
+   - `summary`
+   - `skills`
+   - `labels`
+   - `links`
+   - `why`
+   - `built`
+   - `worked`
+   - `failed`
+   - `learned`
+   - `stack`
+   - `nextSteps`
 3. The project will automatically appear on:
-   - `/personal-projects/`
+   - `/projects/`
    - `/projects/[slug]/`
-4. Add it to homepage or recruiter-feature selections if it should be surfaced earlier.
 
-## How labels and tags work
+## Content rule
 
-The site uses several label types conceptually:
+Every public section should answer one of these:
 
-- status labels such as `active`, `planning`, `building`, `completed`, `archived`
-- section labels such as `personal-projects` or `research-notes`
-- type labels such as `personal-project`, `collection`, `research-note`
-- skill labels such as `hardware`, `AI-systems`, `documentation`, `networking`
+1. Who is Alex?
+2. What does he build?
+3. What proof exists?
+4. Where should the visitor click next?
 
-Project filters on `/personal-projects/` are driven by the `labels` and `status` fields in each project object.
+If a section does not answer one of those, cut it.
 
 ## Public-safety rules
 
@@ -83,29 +90,6 @@ Everything in this repo should remain public-safe.
 - Do not include credentials, tokens, API keys, secrets, private URLs, or internal hostnames.
 - Do not add private admin materials.
 - If a detail is sensitive, omit it or rewrite it into a public-safe summary.
-- Do not expose a public visibility field for content.
-
-## External links
-
-External public links are stored in `siteMeta.links` in [src/data/site.ts](/Users/alexburton/Documents/GitHub/burtonmakes.github.io/src/data/site.ts).
-
-Current configured links:
-
-- GitHub
-- LinkedIn
-- Google Scholar
-- Resume placeholder
-- Contact placeholder
-
-## Renaming Burton Makes later
-
-Brand metadata is centralized in `siteMeta`.
-
-To rename the site later from `Burton Makes` to `Burton Projects`, update:
-
-- `siteMeta.siteTitle`
-- `siteMeta.brandName`
-- `siteMeta.siteDescription` if needed
 
 ## Local development
 

@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { siteMeta } from "../../data/site";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+  title="Contact"
+  description="Contact links for Alex Burton."
+>
+  <section class="section hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Contact</p>
+      <h1>Best places to reach me.</h1>
+      <p class="hero-text">
+        I'm interested in medical device, wearable hardware, sensing, AI tooling,
+        and engineering systems roles.
+      </p>
+
+      <div class="hero-actions">
+        <a class="button button-primary" href={siteMeta.links.linkedin}>LinkedIn</a>
+        <a class="button button-secondary" href={siteMeta.links.github}>GitHub</a>
+        <a class="button button-tertiary" href={siteMeta.links.scholar}>Google Scholar</a>
+      </div>
+    </div>
+
+    <div class="interface-shell tilt-card reveal">
+      <div class="interface-topbar"><span></span><span></span><span></span></div>
+      <div class="profile-list">
+        <div>
+          <span>Work interests</span>
+          <strong>Medical devices, wearable sensing, hardware systems, AI tools</strong>
+        </div>
+        <div>
+          <span>Location</span>
+          <strong>Chicago, open to western U.S. opportunities</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
