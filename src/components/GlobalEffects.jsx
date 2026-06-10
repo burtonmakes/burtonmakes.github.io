@@ -62,9 +62,18 @@ export default function GlobalEffects() {
 
     const navPanel = document.querySelector("[data-mobile-nav]");
     const navButton = document.querySelector("[data-nav-toggle]");
+    const navShell = document.querySelector(".nav-shell");
+    let navCloseTimer = 0;
     const closeNav = () => {
+      window.clearTimeout(navCloseTimer);
       navPanel?.classList.remove("open");
       navButton?.setAttribute("aria-expanded", "false");
+    };
+    const scheduleClose = () => {
+      window.clearTimeout(navCloseTimer);
+      navCloseTimer = window.setTimeout(() => {
+        closeNav();
+      }, 140);
     };
     const toggleNav = () => {
       const isOpen = navPanel?.classList.toggle("open") ?? false;
@@ -77,6 +86,44 @@ export default function GlobalEffects() {
     navPanel?.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeNav));
     cleanup.push(() => {
       navPanel?.querySelectorAll("a").forEach((link) => link.removeEventListener("click", closeNav));
+    });
+
+    const onShellEnter = () => {
+      window.clearTimeout(navCloseTimer);
+    };
+    const onShellLeave = (event) => {
+      if (!hasFinePointer || !navPanel?.classList.contains("open")) {
+        return;
+      }
+
+      const relatedTarget = event.relatedTarget;
+      if (relatedTarget && navShell?.contains(relatedTarget)) {
+        return;
+      }
+
+      scheduleClose();
+    };
+
+    const onDocumentPointerDown = (event) => {
+      if (!navPanel?.classList.contains("open")) {
+        return;
+      }
+
+      if (navShell?.contains(event.target)) {
+        return;
+      }
+
+      closeNav();
+    };
+
+    navShell?.addEventListener("pointerenter", onShellEnter);
+    navShell?.addEventListener("pointerleave", onShellLeave);
+    document.addEventListener("pointerdown", onDocumentPointerDown);
+    cleanup.push(() => {
+      navShell?.removeEventListener("pointerenter", onShellEnter);
+      navShell?.removeEventListener("pointerleave", onShellLeave);
+      document.removeEventListener("pointerdown", onDocumentPointerDown);
+      window.clearTimeout(navCloseTimer);
     });
 
     const filterGroups = [...document.querySelectorAll("[data-filter-group]")];
@@ -232,7 +279,7 @@ export default function GlobalEffects() {
     group.add(ring);
 
     const resize = () => {
-      const width = window.innerWidth;
+      const width = document.documentElement.clientWidth;
       const height = window.innerHeight;
       renderer.setSize(width, height, false);
       camera.aspect = width / height;

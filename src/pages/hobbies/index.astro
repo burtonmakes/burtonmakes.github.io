@@ -1,0 +1,256 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+
+const outdoorActivities = [
+  {
+    title: "Rock Climbing",
+    detail: "Trad climbing · lead climbing · bouldering · indoor climbing",
+    description:
+      "Climbing combines movement, judgment, and trust. I like the mix of physical problem solving, careful setup, and helping people feel confident on the wall or on the route.",
+    years: "12 years",
+    cardTone: "core",
+    barTone: "red",
+    pillTone: "red",
+    pill: "Core interest",
+    bar: 80,
+  },
+  {
+    title: "Backpacking / Hiking",
+    detail: "Multi-day trips · 40+ mile routes · day hikes",
+    description:
+      "Backpacking is about making the trip feel simple once you are out there. I like the quiet miles, shared planning, gear choices, and small decisions that make a long day or multi-day route work.",
+    years: "8 years",
+    cardTone: "active",
+    barTone: "green",
+    pillTone: "green",
+    pill: "Active interest",
+    bar: 53,
+  },
+  {
+    title: "Ice Climbing",
+    detail: "Top rope · top rope soloing · lead climbing",
+    description:
+      "Ice climbing feels alive in a way that keeps me focused. I like the technical movement, the uncertain nature of the ice, and the need to stay calm and aware as conditions change.",
+    years: "5 years",
+    cardTone: "core",
+    barTone: "red",
+    pillTone: "red",
+    pill: "Core interest",
+    bar: 33,
+  },
+  {
+    title: "Skiing",
+    detail: "Ikon Pass · mountain days",
+    description:
+      "I like the rhythm of mountain days: picking runs, checking in with the group, moving at different speeds, and meeting back up without making the day feel over-planned.",
+    years: "5 years",
+    cardTone: "seasonal",
+    barTone: "blue",
+    pillTone: "blue",
+    pill: "Seasonal interest",
+    bar: 33,
+  },
+  {
+    title: "Kayak / Fishing",
+    detail: "Tandem kayak · rivers · lakes",
+    description:
+      "Kayak fishing is slower and more relaxed. In a tandem kayak, it becomes about patience, coordinating with another person, and letting Coco ride up front while we move around the water.",
+    years: "3 years",
+    cardTone: "active",
+    barTone: "green",
+    pillTone: "green",
+    pill: "Active interest",
+    bar: 20,
+  },
+  {
+    title: "Biking",
+    detail: "Long bike rides · busy streets",
+    description:
+      "Biking has become a steady way to spend time outside. I like the simple rhythm of longer rides, getting into a pace, and making it something people can join without overcomplicating it.",
+    years: "2 years",
+    cardTone: "active",
+    barTone: "green",
+    pillTone: "green",
+    pill: "Active interest",
+    bar: 13,
+  },
+];
+
+const makerProjects = [
+  {
+    title: "3D Printing, CAD, Design, and Repair",
+    detail: "Custom part design · mounting systems · replacement parts",
+    description:
+      "I use CAD and 3D printing to make practical parts for repairs, organizers, mounts, and long-term use around the house, on bikes, for equipment, and for outdoor gear.",
+    years: "15 years",
+    cardTone: "core",
+    barTone: "red",
+    pillTone: "red",
+    pill: "Core interest",
+    bar: 100,
+  },
+  {
+    title: "Craft, Design, and Fabrication",
+    detail: "Sewing · embroidery",
+    description:
+      "I like making physical things by hand, testing materials, and turning small design ideas into something useful, durable, or visually interesting.",
+    years: "5 years",
+    cardTone: "active",
+    barTone: "green",
+    pillTone: "green",
+    pill: "Active interest",
+    bar: 33,
+  },
+  {
+    title: "Home Brewing",
+    detail: "Process control · ingredients",
+    description:
+      "Home brewing is another process-heavy hobby where timing, ingredients, and small changes can meaningfully shift the final result.",
+    years: "3 years",
+    cardTone: "active",
+    barTone: "green",
+    pillTone: "green",
+    pill: "Active interest",
+    bar: 20,
+  },
+  {
+    title: "Homelab and Local Infrastructure",
+    detail: "Local storage · backup systems · Immich · Nextcloud / WebDAV · local AI",
+    description:
+      "I build and maintain local infrastructure for images, documents, media, backups, local AI services, data management, and network security.",
+    years: "2 years",
+    cardTone: "active",
+    barTone: "green",
+    pillTone: "green",
+    pill: "Active interest",
+    bar: 13,
+  },
+  {
+    title: "Wearable and Sensor Systems",
+    detail: "Tiny cameras · audio · physiological sensing",
+    description:
+      "I explore small wearable systems, including cameras, audio recorders, pulse oximetry, and mmWave sensing for breathing and heart-rate detection.",
+    years: "1 year",
+    cardTone: "seasonal",
+    barTone: "blue",
+    pillTone: "blue",
+    pill: "Exploring",
+    bar: 7,
+  },
+  {
+    title: "Software Tools and Automation",
+    detail: "GitHub repos · browser tools · data capture tools · plugin · skills",
+    description:
+      "I build small tools and plugins that make data easier to capture, process, and reuse, including browser-based workflows.",
+    years: "1 year",
+    cardTone: "seasonal",
+    barTone: "blue",
+    pillTone: "blue",
+    pill: "Exploring",
+    bar: 7,
+  },
+];
+---
+
+<BaseLayout
+  title="Hobbies"
+  description="Personal hobbies, extracurricular activities, and outdoor interests for Alex Burton."
+>
+  <section class="section hobbies-hero">
+    <aside class="hobbies-left">
+      <div class="hero-copy reveal hobbies-copy">
+        <p class="eyebrow">Outside work</p>
+        <h1>Stay active, clear, and connected.</h1>
+        <p class="hero-text">
+          I like outdoor activities that reward preparation without becoming rigid. The best days outside
+          come from reading the situation, moving well, communicating clearly, and leaving enough room for
+          the day to stay relaxed instead of over-planned.
+        </p>
+      </div>
+
+      <div class="dog-card hobby-dog-card hobby-dog-card-left">
+        <h2>My Dog</h2>
+        <strong>Adventure buddy.</strong>
+        <p>
+          Coco is my dog and joins us for many of these outdoor adventures.
+        </p>
+      </div>
+    </aside>
+
+    <div class="hobbies-right">
+      <section class="hobby-section hobby-section-box">
+        <div class="section-heading hobby-section-heading">
+          <p class="eyebrow">How I spend time outside</p>
+          <h2>Outdoor Activities</h2>
+          <p>
+            I like outdoor activities that keep me moving while still requiring focus, trust, and good judgment.
+            Climbing, hiking, skiing, biking, and time on the water all give me a different way to stay active,
+            think clearly, and share long days with people I trust.
+          </p>
+        </div>
+
+        <div class="hobby-card-grid">
+          {outdoorActivities.map((item) => (
+            <article class={`hobby-mini-card ${item.cardTone}`}>
+              <div class="card-top">
+                <div class="card-title">
+                  <h3>{item.title}</h3>
+                  <small>{item.detail}</small>
+                </div>
+                <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+              </div>
+              <p>{item.description}</p>
+              <div class="bars">
+                <div class="bar-label">
+                  <span>Years active</span>
+                  <strong>{item.years}</strong>
+                </div>
+                <div class="bar">
+                  <i class={`${item.barTone}bar`} style={`width:${item.bar}%`}></i>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="hobby-section hobby-section-box">
+        <div class="section-heading hobby-section-heading">
+          <p class="eyebrow">Hands-on work after hours</p>
+          <h2>Maker Projects</h2>
+          <p>
+            I like projects where I can build, fix, organize, automate, and keep improving things over time.
+            Some are practical repairs or physical parts; others are local infrastructure, sensing experiments,
+            or small tools that make everyday workflows easier.
+          </p>
+        </div>
+
+        <div class="hobby-card-grid">
+          {makerProjects.map((item) => (
+            <article class={`hobby-mini-card ${item.cardTone}`}>
+              <div class="card-top">
+                <div class="card-title">
+                  <h3>{item.title}</h3>
+                  <small>{item.detail}</small>
+                </div>
+                <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+              </div>
+              <p>{item.description}</p>
+              <div class="bars">
+                <div class="bar-label">
+                  <span>Years active</span>
+                  <strong>{item.years}</strong>
+                </div>
+                <div class="bar">
+                  <i class={`${item.barTone}bar`} style={`width:${item.bar}%`}></i>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
+
+</BaseLayout>

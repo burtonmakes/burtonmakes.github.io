@@ -3,54 +3,75 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { projects } from "../../data/site";
 import "../../styles/global.css";
 
-const featuredProjects = projects.slice(0, 6);
+const workProjects = projects.filter((project) => project.group === "work");
+const homeProjects = projects.filter((project) => project.group === "home");
 ---
 
 <BaseLayout
   title="Projects"
-  description="Selected engineering projects by Alex Burton across AI systems, infrastructure, hardware, CAD, sensing, and automation."
+  description="Selected Burton Makes projects split into professional medical-device work and home/personal systems."
 >
   <section class="section hero-grid">
     <div class="hero-copy reveal">
       <p class="eyebrow">Projects</p>
-      <h1>Selected builds across AI tools, infrastructure, hardware, and sensing.</h1>
+      <h1>Work projects and home projects, separated cleanly.</h1>
       <p class="hero-text">
-        A focused set of projects showing how I build systems: define the problem,
-        prototype quickly, document the tradeoffs, and turn rough ideas into working tools.
+        Professional medical-device and graduate research work is grouped separately from
+        home lab, infrastructure, and personal AI systems so recruiters can scan the right context quickly.
       </p>
     </div>
 
-    <div class="interface-shell tilt-card reveal">
+    <a class="interface-shell tilt-card reveal" href="/work/" aria-label="Open the work page">
       <div class="interface-topbar"><span></span><span></span><span></span></div>
       <div class="hero-panel-grid">
-        <article class="hero-stat-card">
+        <span class="hero-stat-card">
           <span class="label">Focus</span>
           <strong>Systems that actually get built</strong>
-        </article>
-        <article class="hero-stat-card">
-          <span class="label">Range</span>
-          <strong>AI, hardware, sensors, infrastructure</strong>
-        </article>
-        <article class="hero-stat-card hero-stat-accent">
-          <span class="label">Style</span>
-          <strong>Prototype, test, simplify, document</strong>
-        </article>
-        <article class="hero-stat-card">
+        </span>
+        <span class="hero-stat-card">
+          <span class="label">Work projects</span>
+          <strong>FlowSense, ACE, Tabby, graduate implantables</strong>
+        </span>
+        <span class="hero-stat-card hero-stat-accent">
+          <span class="label">Home projects</span>
+          <strong>OpenClaw, home lab, self-hosted systems</strong>
+        </span>
+        <span class="hero-stat-card">
           <span class="label">Count</span>
-          <strong>{featuredProjects.length} selected projects</strong>
-        </article>
+          <strong>{projects.length} selected projects</strong>
+        </span>
       </div>
-    </div>
+    </a>
   </section>
 
-  <section class="section" id="featured-projects">
+  <section class="section" id="work-projects">
     <div class="section-heading reveal">
-      <p class="eyebrow">Selected projects</p>
-      <h2>A small set of projects worth opening first.</h2>
+      <p class="eyebrow">Work projects</p>
+      <h2>Medical-device, FlowSense, and graduate research systems.</h2>
     </div>
 
     <div class="card-grid">
-      {featuredProjects.map((project) => (
+      {workProjects.map((project) => (
+        <a class="story-card tilt-card reveal" href={`/projects/${project.slug}/`}>
+          <span class="feature-kicker">{project.section}</span>
+          <h3>{project.title}</h3>
+          <p>{project.summary}</p>
+          <div class="tag-row">
+            {project.labels.slice(0, 3).map((label) => <span class="tag">{label}</span>)}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="home-projects">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Home projects</p>
+      <h2>Personal systems, home lab, AI tooling, and infrastructure.</h2>
+    </div>
+
+    <div class="card-grid card-grid-compact">
+      {homeProjects.map((project) => (
         <a class="story-card tilt-card reveal" href={`/projects/${project.slug}/`}>
           <span class="feature-kicker">{project.section}</span>
           <h3>{project.title}</h3>
