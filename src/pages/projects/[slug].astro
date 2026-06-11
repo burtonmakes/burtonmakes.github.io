@@ -32,7 +32,7 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
       </div>
     </div>
 
-    <a class="interface-shell tilt-card reveal" href="/work/" aria-label="Open the work page">
+    <div class="interface-shell tilt-card reveal">
       <div class="interface-topbar"><span></span><span></span><span></span></div>
       <div class="profile-list">
         <div>
@@ -44,44 +44,44 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
           <strong>{project.skills.join(", ")}</strong>
         </div>
       </div>
-    </a>
+    </div>
   </section>
 
-  <section class="section split-band" id="summary">
+  <section class="section split-band">
     <div class="section-heading reveal">
       <p class="eyebrow">Project summary</p>
       <h2>Why it exists, what I built, and what I learned.</h2>
     </div>
 
     <div class="summary-blocks">
-      <a class="feature-card reveal" href="#summary" aria-label="Jump to the project summary section">
+      <article class="feature-card reveal">
         <h3>Why I built it</h3>
         <p>{project.why}</p>
-      </a>
+      </article>
 
-      <a class="feature-card reveal" href="#stack" aria-label="Jump to the stack section">
+      <article class="feature-card reveal">
         <h3>What I built</h3>
         <p>{project.built}</p>
-      </a>
+      </article>
 
-      <a class="feature-card reveal" href="#links" aria-label="Jump to the links section">
+      <article class="feature-card reveal">
         <h3>What worked</h3>
         <p>{project.worked}</p>
-      </a>
+      </article>
 
-      <a class="feature-card reveal" href="#related" aria-label="Jump to the related projects section">
+      <article class="feature-card reveal">
         <h3>What failed</h3>
         <p>{project.failed}</p>
-      </a>
+      </article>
 
-      <a class="feature-card reveal" href="/projects/" aria-label="Return to the projects overview">
+      <article class="feature-card reveal">
         <h3>What I learned</h3>
         <p>{project.learned}</p>
-      </a>
+      </article>
     </div>
   </section>
 
-  <section class="section" id="stack">
+  <section class="section">
     <div class="section-heading reveal">
       <p class="eyebrow">Stack</p>
       <h2>Tools, systems, and technical areas involved.</h2>
@@ -93,7 +93,7 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
   </section>
 
   {(project.links.length > 0 || project.nextSteps) && (
-    <section class="section split-band" id="links">
+    <section class="section split-band">
       <div class="section-heading reveal">
         <p class="eyebrow">Links and direction</p>
         <h2>Public links and next steps.</h2>
@@ -101,7 +101,7 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
 
       <div class="compact-stack">
         {project.links.map((item) => (
-          <a class="publication-card reveal" href={item.href} target="_blank" rel="noreferrer noopener">
+          <a class="publication-card reveal" href={item.href}>
             <span>Link</span>
             <strong>{item.label}</strong>
             <p>{item.href}</p>
@@ -109,17 +109,17 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
         ))}
 
         {project.nextSteps && (
-          <a class="publication-card reveal" href="/projects/" aria-label="Return to the projects overview">
+          <article class="publication-card reveal">
             <span>Next</span>
             <strong>Future direction</strong>
             <p>{project.nextSteps}</p>
-          </a>
+          </article>
         )}
       </div>
     </section>
   )}
 
-  <section class="section" id="related">
+  <section class="section">
     <div class="section-heading reveal">
       <p class="eyebrow">Related projects</p>
       <h2>Other projects in the same neighborhood.</h2>
