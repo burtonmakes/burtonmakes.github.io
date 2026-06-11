@@ -62,8 +62,9 @@ export default function GlobalEffects() {
 
     const navPanel = document.querySelector("[data-mobile-nav]");
     const navButton = document.querySelector("[data-nav-toggle]");
-    const navShell = document.querySelector(".nav-shell");
-    let navCloseTimer = 0;
+    const siteHeader = document.querySelector(".site-header");
+    let lastScrollY = window.scrollY;
+    let headerRaf = 0;
     const closeNav = () => {
       window.clearTimeout(navCloseTimer);
       navPanel?.classList.remove("open");
@@ -88,43 +89,36 @@ export default function GlobalEffects() {
       navPanel?.querySelectorAll("a").forEach((link) => link.removeEventListener("click", closeNav));
     });
 
-    const onShellEnter = () => {
-      window.clearTimeout(navCloseTimer);
-    };
-    const onShellLeave = (event) => {
-      if (!hasFinePointer || !navPanel?.classList.contains("open")) {
+    const updateHeaderVisibility = () => {
+      const currentY = window.scrollY;
+      const navOpen = navPanel?.classList.contains("open");
+
+      if (!siteHeader) {
         return;
       }
 
-      const relatedTarget = event.relatedTarget;
-      if (relatedTarget && navShell?.contains(relatedTarget)) {
-        return;
+      if (navOpen || currentY < 24) {
+        siteHeader.classList.remove("is-hidden");
+      } else if (currentY > lastScrollY + 8) {
+        siteHeader.classList.add("is-hidden");
+      } else if (currentY < lastScrollY - 4) {
+        siteHeader.classList.remove("is-hidden");
       }
 
-      scheduleClose();
-    };
-
-    const onDocumentPointerDown = (event) => {
-      if (!navPanel?.classList.contains("open")) {
-        return;
-      }
-
-      if (navShell?.contains(event.target)) {
-        return;
-      }
-
-      closeNav();
+      lastScrollY = currentY;
     };
 
-    navShell?.addEventListener("pointerenter", onShellEnter);
-    navShell?.addEventListener("pointerleave", onShellLeave);
-    document.addEventListener("pointerdown", onDocumentPointerDown);
-    cleanup.push(() => {
-      navShell?.removeEventListener("pointerenter", onShellEnter);
-      navShell?.removeEventListener("pointerleave", onShellLeave);
-      document.removeEventListener("pointerdown", onDocumentPointerDown);
-      window.clearTimeout(navCloseTimer);
-    });
+    const onHeaderScroll = () => {
+      if (headerRaf) return;
+      headerRaf = window.requestAnimationFrame(() => {
+        headerRaf = 0;
+        updateHeaderVisibility();
+      });
+    };
+
+    updateHeaderVisibility();
+    window.addEventListener("scroll", onHeaderScroll, { passive: true });
+    cleanup.push(() => window.removeEventListener("scroll", onHeaderScroll));
 
     const filterGroups = [...document.querySelectorAll("[data-filter-group]")];
     filterGroups.forEach((group) => {
