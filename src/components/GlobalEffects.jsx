@@ -66,8 +66,15 @@ export default function GlobalEffects() {
     let lastScrollY = window.scrollY;
     let headerRaf = 0;
     const closeNav = () => {
+      window.clearTimeout(navCloseTimer);
       navPanel?.classList.remove("open");
       navButton?.setAttribute("aria-expanded", "false");
+    };
+    const scheduleClose = () => {
+      window.clearTimeout(navCloseTimer);
+      navCloseTimer = window.setTimeout(() => {
+        closeNav();
+      }, 140);
     };
     const toggleNav = () => {
       const isOpen = navPanel?.classList.toggle("open") ?? false;
@@ -266,7 +273,7 @@ export default function GlobalEffects() {
     group.add(ring);
 
     const resize = () => {
-      const width = window.innerWidth;
+      const width = document.documentElement.clientWidth;
       const height = window.innerHeight;
       renderer.setSize(width, height, false);
       camera.aspect = width / height;

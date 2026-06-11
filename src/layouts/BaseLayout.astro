@@ -36,7 +36,8 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
             <img src="/logo.svg" alt="" width="40" height="40" />
           </span>
           <span class="brand-stack">
-            <span class="brand-site">{siteMeta.personName}</span>
+            <span class="brand-site">{siteMeta.brandName}</span>
+            <span class="brand-person">{siteMeta.personName}</span>
           </span>
         </a>
 
@@ -47,7 +48,7 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
 
         <div class="nav-links" data-mobile-nav data-site-nav>
           {navigation.map((item) => (
-            <a href={item.href}>{item.label}</a>
+            <a class="nav-link" href={item.href}>{item.label}</a>
           ))}
         </div>
       </nav>
@@ -73,7 +74,8 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
               <img src="/logo.svg" alt="" width="40" height="40" />
             </span>
             <span class="brand-stack">
-              <span class="brand-site">{siteMeta.personName}</span>
+              <span class="brand-site">{siteMeta.brandName}</span>
+              <span class="brand-person">{siteMeta.personName}</span>
             </span>
           </a>
 
@@ -84,9 +86,9 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
         </div>
 
         <div class="footer-links">
-          <a href={siteMeta.links.github}>GitHub</a>
-          <a href={siteMeta.links.linkedin}>LinkedIn</a>
-          <a href={siteMeta.links.scholar}>Google Scholar</a>
+          <a href={siteMeta.links.github} target="_blank" rel="noreferrer noopener">GitHub</a>
+          <a href={siteMeta.links.linkedin} target="_blank" rel="noreferrer noopener">LinkedIn</a>
+          <a href={siteMeta.links.scholar} target="_blank" rel="noreferrer noopener">Google Scholar</a>
           <a href="/contact/">Contact</a>
         </div>
       </div>

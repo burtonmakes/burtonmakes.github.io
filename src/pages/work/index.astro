@@ -7,6 +7,20 @@ import {
   workMetrics,
 } from "../../data/site";
 import "../../styles/global.css";
+
+const roleTargets = [
+  "/projects/flowsense-clinical-ace/",
+  "/projects/wireless-battery-free-bioelectronics/",
+  "/projects/",
+  "/projects/",
+];
+
+const metricTargets = [
+  "/projects/flowsense-clinical-ace/",
+  "/projects/flowsense-home-lynx/",
+  "/work/#work-history",
+  "/work/#work-history",
+];
 ---
 
 <BaseLayout
@@ -16,20 +30,20 @@ import "../../styles/global.css";
   <section class="section hero-grid">
     <div class="hero-copy reveal">
       <p class="eyebrow">Professional work</p>
-      <h1>Medical-device engineering with range across hardware, sensing, data, and validation.</h1>
+      <h1>Medical-device engineering across sensing, validation, and systems.</h1>
       <p class="hero-text">
-        My professional work centers on wearable and implantable sensing systems,
-        device reliability, clinical and home monitoring workflows, sensor integration,
-        testing, documentation, and cross-functional execution.
+        Wearable and implantable sensing systems, device reliability, clinical and home
+        monitoring workflows, sensor integration, testing, documentation, and execution.
       </p>
       <div class="hero-actions">
-        <a class="button button-primary" href={siteMeta.links.linkedin}>LinkedIn</a>
-        <a class="button button-secondary" href={siteMeta.links.github}>GitHub</a>
+        <a class="button button-primary" href={siteMeta.links.linkedin} target="_blank" rel="noreferrer noopener">LinkedIn</a>
+        <a class="button button-secondary" href={siteMeta.links.github} target="_blank" rel="noreferrer noopener">GitHub</a>
+        <a class="button button-tertiary" href={siteMeta.links.scholar} target="_blank" rel="noreferrer noopener">Google Scholar</a>
         <a class="button button-tertiary" href="/contact/">Contact</a>
       </div>
     </div>
 
-    <div class="interface-shell tilt-card reveal">
+    <a class="interface-shell tilt-card reveal" href="/projects/#work-projects" aria-label="Open work projects">
       <div class="interface-topbar"><span></span><span></span><span></span></div>
       <div class="profile-list">
         <div>
@@ -41,18 +55,21 @@ import "../../styles/global.css";
           <strong>Hardware, validation, data, documentation, and systems execution</strong>
         </div>
       </div>
-    </div>
+    </a>
   </section>
 
-  <section class="section">
+  <section class="section" id="work-history">
     <div class="section-heading reveal">
       <p class="eyebrow">Work history</p>
       <h2>Roles, responsibilities, and outcomes.</h2>
     </div>
 
     <div class="timeline-stack">
-      {workHistory.map((role) => (
-        <article class="timeline-card reveal">
+      {workHistory.map((role, index) => {
+        const href = roleTargets[index] ?? "/projects/";
+
+        return (
+        <a class="timeline-card reveal" href={href} aria-label={`Open related project or work details for ${role.title}`}>
           <div class="timeline-top">
             <div>
               <h3>{role.title}</h3>
@@ -82,28 +99,33 @@ import "../../styles/global.css";
           <div class="tag-row">
             {role.skills.map((skill) => <span class="tag">{skill}</span>)}
           </div>
-        </article>
-      ))}
+        </a>
+        );
+      })}
     </div>
   </section>
 
-  <section class="section split-band">
+  <section class="section split-band" id="metrics">
     <div class="section-heading reveal">
       <p class="eyebrow">Metrics</p>
       <h2>Public proof points from engineering work.</h2>
     </div>
 
     <div class="card-grid metrics-card-grid">
-      {workMetrics.map(([label, value]) => (
-        <article class="metric-card reveal">
+      {workMetrics.map(([label, value], index) => {
+        const href = metricTargets[index] ?? "/work/#work-history";
+
+        return (
+        <a class="metric-card reveal" href={href} aria-label={`Open related details for ${label}`}>
           <strong>{label}</strong>
           <p>{value}</p>
-        </article>
-      ))}
+        </a>
+        );
+      })}
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="skills">
     <div class="section-heading reveal">
       <p class="eyebrow">Capabilities</p>
       <h2>Skills demonstrated through the work.</h2>
