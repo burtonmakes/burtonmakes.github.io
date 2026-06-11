@@ -4,14 +4,6 @@ Final direction: **V4 — A1 Dark Lab Interface + Signal Coral + Data Teal Integ
 
 V4 is the canonical portfolio design system.
 
-Latest refinement:
-
-- soften hero description text to `#94a3b8`
-- keep hero description text at 1.125rem with 1.6 line-height
-- turn the top nav items into padded pills with softer active fills
-- keep action spacing a bit looser so the hero breathes
-- keep section wrappers aligned as the shared structural container
-
 It keeps the strongest parts of **V2 / A1 Dark Lab Interface**:
 
 - dark navy-black technical background
@@ -115,7 +107,6 @@ This means:
   --text: #F6FAFF;
   --muted: #A9BCD7;
   --muted-2: #D3E0EE;
-  --hero-copy: #94A3B8;
 
   /* Borders and grid */
   --line: rgba(255, 255, 255, 0.10);
@@ -391,32 +382,6 @@ This is brighter than `--muted`, so it works better for paragraph text. It keeps
 - small labels
 - inactive nav items
 - disabled text
-
-## `--hero-copy: #94A3B8`
-
-### Role
-
-Primary hero description color.
-
-### Why this color
-
-This sits below the headline in contrast without looking washed out. It is cool, readable, and closer to the browser-based reference you pointed to.
-
-### Use it for
-
-- hero description paragraphs
-- introductory lead copy
-- dense summary text that needs a softer tone
-
-### Do not use it for
-
-- labels
-- navigation pills
-- calls to action
-
-### Design effect
-
-The copy stops competing with the heading while staying visibly crisp.
 
 ---
 
@@ -1263,40 +1228,6 @@ If not, use blue/cyan or neutral.
 The primary CTA uses dark text `#031014` over the amber/coral gradient. This keeps the button readable and strong.
 
 Do not put white text on the lightest part of the amber CTA unless contrast is checked.
-
-## Navigation and spacing
-
-Navigation items should read as roomy capsules rather than tight text chips:
-
-```css
-padding: 0.5rem 1.2rem;
-border-radius: 9999px;
-background: rgba(255, 255, 255, 0.1);
-```
-
-Hero action groups should keep a consistent gap and leave extra air before the next content band:
-
-```css
-gap: 16px;
-margin-bottom: 2.5rem;
-```
-
-## Quick access block
-
-The first hero should read as a guided entry point:
-
-- left-side brand and recruiter-facing copy:
-  `Alex Burton`, `Burton Makes`, the medical-device systems subtitle, and one short capability paragraph
-- hero actions:
-  `Start with work`, `View projects`, `LinkedIn`, and `GitHub`
-- a right-side `Quick access. Where to look first.` dashboard card with the `Recruiter path` badge
-- quick-access internals based on `v4_quick_access_block_final_clean.html`:
-  `Featured focus` and `Skill depth`
-- visible labels on each internal module so the visitor knows what each block means
-- clickable tiles wherever the tile represents navigation
-- no resume-download action in the primary public interface; use LinkedIn, GitHub, Google Scholar, Work, Projects, and Contact as the public surfaces
-
-The goal is to make the first screen feel like an organized landing point, not a generic hero.
 
 ---
 

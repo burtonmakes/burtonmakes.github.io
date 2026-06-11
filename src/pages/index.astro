@@ -1,112 +1,88 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { quickAccessSkills, siteMeta, workMetrics } from "../data/site";
+import { siteMeta } from "../data/site";
 import "../styles/global.css";
 ---
 
 <BaseLayout title={siteMeta.siteTitle} description={siteMeta.siteDescription}>
   <section class="section studio-hero">
     <div class="hero-copy reveal">
-      <p class="eyebrow">{siteMeta.personName}</p>
-      <h1>{siteMeta.brandName}</h1>
-      <p class="hero-brand-subtitle">{siteMeta.brandSubtitle}</p>
-      <p class="hero-text">
+      <p class="eyebrow">Implantable & wearable medical sensors</p>
+
+      <h1>Medical sensor systems for real-world use.</h1>
+
+      <p class="hero-subtitle">
         Engineering across sensing hardware, flexible electronics, sensor-skin interfaces,
         validation, reliability, manufacturing support, data workflows, and ML/AI-enabled tools.
       </p>
 
       <div class="hero-actions">
-        <a class="button button-primary" href="/work/">Start with work</a>
+        <a class="button button-primary" href="/work/">View work</a>
         <a class="button button-secondary" href="/projects/">View projects</a>
-        <a class="button button-tertiary" href={siteMeta.links.linkedin} target="_blank" rel="noreferrer noopener">
-          LinkedIn
-        </a>
-        <a class="button button-tertiary" href={siteMeta.links.github} target="_blank" rel="noreferrer noopener">
-          GitHub
-        </a>
       </div>
     </div>
 
-    <div class="hero-dashboard reveal" aria-label="Quick access block">
-      <div class="dashboard-window quick-access-window">
-        <div class="window-chrome">
-          <div class="window-topline">
-            <span class="chrome-label">Quick access.</span>
-            <h2 class="chrome-title">Where to look first.</h2>
-          </div>
-
-          <span class="chrome-badge">Recruiter path</span>
-        </div>
-
-        <div class="window-dots window-dots-inline" aria-hidden="true">
+    <div class="hero-dashboard reveal" aria-label="Engineering summary panel">
+      <div class="dashboard-window">
+        <div class="window-dots">
           <span></span>
           <span></span>
           <span></span>
         </div>
 
-        <div class="quick-access-grid">
-          <a class="focus-card" href="/work/" aria-label="Open professional work details">
-            <span class="feature-kicker">Featured focus</span>
-            <h2>Miniature sensing systems from hardware to clinical data.</h2>
-            <p>
-              End-to-end development of miniaturized sensing products across hardware,
-              electronics, firmware/software, signal processing, data pipelines,
-              validation, and clinical or preclinical study readiness.
-            </p>
-            <div class="tag-row tag-row-compact">
-              <span class="tag tag-compact tag-strong">Miniature hardware</span>
-              <span class="tag tag-compact">Flexible materials</span>
-              <span class="tag tag-compact">Biocompatible packaging</span>
-              <span class="tag tag-compact">Low-power electronics</span>
-              <span class="tag tag-compact">Sensing integration</span>
-              <span class="tag tag-compact">Firmware workflows</span>
-              <span class="tag tag-compact">Signal processing</span>
-              <span class="tag tag-compact tag-data">Data pipelines</span>
-              <span class="tag tag-compact tag-warm">Validation studies</span>
-            </div>
-          </a>
+        <div class="dashboard-grid">
+          <article class="prototype-card">
+            <span class="card-label">Focus</span>
+            <strong>Medical sensing</strong>
+            <p>Hardware · data · validation</p>
+          </article>
 
-          <a class="skill-card" href="/work/#skills" aria-label="Open skill details">
-            <span class="feature-kicker">Skill depth</span>
-            <h3>Skill depth</h3>
+          <article class="bar-card">
+            <span></span>
+            <span></span>
+            <span></span>
+          </article>
 
-            <div class="skill-list skill-list-home">
-              {quickAccessSkills.map((item) => (
-                <div class="skill-row-home">
-                  <div class="skill-top-home">
-                    <span>{item.label}</span>
-                    <span class="skill-score">{item.score}</span>
-                  </div>
-                  <div class={`skill-bar ${item.tone}`}>
-                    <i style={`width:${item.value}%`}></i>
-                  </div>
-                  <p class="skill-detail-home">{item.detail}</p>
-                </div>
-              ))}
-            </div>
-          </a>
+          <article class="radar-card">
+            <div class="radar-ring"></div>
+          </article>
+
+          <article class="active-card">
+            <span class="card-label">Systems range</span>
+            <strong>R&D</strong>
+            <p>Prototype → validate → improve</p>
+          </article>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section metrics-section" id="metrics">
+  <section class="section metrics-section">
     <div class="section-heading reveal">
       <p class="eyebrow">Metrics</p>
       <h2>Selected outcomes from medical-device engineering work.</h2>
     </div>
 
     <div class="metrics-grid">
-      {workMetrics.map(([label, value], index) => (
-        <a
-          class="metric-tile reveal"
-          href={index < 2 ? "/work/#metrics" : "/work/#work-history"}
-          aria-label={`Open related work details for ${label}`}
-        >
-          <strong>{value}</strong>
-          <span>{label}</span>
-        </a>
-      ))}
+      <article class="metric-tile reveal">
+        <strong>70% → 96%</strong>
+        <span>field reliability improvement</span>
+      </article>
+
+      <article class="metric-tile reveal">
+        <strong>4 weeks → ~1 week</strong>
+        <span>100-device build cycle improvement</span>
+      </article>
+
+      <article class="metric-tile reveal">
+        <strong>3,000+</strong>
+        <span>hours of device/data collection</span>
+      </article>
+
+      <article class="metric-tile reveal">
+        <strong>200+</strong>
+        <span>sensing datasets reviewed</span>
+      </article>
     </div>
   </section>
 
@@ -117,32 +93,32 @@ import "../styles/global.css";
     </div>
 
     <div class="capability-grid">
-      <a class="capability-card reveal" href="/projects/flowsense-clinical-ace/" aria-label="Open FlowSense Clinical project">
+      <article class="capability-card reveal">
         <span>01</span>
         <h3>Medical sensor systems</h3>
         <p>
           Implantable and wearable sensing platforms, flexible electronics, adhesives,
           encapsulation, BLE/NFC, wireless power, and sensor integration.
         </p>
-      </a>
+      </article>
 
-      <a class="capability-card reveal" href="/work/#work-history" aria-label="Open the work history section">
+      <article class="capability-card reveal">
         <span>02</span>
         <h3>Validation and reliability</h3>
         <p>
           Requirements, test procedures, inspection records, travelers, reliability debugging,
           V&V workflows, and device-performance reviews.
         </p>
-      </a>
+      </article>
 
-      <a class="capability-card reveal" href="/projects/openclaw-ai-agent-system/" aria-label="Open the OpenClaw project">
+      <article class="capability-card reveal">
         <span>03</span>
         <h3>Data and ML/AI workflows</h3>
         <p>
           Sensing datasets, algorithm evaluation, data analysis, automation, local AI tools,
           and engineering systems that make execution easier.
         </p>
-      </a>
+      </article>
     </div>
   </section>
 </BaseLayout>

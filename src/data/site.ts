@@ -1,14 +1,14 @@
 export const siteMeta = {
-  siteTitle: "Burton Makes",
-  brandSubtitle: "Medical devices, wearable sensing, implantables, and systems engineering.",
+  siteTitle: "Alex Burton",
   personName: "Alex Burton",
   brandName: "Burton Makes",
   siteDescription:
-    "Burton Makes is the public portfolio for Alex Burton, focused on medical devices, wearable sensing systems, implantables, AI tools, and infrastructure projects.",
+    "Engineering portfolio for Alex Burton — medical devices, wearable sensing systems, implantables, AI tools, and infrastructure projects.",
   links: {
     github: "https://github.com/CocoHusky",
     linkedin: "https://www.linkedin.com/in/draburton/",
     scholar: "https://scholar.google.com/citations?user=RAq9IoQAAAAJ&hl=en",
+    resume: "/resume/",
     contact: "/contact/",
   },
 } as const;
@@ -167,65 +167,6 @@ export const workMetrics = [
   ["Datasets reviewed", "200+ datasets"],
 ] as const;
 
-export const quickAccessSkills = [
-  {
-    label: "Miniaturized hardware",
-    value: 95,
-    score: "95%",
-    tone: "blue",
-    detail: "device architecture · packaging · fixture builds",
-  },
-  {
-    label: "Sensing integration",
-    value: 92,
-    score: "92%",
-    tone: "blue",
-    detail: "sensor stack · skin/device interface · validation",
-  },
-  {
-    label: "Electronics integration",
-    value: 88,
-    score: "88%",
-    tone: "blue",
-    detail: "BLE · NFC · Qi · PCB/system bring-up",
-  },
-  {
-    label: "Low-power / battery systems",
-    value: 84,
-    score: "84%",
-    tone: "blue",
-    detail: "power budget · charging · thermal risk",
-  },
-  {
-    label: "Signal processing",
-    value: 84,
-    score: "84%",
-    tone: "blue",
-    detail: "filtering · feature extraction · signal QA",
-  },
-  {
-    label: "Data pipelines",
-    value: 82,
-    score: "82%",
-    tone: "teal",
-    detail: "Python · datasets · labeling · dashboards",
-  },
-  {
-    label: "Algorithms / ML",
-    value: 76,
-    score: "76%",
-    tone: "warm",
-    detail: "classification · model eval · study outputs",
-  },
-  {
-    label: "FDA-ready documentation",
-    value: 74,
-    score: "74%",
-    tone: "blue",
-    detail: "requirements · FMEA · V&V · travelers",
-  },
-] as const;
-
 export const skillsDemonstrated = [
   "Medical-device development",
   "Wearable sensing",
@@ -252,7 +193,6 @@ export const skillsDemonstrated = [
 export type Project = {
   slug: string;
   title: string;
-  group: "work" | "home";
   section: string;
   type: string;
   status: "active" | "building" | "planning" | "completed" | "archived";
@@ -274,7 +214,6 @@ export const projects: Project[] = [
   {
     slug: "flowsense-clinical-ace",
     title: "FlowSense Clinical / ACE",
-    group: "work",
     section: "Medical devices",
     type: "product / algorithm",
     status: "completed",
@@ -301,7 +240,6 @@ export const projects: Project[] = [
   {
     slug: "flowsense-home-lynx",
     title: "FlowSense Home / Lynx",
-    group: "work",
     section: "Medical devices",
     type: "product",
     status: "completed",
@@ -328,7 +266,6 @@ export const projects: Project[] = [
   {
     slug: "wound-monitoring-platform-tabby",
     title: "Wound Monitoring Platform / Tabby",
-    group: "work",
     section: "Medical devices",
     type: "product / research",
     status: "completed",
@@ -355,7 +292,6 @@ export const projects: Project[] = [
   {
     slug: "wireless-battery-free-bioelectronics",
     title: "Wireless Battery-Free Bioelectronics",
-    group: "work",
     section: "Implantables",
     type: "research",
     status: "completed",
@@ -382,7 +318,6 @@ export const projects: Project[] = [
   {
     slug: "openclaw-ai-agent-system",
     title: "OpenClaw AI Agent System",
-    group: "home",
     section: "AI systems",
     type: "project",
     status: "active",
@@ -409,7 +344,6 @@ export const projects: Project[] = [
   {
     slug: "home-server-infrastructure",
     title: "Home Server Infrastructure",
-    group: "home",
     section: "Infrastructure",
     type: "project",
     status: "active",
@@ -434,3 +368,40 @@ export const projects: Project[] = [
       "Improve documentation, simplify dashboards, and separate public portfolio content from private infrastructure notes.",
   },
 ];
+
+/**
+ * Legacy exports kept so older pages do not break during cleanup.
+ * These should not drive the public navigation anymore.
+ */
+export const recruiterFastPath = [
+  {
+    title: "Work",
+    description: "Professional engineering work, metrics, and demonstrated capabilities.",
+    href: "/work/",
+  },
+  {
+    title: "Projects",
+    description: "Selected builds across AI systems, infrastructure, hardware, and sensing.",
+    href: "/projects/",
+  },
+  {
+    title: "Contact",
+    description: "Public profile and contact links.",
+    href: "/contact/",
+  },
+] as const;
+
+export const publications = [] as const;
+export const personalProjectFilters = [] as const;
+export const projectStatusFilters = [] as const;
+export const recruiterSummaryVariants = [] as const;
+export const coreStrengths = [] as const;
+export const skillMap = [] as const;
+export const personalNotesSections = [] as const;
+export const archiveSections = [] as const;
+export const researchAreas = [] as const;
+export const researchLinks = [] as const;
+export const futureIdeas = [] as const;
+export const archiveItems = [] as const;
+export const professionalHighlights = [] as const;
+export const workstreams = [] as const;
