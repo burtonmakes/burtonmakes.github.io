@@ -29,6 +29,10 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
     <GlobalEffects client:load />
     <a class="skip-link" href="#main">Skip to content</a>
 
+    <div class="dev-banner" role="banner" aria-label="Development notice">
+      <p>This site is still in production and being actively updated.</p>
+    </div>
+
     <header class="site-header">
       <nav class="nav-shell" aria-label="Primary navigation">
         <a class="brand" href="/" aria-label={`${siteMeta.personName} home`}>
