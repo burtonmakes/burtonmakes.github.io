@@ -8,6 +8,7 @@ export const siteMeta = {
     github: "https://github.com/CocoHusky",
     linkedin: "https://www.linkedin.com/in/draburton/",
     scholar: "https://scholar.google.com/citations?user=RAq9IoQAAAAJ&hl=en",
+    sourcecode: "https://github.com/burtonmakes/burtonmakes.github.io",
     resume: "/resume/",
     contact: "/contact/",
   },
