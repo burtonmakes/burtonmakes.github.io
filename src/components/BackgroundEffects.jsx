@@ -79,9 +79,9 @@ export default function BackgroundEffects() {
     const particles = new THREE.Points(
       particleGeometry,
       new THREE.PointsMaterial({
-        size: 0.036,
+        size: 0.026,
         transparent: true,
-        opacity: 0.82,
+        opacity: 0.38,
         vertexColors: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
@@ -91,7 +91,7 @@ export default function BackgroundEffects() {
 
     const ring = new THREE.Mesh(
       new THREE.TorusKnotGeometry(1.46, 0.008, 240, 12, 2, 5),
-      new THREE.MeshBasicMaterial({ color: 0x4c8dff, transparent: true, opacity: 0.45 })
+      new THREE.MeshBasicMaterial({ color: 0x4c8dff, transparent: true, opacity: 0.2 })
     );
     ring.position.set(2.4, 0.22, -0.9);
     group.add(ring);
@@ -109,11 +109,11 @@ export default function BackgroundEffects() {
       const elapsed = time * 5e-5;
       pointer.x += (pointerTarget.x - pointer.x) * 0.06;
       pointer.y += (pointerTarget.y - pointer.y) * 0.06;
-      group.rotation.y = elapsed + pointer.x * 0.08;
-      group.rotation.x = pointer.y * 0.08;
-      particles.rotation.z = elapsed * 0.42;
-      ring.rotation.x = elapsed * 1.5;
-      ring.rotation.y = elapsed * 1.1;
+      group.rotation.y = elapsed * 0.42 + pointer.x * 0.035;
+      group.rotation.x = pointer.y * 0.035;
+      particles.rotation.z = elapsed * 0.14;
+      ring.rotation.x = elapsed * 0.38;
+      ring.rotation.y = elapsed * 0.28;
       renderer.render(scene, camera);
       frameId = window.requestAnimationFrame(render);
     };
