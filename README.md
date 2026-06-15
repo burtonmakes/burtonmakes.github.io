@@ -105,3 +105,16 @@ Build for production:
 ```bash
 npm run build
 ```
+
+## Analytics
+
+This site uses optional [Plausible](https://plausible.io/) analytics for privacy-friendly, aggregate tracking.
+
+How it works:
+
+- the site loads the Plausible-hosted script only in production
+- analytics stays off unless the env flags are enabled
+- tracked events are aggregate interactions such as page views, nav clicks, project opens, and source-code clicks
+- the site still works normally if Plausible is not configured
+
+You do not need Plausible to run or deploy the site. The repo includes `.env.example` with the non-secret settings needed to enable it if you want analytics on your own deployment.
