@@ -109,6 +109,213 @@ export default function GlobalEffects() {
     window.addEventListener("scroll", onHeaderScroll, { passive: true });
     cleanup.push(() => window.removeEventListener("scroll", onHeaderScroll));
 
+    const getLinkLabel = (anchor) => {
+      const label =
+        anchor.getAttribute("aria-label") ||
+        anchor.getAttribute("title") ||
+        anchor.textContent ||
+        anchor.getAttribute("href") ||
+        "";
+      return label.replace(/\s+/g, " ").trim();
+    };
+
+    const getProjectMeta = (anchor, url) => {
+      const slugFromData = anchor.dataset.projectSlug;
+      const typeFromData = anchor.dataset.projectType;
+      const slugFromPath = url.pathname.split("/").filter(Boolean)[1] || "";
+
+      return {
+        project_slug: slugFromData || slugFromPath,
+        project_type: typeFromData || undefined,
+      };
+    };
+
+    const trackPageView = () => {
+      trackEvent("pageview", {
+        page_path: window.location.pathname,
+        component: "GlobalEffects",
+      });
+    };
+
+    const trackAnchorClick = (anchor) => {
+      const rawHref = anchor.getAttribute("href");
+      if (!rawHref) {
+        return;
+      }
+
+      let url;
+      try {
+        url = new URL(rawHref, window.location.href);
+      } catch {
+        return;
+      }
+
+      const linkLabel = getLinkLabel(anchor);
+      const isInternal = url.origin === window.location.origin;
+      const pagePath = window.location.pathname;
+      const isNavLink = Boolean(anchor.closest("[data-site-nav]"));
+      const isFooterLink = Boolean(anchor.closest(".footer-links"));
+      const isProjectCard = Boolean(anchor.closest(".story-card"));
+      const isPublicationCard = Boolean(anchor.closest(".publication-card"));
+      const isCapabilityNode = Boolean(anchor.closest(".capability-node"));
+      const isWorkMapReset = Boolean(anchor.closest("[data-work-map-reset]"));
+      const isWorkMapEdge = Boolean(anchor.closest("[data-edge-id]"));
+
+      if (isNavLink) {
+        trackEvent("nav_link_click", {
+          link_label: linkLabel,
+          link_type: "nav",
+          page_path: pagePath,
+          target_path: url.pathname,
+          component: "GlobalEffects",
+        });
+      }
+
+      if (url.pathname === "/contact/") {
+        trackEvent("contact_link_click", {
+          link_label: linkLabel,
+          link_type: "internal",
+          page_path: pagePath,
+          target_path: url.pathname,
+          component: "GlobalEffects",
+        });
+      }
+
+      if (!isInternal) {
+        const destinationDomain = url.hostname;
+        const sourceCodeUrl = "https://github.com/burtonmakes/burtonmakes.github.io";
+        const githubUrl = "https://github.com/CocoHusky";
+        const linkedinUrl = "https://www.linkedin.com/in/draburton/";
+        const scholarUrl = "https://scholar.google.com/citations?user=RAq9IoQAAAAJ&hl=en";
+        const isSourceCode = url.href === sourceCodeUrl;
+        const isSocialLink = url.href === githubUrl || url.href === linkedinUrl || url.href === scholarUrl;
+
+        if (isFooterLink) {
+          trackEvent("footer_link_click", {
+            link_label: linkLabel,
+            link_type: isSourceCode ? "source" : isSocialLink ? "social" : "external",
+            destination_domain: destinationDomain,
+            page_path: pagePath,
+            component: "GlobalEffects",
+          });
+        }
+
+        if (isSourceCode) {
+          trackEvent("source_code_click", {
+            link_label: linkLabel,
+            link_type: "source",
+            destination_domain: destinationDomain,
+            page_path: pagePath,
+            component: "GlobalEffects",
+          });
+        }
+
+        trackEvent("external_link_click", {
+          link_label: linkLabel,
+          link_type: isSocialLink ? "social" : isSourceCode ? "source" : "external",
+          destination_domain: destinationDomain,
+          page_path: pagePath,
+          component: "GlobalEffects",
+        });
+        return;
+      }
+
+      if (isFooterLink) {
+        trackEvent("footer_link_click", {
+          link_label: linkLabel,
+          link_type: "internal",
+          page_path: pagePath,
+          target_path: url.pathname,
+          component: "GlobalEffects",
+        });
+      }
+
+      if (isProjectCard || url.pathname.startsWith("/projects/")) {
+        const projectMeta = getProjectMeta(anchor, url);
+
+        if (isProjectCard) {
+          trackEvent("project_card_open", {
+            link_label: linkLabel,
+            page_path: pagePath,
+            target_path: url.pathname,
+            component: "GlobalEffects",
+            ...projectMeta,
+          });
+        }
+
+        trackEvent("project_link_click", {
+          link_label: linkLabel,
+          page_path: pagePath,
+          target_path: url.pathname,
+          component: "GlobalEffects",
+          ...projectMeta,
+        });
+      }
+
+      if (isPublicationCard && !url.pathname.startsWith("/projects/")) {
+        trackEvent("project_link_click", {
+          link_label: linkLabel,
+          page_path: pagePath,
+          target_path: url.pathname,
+          component: "GlobalEffects",
+        });
+      }
+
+      if (isCapabilityNode) {
+        trackEvent("work_map_node_click", {
+          node_id: anchor.closest(".capability-node")?.getAttribute("data-node-id") || "",
+          capability: anchor.closest(".capability-node")?.getAttribute("data-capability") || "",
+          page_path: pagePath,
+          component: "WorkMap",
+        });
+      }
+
+      if (isWorkMapEdge) {
+        trackEvent("work_map_edge_click", {
+          edge_id: anchor.closest("[data-edge-id]")?.getAttribute("data-edge-id") || "",
+          page_path: pagePath,
+          component: "WorkMap",
+        });
+      }
+
+      if (isWorkMapReset) {
+        trackEvent("work_map_reset", {
+          page_path: pagePath,
+          component: "WorkMap",
+        });
+      }
+    };
+
+    const onPageLoad = () => trackPageView();
+    const onDocumentClick = (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const anchor = target.closest("a");
+      if (anchor) {
+        trackAnchorClick(anchor);
+        return;
+      }
+
+      const capabilityNode = target.closest(".capability-node");
+      if (capabilityNode) {
+        trackEvent("work_map_node_click", {
+          node_id: capabilityNode.getAttribute("data-node-id") || "",
+          capability: capabilityNode.getAttribute("data-capability") || "",
+          page_path: window.location.pathname,
+          component: "WorkMap",
+        });
+      }
+    };
+
+    trackPageView();
+    document.addEventListener("astro:page-load", onPageLoad);
+    document.addEventListener("click", onDocumentClick, true);
+    cleanup.push(() => document.removeEventListener("astro:page-load", onPageLoad));
+    cleanup.push(() => document.removeEventListener("click", onDocumentClick, true));
+
     const filterGroups = [...document.querySelectorAll("[data-filter-group]")];
     filterGroups.forEach((group) => {
       const topicButtons = [...group.querySelectorAll("[data-filter-button][data-topic]")];

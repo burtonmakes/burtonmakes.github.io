@@ -22,8 +22,10 @@ declare global {
 const isPrimitive = (value: unknown): value is AnalyticsPrimitive =>
   typeof value === "string" || typeof value === "number" || typeof value === "boolean";
 
-const cleanProps = (props: AnalyticsProps) =>
-  Object.fromEntries(Object.entries(props).filter(([, value]) => isPrimitive(value)));
+const cleanProps = (props: AnalyticsProps): Record<string, AnalyticsPrimitive> =>
+  Object.fromEntries(
+    Object.entries(props).filter(([, value]) => isPrimitive(value))
+  ) as Record<string, AnalyticsPrimitive>;
 
 export function trackEvent(name: string, props: AnalyticsProps = {}): void {
   try {
@@ -37,7 +39,12 @@ export function trackEvent(name: string, props: AnalyticsProps = {}): void {
     }
 
     const cleanedProps = cleanProps(props);
-    plausible(name, Object.keys(cleanedProps).length > 0 ? { props: cleanedProps } : undefined);
+    if (Object.keys(cleanedProps).length === 0) {
+      plausible(name);
+      return;
+    }
+
+    plausible(name, { props: cleanedProps });
   } catch {
     // Analytics should never break the page.
   }
