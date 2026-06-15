@@ -12,13 +12,9 @@ interface Props {
 
 const { title, description = siteMeta.siteDescription, eyebrow } = Astro.props;
 const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.siteTitle}`;
-const analyticsEnabled =
-  import.meta.env.PROD &&
-  import.meta.env.PUBLIC_ANALYTICS_ENABLED === "true" &&
-  import.meta.env.PUBLIC_ANALYTICS_PROVIDER === "plausible" &&
-  typeof import.meta.env.PUBLIC_PLAUSIBLE_SCRIPT_URL === "string" &&
-  import.meta.env.PUBLIC_PLAUSIBLE_SCRIPT_URL.length > 0;
-const plausibleScriptUrl = import.meta.env.PUBLIC_PLAUSIBLE_SCRIPT_URL ?? "";
+const defaultPlausibleScriptUrl = "https://plausible.io/js/pa-gczhG5VDj-KpJH97UfP9Y.js";
+const plausibleScriptUrl = import.meta.env.PUBLIC_PLAUSIBLE_SCRIPT_URL || defaultPlausibleScriptUrl;
+const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 ---
 
 <!doctype html>
