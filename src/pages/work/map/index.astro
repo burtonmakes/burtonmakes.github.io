@@ -1,0 +1,146 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { capabilityCoverageReport, capabilityTaxonomy, getCapabilityAudit } from "../../../data/capability-map";
+import "../../../styles/global.css";
+
+const audit = getCapabilityAudit();
+const groupCount = capabilityTaxonomy.length;
+const nodeCount = capabilityTaxonomy.reduce((total, group) => total + group.nodes.length, 0);
+const evidenceCount = capabilityTaxonomy.reduce(
+  (total, group) => total + group.nodes.reduce((nodeTotal, node) => nodeTotal + node.evidence.length, 0),
+  0
+);
+---
+
+<BaseLayout
+  title="Work Map"
+  description="Capability taxonomy and evidence map for Alex Burton's work history and selected projects."
+>
+  <section class="section hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Work map</p>
+      <h1>Capability taxonomy and evidence map.</h1>
+      <p class="hero-text">
+        This is the review layer for the dense parts of the portfolio. It groups the work into
+        capabilities, points to the evidence behind each one, and keeps the source material visible.
+      </p>
+    </div>
+
+    <div class="interface-shell tilt-card reveal">
+      <div class="interface-topbar"><span></span><span></span><span></span></div>
+      <div class="profile-list">
+        <div>
+          <span>Taxonomy</span>
+          <strong>{groupCount} groups · {nodeCount} capabilities</strong>
+        </div>
+        <div>
+          <span>Evidence</span>
+          <strong>{evidenceCount} supporting links</strong>
+        </div>
+        <div>
+          <span>Coverage</span>
+          <strong>{capabilityCoverageReport.workRoles.length} roles · {capabilityCoverageReport.projects.length} projects</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {capabilityTaxonomy.map((group) => (
+    <section class="section capability-section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">{group.label}</p>
+        <h2>{group.summary}</h2>
+      </div>
+
+      <div class="capability-map-grid">
+        {group.nodes.map((node) => (
+          <article class="capability-node reveal">
+            <div class="capability-node-head">
+              <div>
+                <h3>{node.label}</h3>
+                <p>{node.summary}</p>
+              </div>
+
+              <div class="years-rail">
+                <span>Years active</span>
+                <strong>{node.yearsActive}</strong>
+                <div class="years-bar" aria-hidden="true">
+                  <span style={`width:${node.yearsScore}%`}></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="tag-row">
+              {node.skillTags.map((tag) => (
+                <span class="tag tag-large">{tag}</span>
+              ))}
+            </div>
+
+            <div class="evidence-list">
+              {node.evidence.map((item) => (
+                <article class="evidence-item">
+                  <div class="evidence-meta">
+                    <span>{item.kind}</span>
+                    <strong>{item.title}</strong>
+                    <em>{item.period}</em>
+                  </div>
+                  <p>{item.note}</p>
+                  <ul>
+                    {item.highlights.map((highlight) => <li>{highlight}</li>)}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Verification</p>
+      <h2>Coverage check for the first pass.</h2>
+    </div>
+
+    <div class="card-grid metrics-card-grid">
+      <article class="metric-card reveal">
+        <strong>Work roles</strong>
+        <p>{audit.missingWorkRoles.length === 0 ? "All current roles are represented." : `${audit.missingWorkRoles.length} roles still need coverage.`}</p>
+      </article>
+
+      <article class="metric-card reveal">
+        <strong>Projects</strong>
+        <p>{audit.missingProjects.length === 0 ? "All selected projects are represented." : `${audit.missingProjects.length} projects still need coverage.`}</p>
+      </article>
+
+      <article class="metric-card reveal">
+        <strong>Skills</strong>
+        <p>{audit.missingSkills.length === 0 ? "All current skill tags are mapped." : `${audit.missingSkills.length} skill tags still need mapping.`}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Source coverage</p>
+      <h2>What is represented in the map.</h2>
+    </div>
+
+    <div class="coverage-grid">
+      <article class="coverage-card reveal">
+        <strong>Work sources</strong>
+        <ul>
+          {capabilityCoverageReport.workRoles.map((item) => <li>{item.label}</li>)}
+        </ul>
+      </article>
+
+      <article class="coverage-card reveal">
+        <strong>Project sources</strong>
+        <ul>
+          {capabilityCoverageReport.projects.map((item) => <li>{item.label}</li>)}
+        </ul>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

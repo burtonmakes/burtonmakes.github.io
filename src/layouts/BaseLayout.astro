@@ -93,10 +93,13 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
         </div>
 
         <div class="footer-links">
-          <a href={siteMeta.links.github}>GitHub</a>
           <a href={siteMeta.links.linkedin}>LinkedIn</a>
+          <span>|</span>
+          <a href={siteMeta.links.github}>GitHub</a>
+          <span>|</span>
           <a href={siteMeta.links.scholar}>Google Scholar</a>
-          <a href="/contact/">Contact</a>
+          <span>|</span>
+          <a href={siteMeta.links.sourcecode}>Source Code</a>
         </div>
       </div>
     </footer>
