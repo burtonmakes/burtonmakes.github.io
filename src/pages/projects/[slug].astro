@@ -53,28 +53,53 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
       <h2>Why it exists, what I built, and what I learned.</h2>
     </div>
 
-    <div class="summary-blocks">
-      <article class="feature-card reveal">
+      <div class="summary-blocks">
+      <article
+        class="feature-card reveal"
+        data-analytics-impression="project-detail"
+        data-analytics-id={`${project.slug} | why`}
+        data-analytics-label="Why I built it"
+      >
         <h3>Why I built it</h3>
         <p>{project.why}</p>
       </article>
 
-      <article class="feature-card reveal">
+      <article
+        class="feature-card reveal"
+        data-analytics-impression="project-detail"
+        data-analytics-id={`${project.slug} | built`}
+        data-analytics-label="What I built"
+      >
         <h3>What I built</h3>
         <p>{project.built}</p>
       </article>
 
-      <article class="feature-card reveal">
+      <article
+        class="feature-card reveal"
+        data-analytics-impression="project-detail"
+        data-analytics-id={`${project.slug} | worked`}
+        data-analytics-label="What worked"
+      >
         <h3>What worked</h3>
         <p>{project.worked}</p>
       </article>
 
-      <article class="feature-card reveal">
+      <article
+        class="feature-card reveal"
+        data-analytics-impression="project-detail"
+        data-analytics-id={`${project.slug} | failed`}
+        data-analytics-label="What failed"
+      >
         <h3>What failed</h3>
         <p>{project.failed}</p>
       </article>
 
-      <article class="feature-card reveal">
+      <article
+        class="feature-card reveal"
+        data-analytics-impression="project-detail"
+        data-analytics-id={`${project.slug} | learned`}
+        data-analytics-label="What I learned"
+      >
         <h3>What I learned</h3>
         <p>{project.learned}</p>
       </article>
@@ -101,7 +126,13 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
 
       <div class="compact-stack">
         {project.links.map((item) => (
-          <a class="publication-card reveal" href={item.href}>
+          <a
+            class="publication-card reveal"
+            href={item.href}
+            data-analytics-impression="project-link"
+            data-analytics-id={`${project.slug} | ${item.label}`}
+            data-analytics-label={item.label}
+          >
             <span>Link</span>
             <strong>{item.label}</strong>
             <p>{item.href}</p>
@@ -132,6 +163,9 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
           href={`/projects/${item.slug}/`}
           data-project-slug={item.slug}
           data-project-type={item.type}
+          data-analytics-impression="project-card"
+          data-analytics-id={item.slug}
+          data-analytics-label={item.title}
         >
           <span class="feature-kicker">{item.section}</span>
           <h3>{item.title}</h3>

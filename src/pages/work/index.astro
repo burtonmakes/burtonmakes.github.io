@@ -52,7 +52,12 @@ import "../../styles/global.css";
 
     <div class="timeline-stack">
       {workHistory.map((role) => (
-        <article class="timeline-card reveal">
+        <article
+          class="timeline-card reveal"
+          data-analytics-impression="work-role"
+          data-analytics-id={`${role.company} | ${role.title}`}
+          data-analytics-label={role.dates}
+        >
           <div class="timeline-top">
             <div>
               <h3>{role.title}</h3>
@@ -95,7 +100,12 @@ import "../../styles/global.css";
 
     <div class="card-grid metrics-card-grid">
       {workMetrics.map(([label, value]) => (
-        <article class="metric-card reveal">
+        <article
+          class="metric-card reveal"
+          data-analytics-impression="work-metric"
+          data-analytics-id={label}
+          data-analytics-label={value}
+        >
           <strong>{label}</strong>
           <p>{value}</p>
         </article>
@@ -110,7 +120,16 @@ import "../../styles/global.css";
     </div>
 
     <div class="tag-panel reveal">
-      {skillsDemonstrated.map((item) => <span class="tag tag-large">{item}</span>)}
+      {skillsDemonstrated.map((item) => (
+        <span
+          class="tag tag-large"
+          data-analytics-impression="work-skill"
+          data-analytics-id={item}
+          data-analytics-label={item}
+        >
+          {item}
+        </span>
+      ))}
     </div>
   </section>
 </BaseLayout>

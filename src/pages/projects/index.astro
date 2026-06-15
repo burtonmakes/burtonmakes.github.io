@@ -56,6 +56,9 @@ const featuredProjects = projects.slice(0, 6);
           href={`/projects/${project.slug}/`}
           data-project-slug={project.slug}
           data-project-type={project.type}
+          data-analytics-impression="project-card"
+          data-analytics-id={project.slug}
+          data-analytics-label={project.title}
         >
           <span class="feature-kicker">{project.section}</span>
           <h3>{project.title}</h3>

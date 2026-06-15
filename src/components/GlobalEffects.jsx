@@ -310,6 +310,39 @@ export default function GlobalEffects() {
       }
     };
 
+    const trackedImpressions = new WeakSet();
+    const impressionTargets = [...document.querySelectorAll("[data-analytics-impression]")];
+    if (typeof IntersectionObserver !== "undefined" && impressionTargets.length > 0) {
+      const impressionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting || entry.intersectionRatio < 0.55) {
+              return;
+            }
+
+            const element = entry.target;
+            if (trackedImpressions.has(element)) {
+              return;
+            }
+
+            trackedImpressions.add(element);
+            trackEvent("content_impression", {
+              content_type: element.getAttribute("data-analytics-impression") || "",
+              content_id: element.getAttribute("data-analytics-id") || "",
+              content_label: element.getAttribute("data-analytics-label") || "",
+              page_path: window.location.pathname,
+              component: "GlobalEffects",
+            });
+            impressionObserver.unobserve(element);
+          });
+        },
+        { threshold: [0.55] }
+      );
+
+      impressionTargets.forEach((element) => impressionObserver.observe(element));
+      cleanup.push(() => impressionObserver.disconnect());
+    }
+
     trackPageView();
     document.addEventListener("astro:page-load", onPageLoad);
     document.addEventListener("click", onDocumentClick, true);
