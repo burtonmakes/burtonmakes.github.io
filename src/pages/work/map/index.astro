@@ -54,7 +54,7 @@ const evidenceCount = capabilityTaxonomy.reduce(
 
       <div class="capability-map-grid">
         {group.nodes.map((node) => (
-          <article class="capability-node reveal">
+          <article class="capability-node reveal" data-node-id={node.id} data-capability={node.label}>
             <div class="capability-node-head">
               <div>
                 <h3>{node.label}</h3>

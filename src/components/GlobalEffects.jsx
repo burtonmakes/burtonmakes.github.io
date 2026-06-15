@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { trackEvent } from "../lib/analytics";
 
 export default function GlobalEffects() {
   useEffect(() => {
@@ -133,6 +134,17 @@ export default function GlobalEffects() {
         const onClick = () => {
           topicButtons.forEach((item) => item.classList.remove("is-active"));
           button.classList.add("is-active");
+          trackEvent("search_or_filter_used", {
+            filter_name: "topic",
+            filter_value: button.getAttribute("data-topic") || "all",
+            page_path: window.location.pathname,
+            component: "GlobalEffects",
+          });
+          trackEvent("capability_filter_select", {
+            capability: button.getAttribute("data-topic") || "all",
+            page_path: window.location.pathname,
+            component: "GlobalEffects",
+          });
           applyFilter();
         };
         button.addEventListener("click", onClick);
@@ -143,6 +155,12 @@ export default function GlobalEffects() {
         const onClick = () => {
           statusButtons.forEach((item) => item.classList.remove("is-active"));
           button.classList.add("is-active");
+          trackEvent("search_or_filter_used", {
+            filter_name: "status",
+            filter_value: button.getAttribute("data-status") || "all",
+            page_path: window.location.pathname,
+            component: "GlobalEffects",
+          });
           applyFilter();
         };
         button.addEventListener("click", onClick);

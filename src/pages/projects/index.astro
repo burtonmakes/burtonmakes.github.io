@@ -51,7 +51,12 @@ const featuredProjects = projects.slice(0, 6);
 
     <div class="card-grid">
       {featuredProjects.map((project) => (
-        <a class="story-card tilt-card reveal" href={`/projects/${project.slug}/`}>
+        <a
+          class="story-card tilt-card reveal"
+          href={`/projects/${project.slug}/`}
+          data-project-slug={project.slug}
+          data-project-type={project.type}
+        >
           <span class="feature-kicker">{project.section}</span>
           <h3>{project.title}</h3>
           <p>{project.summary}</p>

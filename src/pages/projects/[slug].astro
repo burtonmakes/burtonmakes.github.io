@@ -127,7 +127,12 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
 
     <div class="card-grid">
       {relatedProjects.map((item) => (
-        <a class="story-card reveal" href={`/projects/${item.slug}/`}>
+        <a
+          class="story-card reveal"
+          href={`/projects/${item.slug}/`}
+          data-project-slug={item.slug}
+          data-project-type={item.type}
+        >
           <span class="feature-kicker">{item.section}</span>
           <h3>{item.title}</h3>
           <p>{item.summary}</p>
