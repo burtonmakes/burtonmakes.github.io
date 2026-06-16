@@ -2,6 +2,7 @@
 import BackgroundEffects from "../components/BackgroundEffects.jsx";
 import GlobalEffects from "../components/GlobalEffects.jsx";
 import { navigation, siteMeta } from "../data/site";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -27,6 +28,7 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{pageTitle}</title>
+    <ClientRouter />
     {analyticsEnabled && <script async src={plausibleScriptUrl}></script>}
     {analyticsEnabled && (
       <script is:inline>
@@ -42,7 +44,7 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
   </head>
 
   <body>
-    <BackgroundEffects client:load />
+    <BackgroundEffects client:load transition:persist />
     <div class="site-backdrop" aria-hidden="true"></div>
     <GlobalEffects client:load />
     <a class="skip-link" href="#main">Skip to content</a>

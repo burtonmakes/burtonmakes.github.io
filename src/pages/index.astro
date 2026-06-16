@@ -1,19 +1,23 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { siteMeta } from "../data/site";
 import "../styles/global.css";
+
+const pageTitle = "Alex Burton | Biomedical Systems Engineer";
+const pageDescription =
+  "Biomedical systems engineer building wearable and implantable medical-device sensing systems across hardware, validation, manufacturing, physiological data workflows, and ML/AI-enabled tools.";
 ---
 
-<BaseLayout title={siteMeta.siteTitle} description={siteMeta.siteDescription}>
+<BaseLayout title={pageTitle} description={pageDescription}>
   <section class="section studio-hero">
     <div class="hero-copy reveal">
-      <p class="eyebrow">Implantable & wearable medical sensors</p>
+      <p class="eyebrow">Biomedical Systems Engineer · Medical Devices</p>
 
-      <h1>Medical sensor systems for real-world use.</h1>
+      <h1>Biomedical sensing systems from prototype to clinical use.</h1>
 
       <p class="hero-subtitle">
-        Engineering across sensing hardware, flexible electronics, sensor-skin interfaces,
-        validation, reliability, manufacturing support, data workflows, and ML/AI-enabled tools.
+        I engineer wearable and implantable medical-device platforms across sensing hardware,
+        flexible and skin-safe interfaces, wireless systems, validation, reliability,
+        manufacturing support, physiological data workflows, and ML/AI-enabled analysis.
       </p>
 
       <div class="hero-actions">
@@ -24,7 +28,7 @@ import "../styles/global.css";
 
     <div class="hero-dashboard reveal" aria-label="Engineering summary panel">
       <div class="dashboard-window">
-        <div class="window-dots">
+        <div class="window-dots" aria-hidden="true">
           <span></span>
           <span></span>
           <span></span>
@@ -33,24 +37,24 @@ import "../styles/global.css";
         <div class="dashboard-grid">
           <article class="prototype-card">
             <span class="card-label">Focus</span>
-            <strong>Medical sensing</strong>
-            <p>Hardware · data · validation</p>
+            <strong>Medical devices</strong>
+            <p>Hardware · validation · data</p>
           </article>
 
-          <article class="bar-card">
+          <article class="bar-card" aria-label="Core engineering areas">
             <span></span>
             <span></span>
             <span></span>
           </article>
 
-          <article class="radar-card">
+          <article class="radar-card" aria-label="Prototype validation loop">
             <div class="radar-ring"></div>
           </article>
 
           <article class="active-card">
             <span class="card-label">Systems range</span>
             <strong>R&D</strong>
-            <p>Prototype → validate → improve</p>
+            <p>Prototype → validate → transfer</p>
           </article>
         </div>
       </div>
@@ -58,30 +62,25 @@ import "../styles/global.css";
   </section>
 
   <section class="section metrics-section">
-    <div class="section-heading reveal">
-      <p class="eyebrow">Metrics</p>
-      <h2>Selected outcomes from medical-device engineering work.</h2>
-    </div>
-
     <div class="metrics-grid">
       <article class="metric-tile reveal">
-        <strong>70% → 96%</strong>
-        <span>field reliability improvement</span>
+        <h2>70% → 96%</h2>
+        <span>home-use wearable sensor field reliability improved after resolving hardware, packaging, and workflow failure modes</span>
       </article>
 
       <article class="metric-tile reveal">
-        <strong>4 weeks → ~1 week</strong>
-        <span>100-device build cycle improvement</span>
+        <h2>4 weeks → ~1 week</h2>
+        <span>100-device build cycle reduced through manufacturing process improvements and clearer build documentation</span>
       </article>
 
       <article class="metric-tile reveal">
-        <strong>3,000+</strong>
-        <span>hours of device/data collection</span>
+        <h2>3,000+</h2>
+        <span>hours of physiological data collected across clinical, preclinical, and home-use sensing studies</span>
       </article>
 
       <article class="metric-tile reveal">
-        <strong>200+</strong>
-        <span>sensing datasets reviewed</span>
+        <h2>200+</h2>
+        <span>home-use sensing datasets reviewed to improve signal quality, algorithms, and device workflows</span>
       </article>
     </div>
   </section>
@@ -89,36 +88,50 @@ import "../styles/global.css";
   <section class="section capabilities-section" id="capabilities">
     <div class="section-heading reveal">
       <p class="eyebrow">Capabilities</p>
-      <h2>Where the work fits.</h2>
+      <h2>Where I create the most value.</h2>
     </div>
 
     <div class="capability-grid">
       <article class="capability-card reveal">
         <span>01</span>
-        <h3>Medical sensor systems</h3>
+        <h3>Wearable and implantable sensing systems</h3>
         <p>
-          Implantable and wearable sensing platforms, flexible electronics, adhesives,
-          encapsulation, BLE/NFC, wireless power, and sensor integration.
+          Miniaturized medical-device platforms using flexible electronics, adhesives,
+          encapsulation, thermal sensing, BLE/NFC, wireless power, and sensor integration.
         </p>
       </article>
 
       <article class="capability-card reveal">
         <span>02</span>
-        <h3>Validation and reliability</h3>
+        <h3>Validation, reliability, and regulated development</h3>
         <p>
-          Requirements, test procedures, inspection records, travelers, reliability debugging,
-          V&V workflows, and device-performance reviews.
+          Requirements, test procedures, FMEA, V&V workflows, inspection records,
+          travelers, reliability debugging, and FDA-ready technical documentation.
         </p>
       </article>
 
       <article class="capability-card reveal">
         <span>03</span>
-        <h3>Data and ML/AI workflows</h3>
+        <h3>Physiological data and ML/AI workflows</h3>
         <p>
-          Sensing datasets, algorithm evaluation, data analysis, automation, local AI tools,
-          and engineering systems that make execution easier.
+          Signal processing, feature engineering, model evaluation, bias and overfitting
+          checks, visualization, automation, and tools that turn sensor data into decisions.
         </p>
       </article>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  :global(.studio-hero) {
+    min-height: auto;
+    padding-top: clamp(6rem, 9vh, 7.5rem);
+    padding-bottom: clamp(4rem, 8vh, 6rem);
+  }
+
+  @media (max-width: 760px) {
+    :global(.studio-hero) {
+      padding-top: 5.5rem;
+    }
+  }
+</style>
