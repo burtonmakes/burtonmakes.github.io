@@ -61,7 +61,7 @@ export default function BackgroundEffects() {
       const i3 = i * 3;
       const radius = 2.3 + Math.random() * 5;
       const angle = Math.random() * Math.PI * 2;
-      const depth = (Math.random() - 0.5) * 6;
+      const depth = (Math.random() - 0.5) * 10;
       const color = palette[i % palette.length];
 
       positions[i3] = Math.cos(angle) * radius;
@@ -81,7 +81,7 @@ export default function BackgroundEffects() {
       new THREE.PointsMaterial({
         size: 0.026,
         transparent: true,
-        opacity: 0.38,
+        opacity: 0.75,
         vertexColors: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
