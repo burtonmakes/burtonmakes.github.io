@@ -2,8 +2,8 @@
   --bg: #010409;
   --bg-2: #06101c;
 
-  --panel: rgba(6, 16, 28, 0.56);
-  --panel-strong: rgba(9, 22, 38, 0.68);
+  --panel: rgba(6, 16, 28, 0.34);
+  --panel-strong: rgba(9, 22, 38, 0.46);
   --panel-soft: rgba(255, 255, 255, 0.02);
 
   --text: #f6faff;
@@ -67,7 +67,7 @@ body {
 body::before {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -4;
   content: "";
   pointer-events: none;
   background-image:
@@ -77,14 +77,15 @@ body::before {
   mask-image: linear-gradient(to bottom, black 0%, black 64%, transparent 96%);
 }
 
-.site-backdrop {
+body::after {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
+  content: "";
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(1, 4, 9, 0.18), rgba(1, 4, 9, 0.28)),
-    radial-gradient(circle at 50% 32%, transparent 0 34%, rgba(1, 4, 9, 0.16) 74%);
+    linear-gradient(180deg, rgba(1, 4, 9, 0.54), rgba(1, 4, 9, 0.64)),
+    radial-gradient(circle at 50% 32%, transparent 0 28%, rgba(1, 4, 9, 0.28) 68%);
 }
 
 a {
@@ -124,11 +125,11 @@ h3 {
 }
 
 h1 {
-  max-width: 18ch;
-  margin-bottom: 24px;
+  max-width: 10.8ch;
+  margin-bottom: 28px;
   color: var(--text);
-  font-size: clamp(2.6rem, 3.4vw, 3.9rem);
-  line-height: 1.08;
+  font-size: clamp(4.1rem, 7.2vw, 7.7rem);
+  line-height: 0.96;
   font-weight: 800;
 }
 
@@ -181,10 +182,10 @@ small,
 .particle-canvas {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -3;
   width: 100%;
   height: 100%;
-  opacity: 0.36;
+  opacity: 0.42;
   pointer-events: none;
 }
 
@@ -192,7 +193,7 @@ small,
   position: fixed;
   left: var(--spot-x, 50vw);
   top: var(--spot-y, 30vh);
-  z-index: 0;
+  z-index: -2;
   width: 580px;
   height: 580px;
   border-radius: 50%;
@@ -200,14 +201,6 @@ small,
   background: radial-gradient(circle, rgba(76, 141, 255, 0.08), transparent 68%);
   opacity: 0;
   transform: translate3d(-50%, -50%, 0);
-}
-
-.site-notice,
-.site-header,
-main,
-.site-footer {
-  position: relative;
-  z-index: 1;
 }
 
 @media (pointer: coarse), (max-width: 900px) {
@@ -398,16 +391,7 @@ main,
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
   align-items: center;
-  gap: clamp(2rem, 4vw, 4.5rem);
-  padding-top: clamp(3rem, 5vw, 5rem);
-  padding-bottom: clamp(3rem, 5vw, 5rem);
-}
-
-.hero-grid h1 {
-  max-width: 22ch;
-  font-size: clamp(2.35rem, 3vw, 3.35rem);
-  line-height: 1.08;
-  overflow-wrap: break-word;
+  gap: 34px;
 }
 
 .hero-home {
@@ -415,18 +399,7 @@ main,
 }
 
 .hero-copy {
-  min-width: 0;
   max-width: 860px;
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.hero-copy::before,
-.section-heading::before {
-  display: none !important;
-  content: none !important;
 }
 
 .eyebrow {
@@ -719,21 +692,21 @@ main,
 
 .hobbies-copy {
   align-self: start;
-  max-width: 48rem;
+  max-width: 36rem;
 }
 
 .hobbies-copy h1 {
-  max-width: 20ch;
-  font-size: clamp(2.45rem, 3.2vw, 3.85rem);
-  line-height: 1.08;
+  max-width: 12ch;
+  font-size: clamp(2.2rem, 3.1vw, 4rem);
+  line-height: 1.04;
   letter-spacing: 0;
 }
 
 .hobbies-copy .hero-text {
-  max-width: 44rem;
+  max-width: 34rem;
   margin-bottom: 0;
-  font-size: 1.04rem;
-  line-height: 1.65;
+  font-size: 1.05rem;
+  line-height: 1.68;
 }
 
 @media (max-width: 1100px) {
@@ -761,10 +734,10 @@ main,
     radial-gradient(circle at 14% 12%, rgba(76, 141, 255, 0.1), transparent 28%),
     radial-gradient(circle at 86% 16%, rgba(61, 214, 200, 0.075), transparent 30%),
     linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012)),
-    var(--panel);
+    rgba(6, 16, 28, 0.76);
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px) saturate(116%);
-  -webkit-backdrop-filter: blur(12px) saturate(116%);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
 
 .hobby-section-heading {
@@ -1622,21 +1595,12 @@ main,
 
 @media (max-width: 1200px) {
   h1 {
-    font-size: clamp(2.45rem, 4.8vw, 3.5rem);
+    font-size: clamp(4rem, 9vw, 7.2rem);
   }
 
   .studio-hero {
     grid-template-columns: 1fr;
     min-height: auto;
-  }
-
-  .hero-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-grid h1 {
-    max-width: 22ch;
-    font-size: clamp(2.25rem, 4.6vw, 3.2rem);
   }
 
   .dashboard-window {
@@ -1746,13 +1710,8 @@ main,
   }
 
   h1 {
-    max-width: 100%;
-    font-size: clamp(2.2rem, 8.4vw, 3rem);
-  }
-
-  .hero-grid h1 {
-    max-width: 100%;
-    font-size: clamp(2rem, 7.8vw, 2.85rem);
+    max-width: 10ch;
+    font-size: clamp(3.25rem, 16vw, 5.1rem);
   }
 
   h2 {
