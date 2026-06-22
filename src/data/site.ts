@@ -54,7 +54,7 @@ export const workHistory = [
     context:
       "Medical-device engineering role across FlowSense Clinical, FlowSense Home, algorithm development, manufacturing support, and FDA-ready documentation.",
     summary:
-      "Worked on sensing systems that connected hardware, software, data, documentation, and real-world use conditions.",
+      "Biomedical engineer leading the translation of novel sensing technologies into wearable and implantable medical products through miniaturized hardware, AI/ML analytics, and cross-functional leadership.",
     responsibilities: [
       "Supported FlowSense Clinical / ACE and FlowSense Home / Lynx development.",
       "Integrated sensors, electronics, packaging, adhesives, wireless charging, and test workflows.",

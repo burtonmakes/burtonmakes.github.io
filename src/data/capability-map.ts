@@ -49,7 +49,7 @@ const sources = {
     href: "/work/",
     period: "May 2022 – Dec 2025",
     summary:
-      "Medical-device engineering across FlowSense Clinical, FlowSense Home, algorithm development, manufacturing support, and FDA-ready documentation.",
+      "Biomedical engineer leading the translation of novel sensing technologies into wearable and implantable medical products through miniaturized hardware, AI/ML analytics, and cross-functional leadership.",
     highlights: [
       "Supported FlowSense Clinical / ACE and FlowSense Home / Lynx development.",
       "Integrated sensors, electronics, packaging, adhesives, wireless charging, and test workflows.",
