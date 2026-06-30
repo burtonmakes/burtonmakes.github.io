@@ -148,6 +148,12 @@ const makerProjects = [
     pill: "Exploring",
   },
 ];
+
+const chunkRows = (items, size = 2) =>
+  Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, index * size + size));
+
+const outdoorRows = chunkRows(outdoorActivities);
+const makerRows = chunkRows(makerProjects);
 ---
 
 <BaseLayout
@@ -155,98 +161,112 @@ const makerProjects = [
   description="Personal hobbies, extracurricular activities, and outdoor interests for Alex Burton."
 >
   <section class="section hobbies-hero">
-    <aside class="hobbies-left">
-      <div class="hero-copy reveal hobbies-copy">
-        <p class="eyebrow">Outside work</p>
-        <h1>Stay active, clear, and connected.</h1>
-        <p class="hero-text">
-          I like outdoor activities that reward preparation without becoming rigid. The best days outside
-          come from reading the situation, moving well, communicating clearly, and leaving enough room for
-          the day to stay relaxed instead of over-planned.
-        </p>
-      </div>
+    <div class="hero-copy reveal hobbies-copy">
+      <p class="eyebrow">Outside work</p>
+      <h1>Stay active, clear, and connected.</h1>
+      <p class="hero-text">
+        I like outdoor activities that reward preparation without becoming rigid. The best days outside
+        come from reading the situation, moving well, communicating clearly, and leaving enough room for
+        the day to stay relaxed instead of over-planned.
+      </p>
+    </div>
 
-      <div class="dog-card hobby-dog-card hobby-dog-card-left">
-        <h2>My Dog</h2>
-        <strong>Adventure buddy.</strong>
-        <p>
-          Coco is my dog and joins us for many of these outdoor adventures.
-        </p>
-      </div>
-    </aside>
+    <div class="dog-card hobby-dog-card">
+      <figure class="dog-photo">
+        <img
+          src="/coco-adventure.jpg"
+          alt="Coco smiling on a rocky hiking trail"
+          width="760"
+          height="1013"
+          loading="eager"
+          decoding="async"
+        />
+      </figure>
+      <h2>My Dog</h2>
+      <strong>Adventure buddy.</strong>
+      <p>
+        Coco is my dog and joins us for many of these outdoor adventures.
+      </p>
+    </div>
+  </section>
 
-    <div class="hobbies-right">
-      <section class="hobby-section hobby-section-box">
-        <div class="section-heading hobby-section-heading">
-          <p class="eyebrow">How I spend time outside</p>
-          <h2>Outdoor Activities</h2>
+  {outdoorRows.map((row, index) => (
+    <section class="section hobby-focus-section">
+      <div class="section-heading hobby-section-heading reveal">
+        <p class="eyebrow">How I spend time outside</p>
+        <h2>{index === 0 ? "Outdoor Activities" : "More Outdoor Activities"}</h2>
+        {index === 0 && (
           <p>
             I like outdoor activities that keep me moving while still requiring focus, trust, and good judgment.
             Climbing, hiking, skiing, biking, and time on the water all give me a different way to stay active,
             think clearly, and share long days with people I trust.
           </p>
-        </div>
+        )}
+      </div>
 
-        <div class="hobby-card-grid">
-          {outdoorActivities.map((item) => (
-            <article class={`hobby-mini-card ${item.cardTone}`}>
-              <div class="card-top">
-                <div class="card-title">
-                  <h3>{item.title}</h3>
-                  <small>{item.detail}</small>
-                </div>
-                <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+      <div class="hobby-row-grid">
+        {row.map((item) => (
+          <article class={`hobby-mini-card ${item.cardTone} reveal`}>
+            <div class="card-top">
+              <div class="card-title">
+                <h3>{item.title}</h3>
+                <small>{item.detail}</small>
               </div>
-              <p>{item.description}</p>
-              <div class="bars">
-                <div class="bar-label">
-                  <span>Years active</span>
-                  <strong>{item.years}</strong>
-                </div>
-                <div class="bar">
-                  <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
-                </div>
+              <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+            </div>
+            <p>{item.description}</p>
+            <div class="bars">
+              <div class="bar-label">
+                <span>Years active</span>
+                <strong>{item.years}</strong>
               </div>
-            </article>
-          ))}
-        </div>
-      </section>
+              <div class="bar">
+                <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
 
-      <section class="hobby-section hobby-section-box">
-        <div class="section-heading hobby-section-heading">
-          <p class="eyebrow">Hands-on work after hours</p>
-          <h2>Maker Projects</h2>
+  {makerRows.map((row, index) => (
+    <section class="section hobby-focus-section">
+      <div class="section-heading hobby-section-heading reveal">
+        <p class="eyebrow">Hands-on work after hours</p>
+        <h2>{index === 0 ? "Maker Projects" : "More Maker Projects"}</h2>
+        {index === 0 && (
           <p>
             I like projects where I can build, fix, organize, automate, and keep improving things over time.
             Some are practical repairs or physical parts; others are local infrastructure, sensing experiments,
             or small tools that make everyday workflows easier.
           </p>
-        </div>
+        )}
+      </div>
 
-        <div class="hobby-card-grid">
-          {makerProjects.map((item) => (
-            <article class={`hobby-mini-card ${item.cardTone}`}>
-              <div class="card-top">
-                <div class="card-title">
-                  <h3>{item.title}</h3>
-                  <small>{item.detail}</small>
-                </div>
-                <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+      <div class="hobby-row-grid">
+        {row.map((item) => (
+          <article class={`hobby-mini-card ${item.cardTone} reveal`}>
+            <div class="card-top">
+              <div class="card-title">
+                <h3>{item.title}</h3>
+                <small>{item.detail}</small>
               </div>
-              <p>{item.description}</p>
-              <div class="bars">
-                <div class="bar-label">
-                  <span>Years active</span>
-                  <strong>{item.years}</strong>
-                </div>
-                <div class="bar">
-                  <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
-                </div>
+              <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+            </div>
+            <p>{item.description}</p>
+            <div class="bars">
+              <div class="bar-label">
+                <span>Years active</span>
+                <strong>{item.years}</strong>
               </div>
-            </article>
-          ))}
-        </div>
-      </section>
-    </div>
-  </section>
+              <div class="bar">
+                <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
 </BaseLayout>
