@@ -68,6 +68,9 @@ export default function GlobalEffects() {
     const toggleNav = () => {
       const isOpen = navPanel?.classList.toggle("open") ?? false;
       navButton?.setAttribute("aria-expanded", String(isOpen));
+      if (isOpen) {
+        siteHeader?.classList.remove("is-hidden");
+      }
     };
 
     navButton?.addEventListener("click", toggleNav);
@@ -86,7 +89,7 @@ export default function GlobalEffects() {
         return;
       }
 
-      if (navOpen || currentY < 24) {
+      if (navOpen || currentY < 80) {
         siteHeader.classList.remove("is-hidden");
       } else if (currentY > lastScrollY + 8) {
         siteHeader.classList.add("is-hidden");

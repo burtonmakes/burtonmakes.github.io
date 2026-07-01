@@ -6,15 +6,15 @@ import "../../styles/global.css";
 
 <BaseLayout
   title="Contact"
-  description="Contact links for Alex Burton."
+  description="Contact Alex Burton about medical devices, wearable sensing, hardware systems, and AI tooling."
 >
   <section class="section hero-grid">
     <div class="hero-copy reveal">
       <p class="eyebrow">Contact</p>
-      <h1>Best places to reach me.</h1>
+      <h1>Send a note directly.</h1>
       <p class="hero-text">
-        I'm interested in medical device, wearable hardware, sensing, AI tooling,
-        and engineering systems roles.
+        Reach out about medical devices, wearable hardware, sensing systems,
+        AI tooling, engineering roles, or related project work.
       </p>
 
       <div class="hero-actions">
@@ -25,18 +25,87 @@ import "../../styles/global.css";
       </div>
     </div>
 
-    <div class="interface-shell tilt-card reveal">
+    <div class="interface-shell contact-shell reveal">
       <div class="interface-topbar"><span></span><span></span><span></span></div>
-      <div class="profile-list">
-        <div>
-          <span>Work interests</span>
-          <strong>Medical devices, wearable sensing, hardware systems, AI tools</strong>
+
+      <form class="contact-form" id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="53d6c7c6-13c6-4da5-b029-517d7dc7fd0a" />
+        <input type="hidden" name="subject" value="New message from burtonmakes.github.io" />
+        <input type="hidden" name="from_name" value="Burton Makes Contact Form" />
+        <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" class="contact-honeypot" aria-hidden="true" />
+
+        <div class="contact-form-heading">
+          <span>Contact form</span>
+          <strong>Tell me what you are working on.</strong>
         </div>
-        <div>
-          <span>Location</span>
-          <strong>Chicago, open to western U.S. opportunities</strong>
+
+        <div class="contact-field-grid">
+          <label>
+            <span>Name</span>
+            <input type="text" name="name" autocomplete="name" required />
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
         </div>
-      </div>
+
+        <label>
+          <span>Message</span>
+          <textarea name="message" rows="6" required></textarea>
+        </label>
+
+        <div class="contact-form-footer">
+          <button class="button button-primary" type="submit">Send message</button>
+          <p class="contact-status" id="contact-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("contact-status");
+  const submitButton = form?.querySelector("button[type='submit']");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!submitButton || !status) {
+      return;
+    }
+
+    const formData = new FormData(form);
+    const originalText = submitButton.textContent || "Send message";
+
+    submitButton.textContent = "Sending...";
+    submitButton.disabled = true;
+    status.textContent = "";
+    status.dataset.state = "";
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        form.reset();
+        status.textContent = "Message sent. I will follow up soon.";
+        status.dataset.state = "success";
+      } else {
+        status.textContent = data.message || "Could not send the message. Please try again.";
+        status.dataset.state = "error";
+      }
+    } catch {
+      status.textContent = "Could not send the message. Please try again.";
+      status.dataset.state = "error";
+    } finally {
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
+    }
+  });
+</script>

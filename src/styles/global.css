@@ -1,6 +1,7 @@
 :root {
   --bg: #010409;
   --bg-2: #06101c;
+  --notice-height: 43px;
 
   --panel: rgba(6, 16, 28, 0.34);
   --panel-strong: rgba(9, 22, 38, 0.46);
@@ -213,8 +214,9 @@ small,
 /* Header */
 
 .site-notice {
-  position: relative;
-  z-index: 60;
+  position: sticky;
+  top: 0;
+  z-index: 70;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,7 +240,7 @@ small,
 
 .site-header {
   position: sticky;
-  top: 0;
+  top: var(--notice-height);
   z-index: 50;
   padding: 12px 16px 6px;
   transition: transform 220ms ease, opacity 220ms ease;
@@ -246,8 +248,9 @@ small,
 }
 
 .site-header.is-hidden {
-  transform: translateY(-120%);
+  transform: translateY(calc(-100% - 12px));
   opacity: 0;
+  pointer-events: none;
 }
 
 .nav-shell {
@@ -1246,6 +1249,126 @@ small,
   letter-spacing: 0.1em;
 }
 
+.contact-shell {
+  min-height: 0;
+}
+
+.contact-form {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 18px;
+}
+
+.contact-form-heading {
+  display: grid;
+  gap: 7px;
+}
+
+.contact-form-heading span,
+.contact-form label span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.contact-form-heading strong {
+  color: var(--text);
+  font-size: clamp(1.25rem, 1.6vw, 1.65rem);
+  line-height: 1.18;
+}
+
+.contact-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.contact-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.014)),
+    rgba(3, 7, 13, 0.3);
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.contact-form input {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.contact-form textarea {
+  min-height: 150px;
+  padding: 13px 14px;
+  resize: vertical;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: color-mix(in srgb, var(--accent-2), white 8%);
+  background: rgba(3, 7, 13, 0.52);
+  box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.09);
+}
+
+.contact-form-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contact-form-footer .button {
+  border: 0;
+  cursor: pointer;
+}
+
+.contact-form-footer .button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+  transform: none;
+}
+
+.contact-status {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.contact-status[data-state="success"] {
+  color: #ddfbf7;
+}
+
+.contact-status[data-state="error"] {
+  color: #f9e0db;
+}
+
+.contact-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .hero-stat-accent {
   background:
     linear-gradient(135deg, rgba(76, 141, 255, 0.08), rgba(232, 111, 78, 0.04)),
@@ -1694,6 +1817,10 @@ small,
 }
 
 @media (max-width: 900px) {
+  :root {
+    --notice-height: 70px;
+  }
+
   .site-notice {
     flex-direction: column;
     gap: 2px;
@@ -1806,8 +1933,10 @@ small,
   }
 
   .hero-actions,
+  .contact-form-footer,
   .footer-grid {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .button {
@@ -1825,6 +1954,10 @@ small,
   .summary-blocks,
   .media-grid,
   .capability-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-field-grid {
     grid-template-columns: 1fr;
   }
 
