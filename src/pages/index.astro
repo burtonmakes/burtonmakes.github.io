@@ -1,10 +1,30 @@
 ---
+import { rhaeosAccomplishments, workProofPoints } from "../data/publicFacts";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "../styles/global.css";
 
 const pageTitle = "Alex Burton | Biomedical Systems Engineer";
 const pageDescription =
   "Biomedical systems engineer building wearable and implantable medical-device sensing systems across hardware, validation, manufacturing, physiological data workflows, and ML/AI-enabled tools.";
+const workProofPointMap = new Map(workProofPoints);
+const homepageMetrics = [
+  {
+    value: workProofPointMap.get("FlowSense Home reliability"),
+    label: rhaeosAccomplishments[0],
+  },
+  {
+    value: workProofPointMap.get("Clinical-study build cycle"),
+    label: rhaeosAccomplishments[1],
+  },
+  {
+    value: workProofPointMap.get("Physiological/device data")?.replace(" hours", "+"),
+    label: rhaeosAccomplishments[2],
+  },
+  {
+    value: workProofPointMap.get("HA Connect datasets")?.replace(" datasets", "+"),
+    label: rhaeosAccomplishments[3],
+  },
+];
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -63,25 +83,12 @@ const pageDescription =
 
   <section class="section metrics-section">
     <div class="metrics-grid">
-      <article class="metric-tile reveal">
-        <h2>70% → 96%</h2>
-        <span>FlowSense Home field reliability improved from initial Gen 1 home device to final Gen 3 clinical study</span>
-      </article>
-
-      <article class="metric-tile reveal">
-        <h2>6 weeks → ~3 weeks</h2>
-        <span>20–30 clinical-study device build cycle reduced across sensor design, builds, encapsulation, testing, and documentation</span>
-      </article>
-
-      <article class="metric-tile reveal">
-        <h2>3,000+</h2>
-        <span>hours of physiological/device data collected across Rhaeos sensing programs</span>
-      </article>
-
-      <article class="metric-tile reveal">
-        <h2>200+</h2>
-        <span>HA Connect datasets reviewed to improve sensor quality, algorithms, and device workflows</span>
-      </article>
+      {homepageMetrics.map((metric) => (
+        <article class="metric-tile reveal">
+          <h2>{metric.value}</h2>
+          <span>{metric.label}</span>
+        </article>
+      ))}
     </div>
   </section>
 
