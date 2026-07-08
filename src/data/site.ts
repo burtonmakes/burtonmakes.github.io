@@ -1,3 +1,10 @@
+import {
+  earlySensingAccomplishments,
+  graduateResearchAccomplishments,
+  rhaeosAccomplishments,
+  workProofPoints,
+} from "./publicFacts";
+
 export const siteMeta = {
   siteTitle: "Alex Burton",
   personName: "Alex Burton",
@@ -62,13 +69,7 @@ export const workHistory = [
       "Created engineering documentation including requirements, test procedures, travelers, inspection records, and design notes.",
       "Worked across hardware, firmware, software, manufacturing, quality, and clinical-facing workflows.",
     ],
-    accomplishments: [
-      "Improved field reliability from roughly 70% to 96%.",
-      "Helped reduce 100-device build cycle time from roughly four weeks to about one week.",
-      "Supported 3,000+ hours of device/data collection.",
-      "Worked across 200+ datasets for sensor review, algorithm evaluation, and device-performance analysis.",
-      "Contributed to home-use and clinical-use device workflows.",
-    ],
+    accomplishments: rhaeosAccomplishments,
     skills: [
       "Medical devices",
       "Wearable sensing",
@@ -95,10 +96,7 @@ export const workHistory = [
       "Supported preclinical validation in freely moving animal models.",
       "Worked across power transfer, communication, encapsulation, and mechanics.",
     ],
-    accomplishments: [
-      "Advanced a dissertation on fully implantable wireless and battery-free organ interfaces.",
-      "Built systems for chronic sensing and stimulation without tethered batteries.",
-    ],
+    accomplishments: graduateResearchAccomplishments,
     skills: [
       "Implantables",
       "Wireless power",
@@ -147,10 +145,7 @@ export const workHistory = [
       "Analyzed environmental stress and fall-risk / frailty signals.",
       "Helped structure real-world time-series data for downstream analysis.",
     ],
-    accomplishments: [
-      "Built an early base in physiological sensing and human-data analysis.",
-      "Learned how sensor placement, labeling, and calibration affect downstream signal quality.",
-    ],
+    accomplishments: earlySensingAccomplishments,
     skills: [
       "Physiological sensing",
       "Data labeling",
@@ -161,12 +156,7 @@ export const workHistory = [
   },
 ] as const;
 
-export const workMetrics = [
-  ["Reliability improvement", "70% → 96%"],
-  ["Build cycle improvement", "4 weeks → ~1 week"],
-  ["Data collection", "3,000+ hours"],
-  ["Datasets reviewed", "200+ datasets"],
-] as const;
+export const workMetrics = workProofPoints;
 
 export const skillsDemonstrated = [
   "Medical-device development",
