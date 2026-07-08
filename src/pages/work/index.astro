@@ -1,6 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { rhaeosAccomplishments, workProofPoints } from "../../data/publicFacts";
+import {
+  earlySensingAccomplishments,
+  graduateResearchAccomplishments,
+  rhaeosAccomplishments,
+  workProofPoints,
+} from "../../data/publicFacts";
 import {
   skillsDemonstrated,
   siteMeta,
@@ -8,11 +13,21 @@ import {
 } from "../../data/site";
 import "../../styles/global.css";
 
-const workHistory = siteWorkHistory.map((role) =>
-  role.company === "Rhaeos, Inc."
-    ? { ...role, accomplishments: rhaeosAccomplishments }
-    : role,
-);
+const workHistory = siteWorkHistory.map((role) => {
+  if (role.company === "Rhaeos, Inc.") {
+    return { ...role, accomplishments: rhaeosAccomplishments };
+  }
+
+  if (role.company === "Gutruf Lab, University of Arizona") {
+    return { ...role, accomplishments: graduateResearchAccomplishments };
+  }
+
+  if (role.company === "iCAMP Research Group, University of Arizona") {
+    return { ...role, accomplishments: earlySensingAccomplishments };
+  }
+
+  return role;
+});
 ---
 
 <BaseLayout
