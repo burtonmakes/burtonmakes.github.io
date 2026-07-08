@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projectFacts } from "../../data/publicFacts";
 import { projects } from "../../data/site";
 import "../../styles/global.css";
 
@@ -16,6 +17,7 @@ if (!project) {
   return Astro.redirect("/projects/");
 }
 const relatedProjects = projects.filter((item) => item.slug !== project.slug).slice(0, 3);
+const selectedFacts = projectFacts[project.slug as keyof typeof projectFacts] ?? [];
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
@@ -46,6 +48,28 @@ const relatedProjects = projects.filter((item) => item.slug !== project.slug).sl
       </div>
     </div>
   </section>
+
+  {selectedFacts.length > 0 && (
+    <section class="section split-band">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Selected facts</p>
+        <h2>Quantitative details and source-backed proof points.</h2>
+      </div>
+
+      <div class="summary-blocks">
+        {selectedFacts.map((fact) => (
+          <article
+            class="feature-card reveal"
+            data-analytics-impression="project-fact"
+            data-analytics-id={`${project.slug} | ${fact}`}
+            data-analytics-label="Selected fact"
+          >
+            <p>{fact}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
 
   <section class="section split-band">
     <div class="section-heading reveal">
