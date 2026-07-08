@@ -7,6 +7,7 @@ const pageTitle = "Alex Burton | Biomedical Systems Engineer";
 const pageDescription =
   "Biomedical systems engineer building wearable and implantable medical-device sensing systems across hardware, validation, manufacturing, physiological data workflows, and ML/AI-enabled tools.";
 const workProofPointMap = new Map(workProofPoints);
+const getFirstToken = (value: string | undefined) => value?.split(" ")[0];
 const homepageMetrics = [
   {
     value: workProofPointMap.get("FlowSense Home reliability"),
@@ -17,11 +18,11 @@ const homepageMetrics = [
     label: rhaeosAccomplishments[1],
   },
   {
-    value: workProofPointMap.get("Physiological/device data")?.replace(" hours", "+"),
+    value: getFirstToken(workProofPointMap.get("Physiological/device data")),
     label: rhaeosAccomplishments[2],
   },
   {
-    value: workProofPointMap.get("HA Connect datasets")?.replace(" datasets", "+"),
+    value: getFirstToken(workProofPointMap.get("HA Connect datasets")),
     label: rhaeosAccomplishments[3],
   },
 ];
