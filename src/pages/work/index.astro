@@ -1,33 +1,12 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
-  earlySensingAccomplishments,
-  graduateResearchAccomplishments,
-  rhaeosAccomplishments,
-  workProofPoints,
-} from "../../data/publicFacts";
-import {
   skillsDemonstrated,
   siteMeta,
-  workHistory as siteWorkHistory,
+  workHistory,
+  workMetrics,
 } from "../../data/site";
 import "../../styles/global.css";
-
-const workHistory = siteWorkHistory.map((role) => {
-  if (role.company === "Rhaeos, Inc.") {
-    return { ...role, accomplishments: rhaeosAccomplishments };
-  }
-
-  if (role.company === "Gutruf Lab, University of Arizona") {
-    return { ...role, accomplishments: graduateResearchAccomplishments };
-  }
-
-  if (role.company === "iCAMP Research Group, University of Arizona") {
-    return { ...role, accomplishments: earlySensingAccomplishments };
-  }
-
-  return role;
-});
 ---
 
 <BaseLayout
@@ -120,7 +99,7 @@ const workHistory = siteWorkHistory.map((role) => {
     </div>
 
     <div class="card-grid metrics-card-grid">
-      {workProofPoints.map(([label, value]) => (
+      {workMetrics.map(([label, value]) => (
         <article
           class="metric-card reveal"
           data-analytics-impression="work-metric"
