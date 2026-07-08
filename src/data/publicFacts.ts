@@ -9,6 +9,18 @@ export const rhaeosAccomplishments = [
   "Built wound-healing prediction analysis from 10 control and 10 diabetic mouse subjects using 5-fold cross-validation.",
 ] as const;
 
+export const earlySensingAccomplishments = [
+  "Extracted ECG, HRV, posture, and activity features from 800+ hours of chest-worn wearable data across 31 subjects.",
+  "Supported fall-risk classification improvements from 0.73 baseline AUC to 0.969 mixed-model AUC in the Biohub deck reference.",
+  "Developed a low-cost optical/microfluidic nanoparticle analyzer with about $4,500 prototype cost, below $5 chamber cost per unit, and below 1.9% size error across 50 nm to 1 µm particles.",
+] as const;
+
+export const graduateResearchAccomplishments = [
+  "Built reusable validation infrastructure across 20+ test fixtures, 6 tuned antenna designs, and 3 simulation frameworks.",
+  "Contributed to peer-reviewed work in PNAS, Microsystems & Nanoengineering, and Nature Communications, with 14 peer-reviewed journal articles, 5 conference proceedings/abstracts, and 1 book chapter.",
+  "Mentored or managed 10+ researchers/students across graduate research work.",
+] as const;
+
 export const workProofPoints = [
   ["Biomedical sensing experience", "11+ years"],
   ["Commercial med-device programs", "3+ years"],
@@ -22,6 +34,9 @@ export const workProofPoints = [
   ["Clinical workflow scale", "9 hospitals / 182 subjects / 112-subject validation set"],
   ["Publication output", "14 journal articles / 5 conference proceedings or abstracts / 1 book chapter"],
   ["Implant validation infrastructure", "20+ fixtures / 6 tuned antenna designs / 3 simulation frameworks"],
+  ["Early wearable-data study", "31 subjects / 800+ hours"],
+  ["Fall-risk model reference", "0.73 baseline AUC → 0.969 mixed-model AUC"],
+  ["Nanoparticle analyzer", "~$4,500 prototype / <$5 chambers / <1.9% size error across 50 nm–1 µm"],
 ] as const;
 
 export const projectFacts = {
