@@ -73,7 +73,7 @@ const getYearRange = (dates: string) => {
                 <strong>{role.context}</strong>
               </div>
               <div>
-                <span>Proof point</span>
+                <span>Achievement</span>
                 <strong>{role.accomplishments[0]}</strong>
               </div>
               <div>
@@ -81,67 +81,57 @@ const getYearRange = (dates: string) => {
                 <strong>{role.skills.slice(0, 4).join(" · ")}</strong>
               </div>
             </div>
+
+            <details class="career-detail-tree" data-career-tree>
+              <summary
+                class="career-detail-toggle"
+                aria-label={`Toggle detailed information for ${role.title}`}
+              >
+                <span class="detail-label-open">Details</span>
+                <span class="detail-label-close">Close</span>
+              </summary>
+
+              <div class="career-detail-tree-body">
+                <div class="work-tree-root">
+                  <span>Selected role</span>
+                  <strong>{role.title}</strong>
+                  <p>{role.company} · {role.dates}</p>
+                </div>
+
+                <div class="work-tree-branches">
+                  <section class="work-tree-node">
+                    <span>Scope</span>
+                    <ul>
+                      {role.responsibilities.map((item) => <li>{item}</li>)}
+                    </ul>
+                  </section>
+
+                  <section class="work-tree-node">
+                    <span>Achievements</span>
+                    <ul>
+                      {role.accomplishments.map((item) => <li>{item}</li>)}
+                    </ul>
+                  </section>
+
+                  <section class="work-tree-node">
+                    <span>Technical range</span>
+                    <div class="tag-row tree-tag-row">
+                      {role.skills.map((skill) => <span class="tag">{skill}</span>)}
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </details>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="section-heading reveal">
-      <p class="eyebrow">Work history</p>
-      <h2>Role details, kept compact.</h2>
-      <p>
-        The timeline above gives the high-level path. Open a role here for the
-        scope, proof points, and technical tools behind it.
-      </p>
-    </div>
-
-    <div class="timeline-stack">
-      {workHistory.map((role) => (
-        <details
-          id={`role-${roleId(role.title)}`}
-          class="timeline-card work-detail-card reveal"
-          data-analytics-impression="work-role"
-          data-analytics-id={`${role.company} | ${role.title}`}
-          data-analytics-label={role.dates}
-        >
-          <summary class="work-detail-summary">
-            <div>
-              <h3>{role.title}</h3>
-              <p class="muted">{role.company} · {role.dates}</p>
-            </div>
-            <span>Details</span>
-          </summary>
-
-          <div class="dual-list">
-            <div>
-              <strong>Scope</strong>
-              <ul>
-                {role.responsibilities.slice(0, 3).map((item) => <li>{item}</li>)}
-              </ul>
-            </div>
-
-            <div>
-              <strong>Proof</strong>
-              <ul>
-                {role.accomplishments.slice(0, 3).map((item) => <li>{item}</li>)}
-              </ul>
-            </div>
-          </div>
-
-          <div class="tag-row">
-            {role.skills.slice(0, 6).map((skill) => <span class="tag">{skill}</span>)}
-          </div>
-        </details>
-      ))}
-    </div>
-  </section>
-
   <section class="section split-band">
     <div class="section-heading reveal">
       <p class="eyebrow">Metrics</p>
-      <h2>Public proof points from engineering work.</h2>
+      <h2>Public achievements from engineering work.</h2>
     </div>
 
     <div class="card-grid metrics-card-grid">
@@ -180,6 +170,185 @@ const getYearRange = (dates: string) => {
   </section>
 </BaseLayout>
 
+<style>
+  .career-detail-tree {
+    margin-top: 18px;
+  }
+
+  .career-detail-toggle {
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .career-detail-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .career-detail-toggle span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 17px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--cta-1), var(--cta-2));
+    color: #081014;
+    box-shadow: 0 10px 28px rgba(232, 111, 78, 0.2);
+    font-size: 0.76rem;
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .career-detail-toggle:hover span,
+  .career-detail-toggle:focus-visible span {
+    filter: brightness(1.06);
+  }
+
+  .career-detail-toggle .detail-label-close,
+  .career-detail-tree[open] .career-detail-toggle .detail-label-open {
+    display: none;
+  }
+
+  .career-detail-tree[open] .career-detail-toggle .detail-label-close {
+    display: inline-flex;
+  }
+
+  .career-detail-tree-body {
+    position: relative;
+    margin-top: 18px;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
+      rgba(3, 8, 15, 0.36);
+  }
+
+  .work-tree-root {
+    position: relative;
+    display: grid;
+    gap: 5px;
+    padding: 18px 20px;
+    border: 1px solid color-mix(in srgb, var(--accent-2), transparent 65%);
+    border-radius: 10px;
+    background: rgba(76, 141, 255, 0.08);
+  }
+
+  .work-tree-root::after {
+    position: absolute;
+    left: 28px;
+    top: 100%;
+    width: 1px;
+    height: 18px;
+    background: color-mix(in srgb, var(--accent-2), transparent 54%);
+    content: "";
+  }
+
+  .work-tree-root span,
+  .work-tree-node span {
+    display: block;
+    color: #9fe7ff;
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .work-tree-root strong {
+    color: var(--text);
+    font-size: 1.08rem;
+    line-height: 1.2;
+  }
+
+  .work-tree-root p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .work-tree-branches {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+    padding-top: 18px;
+  }
+
+  .work-tree-branches::before {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--accent-2), transparent 72%);
+    content: "";
+  }
+
+  .work-tree-node {
+    position: relative;
+    min-height: 100%;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.095);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .work-tree-node::before {
+    position: absolute;
+    left: 28px;
+    bottom: 100%;
+    width: 1px;
+    height: 18px;
+    background: color-mix(in srgb, var(--accent-2), transparent 65%);
+    content: "";
+  }
+
+  .work-tree-node ul {
+    margin-top: 12px;
+  }
+
+  .work-tree-node li {
+    color: #d6e4f3;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .tree-tag-row {
+    margin-top: 14px;
+  }
+
+  @media (max-width: 980px) {
+    .work-tree-branches {
+      grid-template-columns: 1fr;
+    }
+
+    .work-tree-branches::before,
+    .work-tree-node::before,
+    .work-tree-root::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .career-detail-toggle {
+      justify-content: stretch;
+    }
+
+    .career-detail-toggle span {
+      width: 100%;
+    }
+
+    .career-detail-tree-body {
+      padding: 16px;
+    }
+  }
+</style>
+
 <script>
   const setupCareerExplorer = () => {
     document.querySelectorAll<HTMLElement>("[data-career-explorer]").forEach((explorer) => {
@@ -188,6 +357,13 @@ const getYearRange = (dates: string) => {
 
       const tabs = [...explorer.querySelectorAll<HTMLButtonElement>("[data-career-tab]")];
       const panels = [...explorer.querySelectorAll<HTMLElement>("[data-career-panel]")];
+      const detailTrees = [...explorer.querySelectorAll<HTMLDetailsElement>("[data-career-tree]")];
+
+      const closeHiddenTrees = (activePanel: HTMLElement) => {
+        detailTrees.forEach((tree) => {
+          if (!activePanel.contains(tree)) tree.open = false;
+        });
+      };
 
       const activate = (tab: HTMLButtonElement) => {
         const target = tab.dataset.careerTab;
@@ -197,9 +373,20 @@ const getYearRange = (dates: string) => {
           item.tabIndex = selected ? 0 : -1;
         });
         panels.forEach((panel) => {
-          panel.hidden = panel.dataset.careerPanel !== target;
+          const selected = panel.dataset.careerPanel === target;
+          panel.hidden = !selected;
+          if (selected) closeHiddenTrees(panel);
         });
       };
+
+      detailTrees.forEach((tree) => {
+        tree.addEventListener("toggle", () => {
+          if (!tree.open) return;
+          detailTrees.forEach((item) => {
+            if (item !== tree) item.open = false;
+          });
+        });
+      });
 
       tabs.forEach((tab, index) => {
         tab.addEventListener("click", () => activate(tab));
