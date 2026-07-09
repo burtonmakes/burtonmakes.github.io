@@ -56,10 +56,7 @@ const originStory = [
     <div class="capability-grid origin-card-grid">
       {originStory.map((item, index) => (
         <article class="capability-card origin-card reveal">
-          <div class="origin-card-meta">
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <p class="feature-kicker">{item.kicker}</p>
-          </div>
+          <span>{String(index + 1).padStart(2, "0")}</span>
           <h3>{item.title}</h3>
           <p>{item.body}</p>
         </article>
@@ -144,36 +141,18 @@ const originStory = [
 
   :global(.origin-card) {
     display: grid;
-    grid-template-rows: 1.35rem minmax(3.35rem, auto) auto;
+    grid-template-rows: 1.2rem minmax(3.2rem, auto) auto;
     align-content: start;
     min-height: 0;
     padding: clamp(24px, 2.1vw, 34px);
     gap: 0;
   }
 
-  :global(.origin-card-meta) {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    min-width: 0;
-    margin-bottom: clamp(34px, 3.3vw, 50px);
-  }
-
-  :global(.origin-card-meta span) {
-    flex: 0 0 auto;
-    margin: 0;
+  :global(.origin-card > span) {
+    margin: 0 0 clamp(44px, 4.2vw, 68px);
     color: var(--accent-2);
     font-size: clamp(0.9rem, 1vw, 1rem);
     line-height: 1;
-  }
-
-  :global(.origin-card-meta .feature-kicker) {
-    margin: 0;
-    color: var(--muted);
-    font-size: clamp(0.76rem, 0.86vw, 0.9rem);
-    line-height: 1.1;
-    letter-spacing: 0.09em;
-    overflow-wrap: anywhere;
   }
 
   :global(.origin-card h3) {
@@ -182,7 +161,7 @@ const originStory = [
     line-height: 1.08;
   }
 
-  :global(.origin-card > p:not(.feature-kicker)) {
+  :global(.origin-card > p) {
     margin: 0;
     color: #d6e3f2;
     font-size: clamp(0.96rem, 1.08vw, 1.06rem);
@@ -210,8 +189,8 @@ const originStory = [
       grid-template-rows: auto auto auto;
     }
 
-    :global(.origin-card-meta) {
-      margin-bottom: 24px;
+    :global(.origin-card > span) {
+      margin-bottom: 28px;
     }
   }
 </style>
