@@ -148,12 +148,6 @@ const makerProjects = [
     pill: "Exploring",
   },
 ];
-
-const chunkRows = (items, size = 2) =>
-  Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, index * size + size));
-
-const outdoorRows = chunkRows(outdoorActivities);
-const makerRows = chunkRows(makerProjects);
 ---
 
 <BaseLayout
@@ -190,83 +184,167 @@ const makerRows = chunkRows(makerProjects);
     </div>
   </section>
 
-  {outdoorRows.map((row, index) => (
-    <section class="section hobby-focus-section">
-      <div class="section-heading hobby-section-heading reveal">
-        <p class="eyebrow">How I spend time outside</p>
-        <h2>{index === 0 ? "Outdoor Activities" : "More Outdoor Activities"}</h2>
-        {index === 0 && (
-          <p>
-            I like outdoor activities that keep me moving while still requiring focus, trust, and good judgment.
-            Climbing, hiking, skiing, biking, and time on the water all give me a different way to stay active,
-            think clearly, and share long days with people I trust.
-          </p>
-        )}
-      </div>
+  <section class="section hobby-scroll-section">
+    <div class="section-heading hobby-section-heading hobby-sticky-copy reveal">
+      <p class="eyebrow">How I spend time outside</p>
+      <h2>Outdoor Activities</h2>
+      <p>
+        I like outdoor activities that keep me moving while still requiring focus, trust, and good judgment.
+        Climbing, hiking, skiing, biking, and time on the water all give me a different way to stay active,
+        think clearly, and share long days with people I trust.
+      </p>
+    </div>
 
-      <div class="hobby-row-grid">
-        {row.map((item) => (
-          <article class={`hobby-mini-card ${item.cardTone} reveal`}>
-            <div class="card-top">
-              <div class="card-title">
-                <h3>{item.title}</h3>
-                <small>{item.detail}</small>
-              </div>
-              <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+    <div class="hobby-scroll-list">
+      {outdoorActivities.map((item) => (
+        <article class={`hobby-mini-card ${item.cardTone} reveal`}>
+          <div class="card-top">
+            <div class="card-title">
+              <h3>{item.title}</h3>
+              <small>{item.detail}</small>
             </div>
-            <p>{item.description}</p>
-            <div class="bars">
-              <div class="bar-label">
-                <span>Years active</span>
-                <strong>{item.years}</strong>
-              </div>
-              <div class="bar">
-                <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
-              </div>
+            <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+          </div>
+          <p>{item.description}</p>
+          <div class="bars">
+            <div class="bar-label">
+              <span>Years active</span>
+              <strong>{item.years}</strong>
             </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  ))}
+            <div class="bar">
+              <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 
-  {makerRows.map((row, index) => (
-    <section class="section hobby-focus-section">
-      <div class="section-heading hobby-section-heading reveal">
-        <p class="eyebrow">Hands-on work after hours</p>
-        <h2>{index === 0 ? "Maker Projects" : "More Maker Projects"}</h2>
-        {index === 0 && (
-          <p>
-            I like projects where I can build, fix, organize, automate, and keep improving things over time.
-            Some are practical repairs or physical parts; others are local infrastructure, sensing experiments,
-            or small tools that make everyday workflows easier.
-          </p>
-        )}
-      </div>
+  <section class="section hobby-scroll-section maker-scroll-section">
+    <div class="section-heading hobby-section-heading hobby-sticky-copy reveal">
+      <p class="eyebrow">Hands-on work after hours</p>
+      <h2>Maker Projects</h2>
+      <p>
+        I like projects where I can build, fix, organize, automate, and keep improving things over time.
+        Some are practical repairs or physical parts; others are local infrastructure, sensing experiments,
+        or small tools that make everyday workflows easier.
+      </p>
+    </div>
 
-      <div class="hobby-row-grid">
-        {row.map((item) => (
-          <article class={`hobby-mini-card ${item.cardTone} reveal`}>
-            <div class="card-top">
-              <div class="card-title">
-                <h3>{item.title}</h3>
-                <small>{item.detail}</small>
-              </div>
-              <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+    <div class="hobby-scroll-list">
+      {makerProjects.map((item) => (
+        <article class={`hobby-mini-card ${item.cardTone} reveal`}>
+          <div class="card-top">
+            <div class="card-title">
+              <h3>{item.title}</h3>
+              <small>{item.detail}</small>
             </div>
-            <p>{item.description}</p>
-            <div class="bars">
-              <div class="bar-label">
-                <span>Years active</span>
-                <strong>{item.years}</strong>
-              </div>
-              <div class="bar">
-                <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
-              </div>
+            <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+          </div>
+          <p>{item.description}</p>
+          <div class="bars">
+            <div class="bar-label">
+              <span>Years active</span>
+              <strong>{item.years}</strong>
             </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  ))}
+            <div class="bar">
+              <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  :global(.hobby-scroll-section) {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.42fr) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+    min-height: auto;
+    padding-top: clamp(72px, 10vh, 112px);
+    padding-bottom: clamp(72px, 10vh, 112px);
+  }
+
+  :global(.hobby-sticky-copy) {
+    max-width: 540px;
+    margin-bottom: 0;
+  }
+
+  :global(.hobby-sticky-copy h2) {
+    max-width: 11ch;
+  }
+
+  :global(.hobby-sticky-copy p:not(.eyebrow)) {
+    max-width: 44rem;
+    margin: 18px 0 0;
+    color: var(--muted-2);
+    font-size: 1rem;
+    line-height: 1.64;
+  }
+
+  :global(.hobby-scroll-list) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  :global(.hobby-scroll-list .hobby-mini-card) {
+    min-width: 0;
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    align-content: start;
+  }
+
+  :global(.hobby-scroll-list .card-top) {
+    min-width: 0;
+  }
+
+  :global(.hobby-scroll-list .card-title) {
+    min-width: 0;
+  }
+
+  :global(.hobby-scroll-list .card-title h3),
+  :global(.hobby-scroll-list .card-title small),
+  :global(.hobby-scroll-list .hobby-mini-card p) {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 901px) {
+    :global(.hobby-scroll-section) {
+      align-content: start !important;
+      scroll-snap-align: none !important;
+    }
+
+    :global(.hobby-sticky-copy) {
+      position: sticky;
+      top: calc(var(--notice-height) + 96px);
+      align-self: start;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    :global(.hobby-scroll-section) {
+      grid-template-columns: minmax(220px, 0.38fr) minmax(0, 1fr);
+      gap: 28px;
+    }
+
+    :global(.hobby-scroll-list) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    :global(.hobby-scroll-section) {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.hobby-sticky-copy h2) {
+      max-width: none;
+    }
+  }
+</style>
