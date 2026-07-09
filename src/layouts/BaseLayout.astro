@@ -122,40 +122,42 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 
     <style is:global>
       :root {
-        --surface-window: rgba(6, 16, 28, 0.9);
-        --surface-window-strong: rgba(9, 22, 38, 0.9);
-        --surface-window-soft: rgba(255, 255, 255, 0.04);
+        --surface-window: rgba(6, 16, 28, 0.999);
+        --surface-window-strong: rgba(9, 22, 38, 0.999);
+        --surface-window-line: rgba(255, 255, 255, 0.16);
+        --surface-window-line-soft: rgba(255, 255, 255, 0.1);
         --panel: var(--surface-window);
         --panel-strong: var(--surface-window-strong);
-        --panel-soft: var(--surface-window-soft);
-        --line: rgba(255, 255, 255, 0.16);
-        --line-soft: rgba(255, 255, 255, 0.1);
+        --panel-soft: var(--surface-window);
+        --line: var(--surface-window-line);
+        --line-soft: var(--surface-window-line-soft);
       }
 
       :is(
         .nav-shell,
-        .capability-card,
-        .metric-card,
-        .project-card,
-        .timeline-item,
-        .career-panel,
-        .career-stop,
-        .career-scan-item,
-        .branch-expansion,
-        .tag-panel,
-        .dog-card,
-        .hobby-mini-card,
-        .hobby-sticky-copy,
-        .hobby-section-box,
-        .contact-card,
-        .contact-method,
-        .card,
-        .panel
-      ) {
-        border-color: var(--line);
-        background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
-          var(--surface-window);
+        [class*="card"],
+        [class*="panel"],
+        [class*="window"],
+        [class*="shell"],
+        [class*="box"],
+        [class*="tile"],
+        [class*="item"]
+      ):not(.brand-mark):not(.pill):not(.tag):not(.button):not(.bar-fill) {
+        border-color: var(--surface-window-line) !important;
+        background: var(--surface-window) !important;
+      }
+
+      :is(
+        [class*="card"]:hover,
+        [class*="panel"]:hover,
+        [class*="window"]:hover,
+        [class*="box"]:hover,
+        [class*="tile"]:hover,
+        [class*="item"]:hover,
+        .career-stop[aria-selected="true"],
+        .career-scan-item.is-active
+      ):not(.brand-mark):not(.pill):not(.tag):not(.button):not(.bar-fill) {
+        background: var(--surface-window-strong) !important;
       }
 
       body::after {
