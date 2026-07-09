@@ -226,22 +226,8 @@ const getYearRange = (dates: string) => {
       transform 180ms ease;
   }
 
-  .career-scan-item::after {
-    position: absolute;
-    left: 50%;
-    bottom: -30px;
-    display: none;
-    width: 2px;
-    height: 30px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, var(--branch-line), var(--branch-line-soft));
-    box-shadow: 0 0 16px rgba(159, 231, 255, 0.34);
-    content: "";
-    transform: translateX(-50%);
-  }
-
-  .career-scan-item:hover,
-  .career-scan-item:focus-visible {
+  .career-scan-item:not(.is-active):hover,
+  .career-scan-item:not(.is-active):focus-visible {
     border-color: color-mix(in srgb, var(--branch-orange), white 10%);
     background:
       linear-gradient(145deg, rgba(232, 111, 78, 0.08), rgba(226, 184, 105, 0.03)),
@@ -252,17 +238,15 @@ const getYearRange = (dates: string) => {
   }
 
   .career-scan-item.is-active {
-    border-color: color-mix(in srgb, var(--branch-orange), white 8%);
+    border-color: color-mix(in srgb, var(--branch-line), white 8%);
     background:
-      linear-gradient(145deg, rgba(232, 111, 78, 0.14), rgba(226, 184, 105, 0.04)),
-      rgba(255, 255, 255, 0.05);
+      radial-gradient(circle at 50% 0%, rgba(159, 231, 255, 0.12), transparent 45%),
+      linear-gradient(145deg, rgba(159, 231, 255, 0.07), rgba(76, 141, 255, 0.035)),
+      rgba(255, 255, 255, 0.045);
     box-shadow:
-      0 0 0 1px rgba(232, 111, 78, 0.26),
+      0 0 0 1px rgba(159, 231, 255, 0.28),
       0 16px 36px rgba(0, 0, 0, 0.2);
-  }
-
-  .career-scan-item.is-active::after {
-    display: block;
+    outline: none;
   }
 
   .career-scan-item span {
@@ -276,10 +260,13 @@ const getYearRange = (dates: string) => {
     transition: color 180ms ease;
   }
 
-  .career-scan-item:hover span,
-  .career-scan-item:focus-visible span,
-  .career-scan-item.is-active span {
+  .career-scan-item:not(.is-active):hover span,
+  .career-scan-item:not(.is-active):focus-visible span {
     color: #f2b277;
+  }
+
+  .career-scan-item.is-active span {
+    color: var(--branch-line);
   }
 
   .career-scan-item strong {
@@ -294,10 +281,10 @@ const getYearRange = (dates: string) => {
     position: relative;
     margin-top: 30px;
     padding: 22px;
-    border: 1px solid rgba(159, 231, 255, 0.22);
+    border: 1px solid rgba(159, 231, 255, 0.24);
     border-radius: 12px;
     background:
-      radial-gradient(circle at var(--branch-x, 50%) 0%, rgba(159, 231, 255, 0.14), transparent 28%),
+      radial-gradient(circle at var(--branch-x, 50%) 0%, rgba(159, 231, 255, 0.12), transparent 24%),
       linear-gradient(145deg, rgba(255, 255, 255, 0.048), rgba(255, 255, 255, 0.014)),
       rgba(3, 8, 15, 0.38);
     box-shadow:
@@ -308,12 +295,25 @@ const getYearRange = (dates: string) => {
   .branch-expansion::before {
     position: absolute;
     left: var(--branch-x, 50%);
+    top: -30px;
+    width: 2px;
+    height: 30px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--branch-line), var(--branch-line-soft));
+    box-shadow: 0 0 16px rgba(159, 231, 255, 0.34);
+    content: "";
+    transform: translateX(-50%);
+  }
+
+  .branch-expansion::after {
+    position: absolute;
+    left: var(--branch-x, 50%);
     top: -1px;
-    width: min(140px, 24%);
+    width: 28px;
     height: 2px;
     border-radius: 999px;
-    background: linear-gradient(90deg, transparent, var(--branch-line), transparent);
-    box-shadow: 0 0 18px rgba(159, 231, 255, 0.32);
+    background: var(--branch-line);
+    box-shadow: 0 0 16px rgba(159, 231, 255, 0.34);
     content: "";
     transform: translateX(-50%);
   }
@@ -378,8 +378,8 @@ const getYearRange = (dates: string) => {
   }
 
   @media (max-width: 900px) {
-    .career-scan-item.is-active::after,
-    .branch-expansion::before {
+    .branch-expansion::before,
+    .branch-expansion::after {
       display: none;
     }
 
@@ -416,7 +416,7 @@ const getYearRange = (dates: string) => {
       const syncBranchLine = (toggle: HTMLButtonElement, expansion: HTMLElement) => {
         const toggleRect = toggle.getBoundingClientRect();
         const expansionRect = expansion.getBoundingClientRect();
-        const x = toggleRect.left + toggleRect.width / 2 - expansionRect.left;
+        const x = Math.round(toggleRect.left + toggleRect.width / 2 - expansionRect.left);
         expansion.style.setProperty("--branch-x", `${x}px`);
       };
 
