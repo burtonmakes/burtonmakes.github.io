@@ -122,14 +122,16 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 
     <style is:global>
       :root {
-        --surface-window: rgba(6, 16, 28, 0.9);
-        --surface-window-strong: rgba(9, 22, 38, 0.9);
-        --surface-window-soft: rgba(255, 255, 255, 0.04);
+        --surface-window: rgba(6, 16, 28, 0.97);
+        --surface-window-strong: rgba(9, 22, 38, 0.97);
+        --surface-window-soft: rgba(255, 255, 255, 0.035);
+        --surface-window-line: rgba(255, 255, 255, 0.16);
+        --surface-window-line-soft: rgba(255, 255, 255, 0.1);
         --panel: var(--surface-window);
         --panel-strong: var(--surface-window-strong);
         --panel-soft: var(--surface-window-soft);
-        --line: rgba(255, 255, 255, 0.16);
-        --line-soft: rgba(255, 255, 255, 0.1);
+        --line: var(--surface-window-line);
+        --line-soft: var(--surface-window-line-soft);
       }
 
       :is(
@@ -137,7 +139,10 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
         .capability-card,
         .metric-card,
         .project-card,
+        .project-feature,
+        .project-detail,
         .timeline-item,
+        .timeline-card,
         .career-panel,
         .career-stop,
         .career-scan-item,
@@ -149,13 +154,38 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
         .hobby-section-box,
         .contact-card,
         .contact-method,
+        .contact-panel,
+        .resume-card,
+        .stat-card,
+        .feature-card,
+        .archive-card,
+        .info-card,
         .card,
         .panel
       ) {
-        border-color: var(--line);
+        border-color: var(--surface-window-line) !important;
         background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
-          var(--surface-window);
+          linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+          var(--surface-window) !important;
+      }
+
+      :is(
+        .capability-card:hover,
+        .metric-card:hover,
+        .project-card:hover,
+        .career-stop:hover,
+        .career-stop[aria-selected="true"],
+        .career-scan-item:hover,
+        .career-scan-item.is-active,
+        .hobby-mini-card:hover,
+        .contact-card:hover,
+        .contact-method:hover,
+        .card:hover,
+        .panel:hover
+      ) {
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.014)),
+          var(--surface-window-strong) !important;
       }
 
       body::after {
