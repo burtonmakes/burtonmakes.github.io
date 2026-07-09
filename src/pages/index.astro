@@ -53,9 +53,9 @@ const originStory = [
       <h2>From early hardware curiosity to biomedical systems.</h2>
     </div>
 
-    <div class="capability-grid origin-card-grid">
+    <div class="capability-grid home-card-grid">
       {originStory.map((item, index) => (
-        <article class="capability-card origin-card reveal">
+        <article class="capability-card home-card reveal">
           <span>{String(index + 1).padStart(2, "0")}</span>
           <h3>{item.title}</h3>
           <p>{item.body}</p>
@@ -70,8 +70,8 @@ const originStory = [
       <h2>Where I create the most value.</h2>
     </div>
 
-    <div class="capability-grid">
-      <article class="capability-card reveal">
+    <div class="capability-grid home-card-grid">
+      <article class="capability-card home-card reveal">
         <span>01</span>
         <h3>Wearable and implantable sensing systems</h3>
         <p>
@@ -80,7 +80,7 @@ const originStory = [
         </p>
       </article>
 
-      <article class="capability-card reveal">
+      <article class="capability-card home-card reveal">
         <span>02</span>
         <h3>Validation, reliability, and regulated development</h3>
         <p>
@@ -89,7 +89,7 @@ const originStory = [
         </p>
       </article>
 
-      <article class="capability-card reveal">
+      <article class="capability-card home-card reveal">
         <span>03</span>
         <h3>Physiological data and ML/AI workflows</h3>
         <p>
@@ -134,12 +134,12 @@ const originStory = [
     line-height: 1.04;
   }
 
-  :global(.origin-card-grid) {
+  :global(.home-card-grid) {
     gap: clamp(18px, 1.9vw, 28px);
     align-items: stretch;
   }
 
-  :global(.origin-card) {
+  :global(.home-card) {
     display: grid;
     grid-template-rows: 1.2rem minmax(3.2rem, auto) auto;
     align-content: start;
@@ -148,20 +148,20 @@ const originStory = [
     gap: 0;
   }
 
-  :global(.origin-card > span) {
+  :global(.home-card > span) {
     margin: 0 0 clamp(44px, 4.2vw, 68px);
     color: var(--accent-2);
     font-size: clamp(0.9rem, 1vw, 1rem);
     line-height: 1;
   }
 
-  :global(.origin-card h3) {
+  :global(.home-card h3) {
     margin: 0 0 clamp(16px, 1.45vw, 20px);
     font-size: clamp(1.4rem, 1.68vw, 1.78rem);
     line-height: 1.08;
   }
 
-  :global(.origin-card > p) {
+  :global(.home-card > p) {
     margin: 0;
     color: #d6e3f2;
     font-size: clamp(0.96rem, 1.08vw, 1.06rem);
@@ -171,7 +171,7 @@ const originStory = [
   }
 
   @media (max-width: 1050px) {
-    :global(.origin-card-grid) {
+    :global(.home-card-grid) {
       grid-template-columns: 1fr;
     }
   }
@@ -185,11 +185,11 @@ const originStory = [
       max-width: none;
     }
 
-    :global(.origin-card) {
+    :global(.home-card) {
       grid-template-rows: auto auto auto;
     }
 
-    :global(.origin-card > span) {
+    :global(.home-card > span) {
       margin-bottom: 28px;
     }
   }
