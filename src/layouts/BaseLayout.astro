@@ -123,9 +123,9 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
     <style is:global>
       :root {
         --bg: #000000;
-        --bg-2: #020304;
-        --surface-window: rgba(3, 8, 15, 0.999);
-        --surface-window-strong: rgba(5, 12, 20, 0.999);
+        --bg-2: #010102;
+        --surface-window: rgba(1, 5, 10, 0.999);
+        --surface-window-strong: rgba(3, 9, 16, 0.999);
         --surface-window-line: rgba(255, 255, 255, 0.16);
         --surface-window-line-soft: rgba(255, 255, 255, 0.1);
         --panel: var(--surface-window);
@@ -136,8 +136,16 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
         --muted-2: #e6eef8;
         --line: var(--surface-window-line);
         --line-soft: var(--surface-window-line-soft);
-        --blue-glow: rgba(76, 141, 255, 0.27);
-        --coral-glow: rgba(232, 111, 78, 0.22);
+        --blue-glow: rgba(32, 64, 120, 0.27);
+        --coral-glow: rgba(92, 40, 28, 0.22);
+      }
+
+      body {
+        background:
+          radial-gradient(circle at 18% 12%, rgba(32, 64, 120, 0.27), transparent 28%),
+          radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
+          radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
+          linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg)) !important;
       }
 
       :is(
