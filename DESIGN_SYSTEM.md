@@ -1,8 +1,8 @@
 # Portfolio Design System
 
-Canonical direction: **darkest lab interface + electric blue accents + signal coral actions**.
+Canonical direction: **darker color palette + electric blue accents + signal coral actions**.
 
-The site should feel dark, technical, calm, and easy to read. Use a nearly black page background, nearly solid card surfaces, electric blue / light cyan for system identity, and amber-to-signal-coral only for primary actions or highlighted data.
+The site should feel dark, technical, calm, and easy to read. Use a nearly black page color palette and nearly solid card surfaces, but do **not** dim the background grid, network, particles, or mouse-follow effect. The goal is darker colors, not hidden background effects.
 
 ## Canonical tokens
 
@@ -44,26 +44,27 @@ The site should feel dark, technical, calm, and easy to read. Use a nearly black
   --graph-amber: #e2b869;
   --graph-coral: #e86f4e;
 
-  /* Glows */
-  --blue-glow: rgba(76, 141, 255, 0.06);
-  --coral-glow: rgba(232, 111, 78, 0.035);
+  /* Glows keep original visibility */
+  --blue-glow: rgba(76, 141, 255, 0.27);
+  --coral-glow: rgba(232, 111, 78, 0.22);
 }
 ```
 
 ## Background
 
-Use the darkest reference for the site background.
+Use the darker page colors, but keep the original background-effect visibility.
 
 ```css
 body {
   background:
-    radial-gradient(circle at 18% 12%, rgba(76, 141, 255, 0.06), transparent 28%),
-    radial-gradient(circle at 82% 24%, rgba(111, 211, 255, 0.04), transparent 30%),
-    linear-gradient(180deg, #000000, #020304 45%, #000000);
+    radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
+    radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
+    radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
+    linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 }
 ```
 
-The background should stay quiet. Do not use large teal, purple, or orange washes behind cards.
+Do not lower the opacity of `body::before`, `.mesh-canvas`, `.particle-canvas`, `.spotlight`, or `body::after` when changing the color palette. Those effects should stay visible behind the content.
 
 ## Cards and panels
 
@@ -122,24 +123,6 @@ Use `--muted-2` for body copy. It is brighter than the old body text and reads b
 
 Use `--muted` for small labels, metadata, and inactive navigation text.
 
-```css
-h1,
-h2,
-h3 {
-  color: var(--text);
-}
-
-p {
-  color: var(--muted-2);
-}
-
-small,
-.label,
-.meta {
-  color: var(--muted);
-}
-```
-
 ## Buttons
 
 Primary actions use the amber-to-signal-coral gradient.
@@ -154,19 +137,11 @@ Primary actions use the amber-to-signal-coral gradient.
 
 Use this gradient sparingly. It should not become a background color system.
 
-## Graph and dashboard colors
-
-Use blue/cyan for most technical and data visuals. Use coral/amber only for emphasis.
-
-```text
-80–85% blue/cyan
-15–20% amber/coral
-```
-
 ## Final usage summary
 
 ```text
-Nearly black site background
+Darker page colors
+Original grid/network/mouse-follower visibility
 99.9% opaque dark-navy cards
 No large grid backplates behind cards
 Electric blue system identity
