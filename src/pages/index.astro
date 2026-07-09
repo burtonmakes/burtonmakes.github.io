@@ -7,44 +7,22 @@ const pageDescription =
   "Biomedical systems engineer building wearable and implantable medical-device sensing systems across hardware, validation, manufacturing, physiological data workflows, and ML/AI-enabled tools.";
 const originStory = [
   {
-    year: "2013 – present",
-    title: "3D printing business",
-    bullets: [
-      "Started and maintained an online page to sell 3D printed objects.",
-      "Kept learning through practical part design, customer requests, print failures, and material constraints.",
-    ],
+    kicker: "Early builds",
+    title: "Electronics, mechanics, and hands-on systems.",
+    body:
+      "Before medical devices, I was already building and tuning hardware: a 3D printer, a 5×5×5 LED matrix, a small 3D-printing business, recycled-filament ideas, magnetic projectile experiments, and motion-control projects.",
   },
   {
-    year: "2014 – 2015",
-    title: "Built a 3D printer",
-    bullets: [
-      "Built and tuned the printer hardware.",
-      "Optimized the system to reduce vibration and improve print resolution.",
-    ],
+    kicker: "Biomedical turn",
+    title: "Electronics became biomedical sensing.",
+    body:
+      "In 2016 I built a bio-amplifier for surface ECG signals. That project made the connection clear: the same electronics and hardware instincts could be used to measure the body.",
   },
   {
-    year: "2015",
-    title: "3D LED matrix",
-    bullets: [
-      "Designed, built, and programmed a 5×5×5 LED cube display.",
-      "Used multiplexers and control logic to drive the display.",
-    ],
-  },
-  {
-    year: "2016",
-    title: "Bio-amplifier",
-    bullets: [
-      "Built and designed a bio-amplifier to measure surface ECG signals.",
-      "This was the bridge from electronics projects into biomedical sensing.",
-    ],
-  },
-  {
-    year: "College onward",
-    title: "Biomedical systems",
-    bullets: [
-      "Chose biomedical engineering because medicine and technology both mattered to me.",
-      "Medicine was the initial pull, but sensors, hardware, mechanics, and useful systems are where I do my best work.",
-    ],
+    kicker: "Current thread",
+    title: "Biomedical systems became the through line.",
+    body:
+      "I studied biomedical engineering because medicine and technology both mattered to me. Medicine was the initial pull, but sensors, hardware, mechanics, validation, data, and useful systems are where I do my best work.",
   },
 ];
 ---
@@ -52,14 +30,14 @@ const originStory = [
 <BaseLayout title={pageTitle} description={pageDescription}>
   <section class="section studio-hero">
     <div class="hero-copy reveal">
-      <p class="eyebrow">Burton Makes · biomedical systems engineer</p>
+      <p class="eyebrow">Biomedical Systems Engineer · Medical Devices</p>
 
-      <h1>A technical life built around sensors, hardware, medicine, and useful systems.</h1>
+      <h1>Biomedical sensing systems from prototype to clinical use.</h1>
 
       <p class="hero-subtitle">
-        This is both a portfolio and a personal record: early mechanical builds,
-        biomedical research, medical-device work, infrastructure projects, and the
-        thread that connects them.
+        Biomedical systems engineer building wearable and implantable medical-device
+        sensing systems across hardware, validation, manufacturing, physiological
+        data workflows, and ML/AI-enabled tools.
       </p>
 
       <div class="hero-actions">
@@ -72,22 +50,16 @@ const originStory = [
   <section class="section origin-section">
     <div class="section-heading reveal">
       <p class="eyebrow">Through line</p>
-      <h2>Projects became electronics, electronics became biomedical systems.</h2>
-      <p>
-        The through line is not a single job title. It is a habit of building,
-        testing, fixing, and connecting mechanical, electrical, software, and
-        biological systems.
-      </p>
+      <h2>From building hardware to biomedical systems.</h2>
     </div>
 
-    <div class="origin-grid">
-      {originStory.map((item) => (
-        <article class="origin-card reveal">
-          <span>{item.year}</span>
+    <div class="capability-grid">
+      {originStory.map((item, index) => (
+        <article class="capability-card reveal">
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <p class="feature-kicker">{item.kicker}</p>
           <h3>{item.title}</h3>
-          <ul>
-            {item.bullets.map((bullet) => <li>{bullet}</li>)}
-          </ul>
+          <p>{item.body}</p>
         </article>
       ))}
     </div>
