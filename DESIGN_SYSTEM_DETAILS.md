@@ -1,11 +1,12 @@
 # Portfolio Design System Details
 
-Canonical direction: **darkest lab interface + electric blue system identity + signal coral actions**.
+Canonical direction: **darker lab interface + electric blue system identity + signal coral actions**.
 
-This file is the detailed reference for the current portfolio styling. The previous transparent/glass-card direction has been replaced with a darker, more readable system:
+This file is the detailed reference for the current portfolio styling. The current direction darkens the color palette while preserving the background effects:
 
 ```text
-Nearly black site background
+Nearly black site colors
+Original grid / network / particle / mouse-follower visibility
 99.9% opaque card and panel surfaces
 No large grid backplates behind groups of cards
 Electric blue / light cyan for the technical identity
@@ -58,11 +59,11 @@ Geist typography
   --graph-teal: #3dd6c8;
   --graph-teal-light: #6fe5dd;
 
-  /* Glows */
-  --blue-glow: rgba(76, 141, 255, 0.06);
-  --cyan-glow: rgba(111, 211, 255, 0.04);
-  --coral-glow: rgba(232, 111, 78, 0.035);
-  --teal-glow: rgba(61, 214, 200, 0.08);
+  /* Glows keep original visibility */
+  --blue-glow: rgba(76, 141, 255, 0.27);
+  --cyan-glow: rgba(111, 211, 255, 0.20);
+  --coral-glow: rgba(232, 111, 78, 0.22);
+  --teal-glow: rgba(61, 214, 200, 0.24);
 
   /* Status */
   --danger: #ff7f8e;
@@ -78,7 +79,7 @@ Geist typography
 
 ### `--bg: #000000`
 
-Primary page background.
+Primary page background color.
 
 Use it for:
 
@@ -87,7 +88,7 @@ Use it for:
 - outer site shell
 - deepest dashboard base
 
-Why: the new direction uses the darkest reference from the color comparison. It removes the washed-out glass look and makes the content feel clearer.
+Why: this makes the palette darker without hiding the grid, network, particle field, or mouse-follow effect.
 
 ### `--bg-2: #020304`
 
@@ -100,13 +101,14 @@ Recommended page background:
 ```css
 body {
   background:
-    radial-gradient(circle at 18% 12%, rgba(76, 141, 255, 0.06), transparent 28%),
-    radial-gradient(circle at 82% 24%, rgba(111, 211, 255, 0.04), transparent 30%),
-    linear-gradient(180deg, #000000, #020304 45%, #000000);
+    radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
+    radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
+    radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
+    linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 }
 ```
 
-Do not add large orange, purple, or teal background washes.
+Do not lower the opacity of `body::before`, `.mesh-canvas`, `.particle-canvas`, `.spotlight`, or `body::after` to make the palette darker. Change the base colors instead.
 
 ---
 
@@ -128,7 +130,7 @@ Use it for:
 - hobby cards
 - work detail panels
 
-Why: the surface should be almost solid so text is easy to read. This replaces the older translucent panel values.
+Why: the surface should be almost solid so text is easy to read.
 
 ### `--surface-window-strong: rgba(5, 12, 20, 0.999)`
 
@@ -306,9 +308,10 @@ Every hero page should use the same background system as the rest of the site:
 
 ```css
 background:
-  radial-gradient(circle at 18% 12%, rgba(76, 141, 255, 0.06), transparent 28%),
-  radial-gradient(circle at 82% 24%, rgba(111, 211, 255, 0.04), transparent 30%),
-  linear-gradient(180deg, #000000, #020304 45%, #000000);
+  radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
+  radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
+  radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
+  linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 ```
 
 Do not create a different hero-only background palette.
@@ -319,7 +322,10 @@ Do not create a different hero-only background palette.
 
 Before merging a visual change, confirm:
 
-- The page background is nearly black.
+- The page colors are darker.
+- The grid is still visible.
+- The network/particle field is still visible.
+- The mouse-follow effect is still visible.
 - Cards are 99.9% opaque.
 - Card grids are transparent wrappers.
 - There is no large backplate behind a group of cards.
