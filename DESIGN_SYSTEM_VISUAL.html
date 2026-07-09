@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Darkest Portfolio Palette Preview</title>
+<title>Darker Portfolio Palette Preview</title>
 <style>
 * { box-sizing: border-box; }
 
@@ -23,6 +23,8 @@
   --cta-2: #e86f4e;
   --data-teal: #3dd6c8;
   --data-teal-2: #6fe5dd;
+  --blue-glow: rgba(76, 141, 255, 0.27);
+  --coral-glow: rgba(232, 111, 78, 0.22);
 }
 
 body {
@@ -30,8 +32,9 @@ body {
   color: var(--text);
   font-family: Geist, Inter, "Avenir Next", "Segoe UI", system-ui, sans-serif;
   background:
-    radial-gradient(circle at 18% 12%, rgba(76, 141, 255, 0.06), transparent 28%),
-    radial-gradient(circle at 82% 24%, rgba(111, 211, 255, 0.04), transparent 30%),
+    radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
+    radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
+    radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
     linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 }
 
@@ -41,10 +44,20 @@ body::before {
   pointer-events: none;
   content: "";
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.128) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.128) 1px, transparent 1px);
   background-size: 78px 78px;
   mask-image: linear-gradient(to bottom, black 0%, black 64%, transparent 96%);
+}
+
+body::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(180deg, rgba(1, 4, 9, 0.54), rgba(1, 4, 9, 0.44)),
+    radial-gradient(circle at 50% 32%, transparent 0 28%, rgba(1, 4, 9, 0.28) 68%);
 }
 
 .page {
@@ -55,9 +68,7 @@ body::before {
   padding: 32px;
 }
 
-.intro {
-  margin-bottom: 24px;
-}
+.intro { margin-bottom: 24px; }
 
 .eyebrow {
   margin: 0 0 18px;
@@ -110,9 +121,7 @@ h1 {
   border-radius: 18px;
 }
 
-.nav strong {
-  color: var(--text);
-}
+.nav strong { color: var(--text); }
 
 .nav-links {
   display: flex;
@@ -161,8 +170,30 @@ h2 {
 }
 
 .panel {
+  position: relative;
+  overflow: hidden;
   padding: 28px;
   border-radius: 18px;
+}
+
+.panel::before {
+  position: absolute;
+  inset: 18px;
+  pointer-events: none;
+  content: "";
+  opacity: 0.9;
+  background:
+    linear-gradient(24deg, transparent 0 29%, rgba(111, 211, 255, 0.24) 29.2% 29.5%, transparent 29.7% 100%),
+    linear-gradient(154deg, transparent 0 38%, rgba(226, 184, 105, 0.22) 38.2% 38.5%, transparent 38.7% 100%),
+    radial-gradient(circle at 24% 38%, rgba(111, 211, 255, 0.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 52% 18%, rgba(226, 184, 105, 0.48) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 48%, rgba(76, 141, 255, 0.48) 0 2px, transparent 3px),
+    radial-gradient(circle at 38% 72%, rgba(111, 211, 255, 0.42) 0 2px, transparent 3px);
+}
+
+.panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .panel-head {
@@ -177,9 +208,7 @@ h2 {
   font-weight: 850;
 }
 
-.live {
-  color: var(--accent-2);
-}
+.live { color: var(--accent-2); }
 
 .metric-grid {
   display: grid;
@@ -212,10 +241,7 @@ h2 {
   font-weight: 800;
 }
 
-.bars {
-  display: grid;
-  gap: 14px;
-}
+.bars { display: grid; gap: 14px; }
 
 .bar-row {
   display: grid;
@@ -224,9 +250,7 @@ h2 {
   align-items: center;
 }
 
-.bar-row span {
-  color: var(--muted-2);
-}
+.bar-row span { color: var(--muted-2); }
 
 .bar {
   height: 12px;
@@ -276,11 +300,11 @@ pre {
 <body>
   <main class="page">
     <section class="intro">
-      <p class="eyebrow">Darkest reference palette</p>
-      <h1>Dark lab interface with readable cards.</h1>
+      <p class="eyebrow">Darker palette · original effect visibility</p>
+      <h1>Dark lab interface with visible grid and network.</h1>
       <p>
-        This preview uses the darkest background reference: black to near-black page depth, nearly solid cards,
-        electric blue system accents, and warm CTA emphasis only where needed.
+        This preview darkens the color palette while preserving the grid, network, particles,
+        and mouse-follow visual language. Cards stay nearly solid for readability.
       </p>
     </section>
 
@@ -309,7 +333,7 @@ pre {
       </div>
 
       <aside class="panel">
-        <div class="panel-head"><span>Validation dashboard</span><span class="live">Live system</span></div>
+        <div class="panel-head"><span>Validation dashboard</span><span class="live">Visible network</span></div>
         <div class="metric-grid">
           <div class="metric"><b>96%</b><small>Reliability</small></div>
           <div class="metric"><b>3k+</b><small>Hours</small></div>
@@ -338,6 +362,8 @@ pre {
   --accent-2: #6fd3ff;
   --cta-1: #e2b869;
   --cta-2: #e86f4e;
+  --blue-glow: rgba(76, 141, 255, 0.27);
+  --coral-glow: rgba(232, 111, 78, 0.22);
 }</code></pre>
     </section>
   </main>
