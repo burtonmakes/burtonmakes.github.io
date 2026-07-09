@@ -10,11 +10,11 @@ The site should feel dark, technical, calm, and easy to read. Use a nearly black
 :root {
   /* Page foundation */
   --bg: #000000;
-  --bg-2: #020304;
+  --bg-2: #010102;
 
   /* Cards, panels, windows */
-  --surface-window: rgba(3, 8, 15, 0.999);
-  --surface-window-strong: rgba(5, 12, 20, 0.999);
+  --surface-window: rgba(1, 5, 10, 0.999);
+  --surface-window-strong: rgba(3, 9, 16, 0.999);
   --panel: var(--surface-window);
   --panel-strong: var(--surface-window-strong);
   --panel-soft: var(--surface-window);
@@ -44,22 +44,22 @@ The site should feel dark, technical, calm, and easy to read. Use a nearly black
   --graph-amber: #e2b869;
   --graph-coral: #e86f4e;
 
-  /* Glows keep original visibility */
-  --blue-glow: rgba(76, 141, 255, 0.27);
-  --coral-glow: rgba(232, 111, 78, 0.22);
+  /* Darker background glow colors, same effect visibility */
+  --blue-glow: rgba(32, 64, 120, 0.27);
+  --coral-glow: rgba(92, 40, 28, 0.22);
 }
 ```
 
 ## Background
 
-Use the darker page colors, but keep the original background-effect visibility.
+Use darker page and glow colors while keeping the original background-effect visibility.
 
 ```css
 body {
   background:
-    radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
-    radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
-    radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
+    radial-gradient(circle at 18% 12%, rgba(32, 64, 120, 0.27), transparent 28%),
+    radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
+    radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
     linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 }
 ```
@@ -80,14 +80,6 @@ All card-like surfaces should use the same nearly solid surface color.
 ```
 
 Hover or active cards may use `--surface-window-strong`, but they should not become translucent or add a large parent backplate behind a card grid.
-
-```css
-.card:hover,
-.panel:hover,
-.card.is-active {
-  background: var(--surface-window-strong);
-}
-```
 
 ## Important layout rule
 
@@ -140,9 +132,9 @@ Use this gradient sparingly. It should not become a background color system.
 ## Final usage summary
 
 ```text
-Darker page colors
+Darker page and glow colors
 Original grid/network/mouse-follower visibility
-99.9% opaque dark-navy cards
+99.9% opaque darker cards
 No large grid backplates behind cards
 Electric blue system identity
 Light-cyan technical highlights
