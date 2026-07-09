@@ -1,23 +1,27 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projectFacts } from "../../data/publicFacts";
 import { projects } from "../../data/site";
 import "../../styles/global.css";
 
-const featuredProjects = projects.slice(0, 6);
+const featuredProjects = projects;
 const projectDomains = [...new Set(featuredProjects.map((project) => project.section))];
+const getProjectProof = (slug: string) =>
+  (projectFacts[slug as keyof typeof projectFacts] ?? []).slice(0, 2);
 ---
 
 <BaseLayout
   title="Projects"
-  description="Selected engineering projects by Alex Burton across AI systems, infrastructure, hardware, CAD, sensing, and automation."
+  description="Selected engineering projects by Alex Burton across medical devices, implantables, physiological data, AI systems, infrastructure, and sensing."
 >
   <section class="section projects-hero">
     <div class="hero-copy reveal">
       <p class="eyebrow">Projects</p>
-      <h1>Selected builds across AI tools, infrastructure, hardware, and sensing.</h1>
+      <h1>Selected medical-device, implantable, sensing, data, and AI systems.</h1>
       <p class="hero-text">
-        A focused set of projects showing how I build systems: define the problem,
-        prototype quickly, document the tradeoffs, and turn rough ideas into working tools.
+        Concise project evidence from commercial medical-device work, Ph.D. implantable
+        bioelectronics, early biomedical sensing, physiological data workflows, and
+        selected AI/infrastructure builds.
       </p>
     </div>
 
@@ -53,31 +57,84 @@ const projectDomains = [...new Set(featuredProjects.map((project) => project.sec
   <section class="section" id="featured-projects">
     <div class="section-heading reveal">
       <p class="eyebrow">Selected projects</p>
-      <h2>A small set of projects worth opening first.</h2>
+      <h2>Project evidence with the numbers pulled forward.</h2>
     </div>
 
-    <div class="card-grid">
-      {featuredProjects.map((project) => (
-        <a
-          class="story-card tilt-card reveal"
-          href={`/projects/${project.slug}/`}
-          data-project-slug={project.slug}
-          data-project-type={project.type}
-          data-analytics-impression="project-card"
-          data-analytics-id={project.slug}
-          data-analytics-label={project.title}
-        >
-          <span class="feature-kicker">{project.section}</span>
-          <h3>{project.title}</h3>
-          <p>{project.summary}</p>
-          <div class="tag-row">
-            {project.labels.slice(0, 3).map((label) => <span class="tag">{label}</span>)}
-          </div>
-        </a>
-      ))}
+    <div class="card-grid project-evidence-grid">
+      {featuredProjects.map((project) => {
+        const proof = getProjectProof(project.slug);
+        return (
+          <a
+            class="story-card tilt-card reveal project-evidence-card"
+            href={`/projects/${project.slug}/`}
+            data-project-slug={project.slug}
+            data-project-type={project.type}
+            data-analytics-impression="project-card"
+            data-analytics-id={project.slug}
+            data-analytics-label={project.title}
+          >
+            <span class="feature-kicker">{project.section}</span>
+            <h3>{project.title}</h3>
+            <p>{project.summary}</p>
+            {proof.length > 0 && (
+              <ul class="project-proof-list" aria-label={`Evidence for ${project.title}`}>
+                {proof.map((item) => <li>{item}</li>)}
+              </ul>
+            )}
+            <div class="tag-row">
+              {project.labels.slice(0, 3).map((label) => <span class="tag">{label}</span>)}
+            </div>
+          </a>
+        );
+      })}
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .project-evidence-grid {
+    align-items: stretch;
+  }
+
+  .project-evidence-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-proof-list {
+    display: grid;
+    gap: 8px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-proof-list li {
+    position: relative;
+    margin: 0;
+    padding-left: 16px;
+    color: var(--muted-2);
+    font-size: 0.92rem;
+    line-height: 1.42;
+    font-weight: 620;
+  }
+
+  .project-proof-list li::before {
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--accent-2);
+    content: "";
+  }
+
+  .project-evidence-card .tag-row {
+    margin-top: auto;
+    padding-top: 18px;
+  }
+</style>
 
 <script>
   const setupProjectExplorer = () => {
@@ -105,7 +162,7 @@ const projectDomains = [...new Set(featuredProjects.map((project) => project.sec
       filters.forEach((filter) => {
         filter.addEventListener("click", () => selectDomain(filter.dataset.projectDomain || "all"));
         filter.addEventListener("mouseenter", () => selectDomain(filter.dataset.projectDomain || "all"));
-        filter.addEventListener("focus", () => selectDomain(filter.dataset.projectDomain || "all"));
+        filter.addEventListener("focus", () => selectDomain(filter.datasetProjectDomain || "all"));
       });
     });
   };
