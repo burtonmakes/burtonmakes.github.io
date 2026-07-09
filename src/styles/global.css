@@ -579,8 +579,7 @@ small,
 }
 
 .prototype-card,
-.bar-card,
-.radar-card,
+.evidence-card,
 .active-card {
   min-height: 132px;
   overflow: hidden;
@@ -616,82 +615,41 @@ small,
 }
 
 .prototype-card strong {
-  max-width: 8ch;
+  max-width: 10ch;
   color: var(--text);
-  font-size: 2.35rem;
-  line-height: 1;
+  font-size: 2.1rem;
+  line-height: 1.05;
   letter-spacing: 0;
 }
 
 .prototype-card p,
+.evidence-card p,
 .active-card p {
   margin: 10px 0 0;
   color: var(--muted);
 }
 
-.bar-card {
-  display: grid;
-  align-content: center;
-  gap: 18px;
+.evidence-card {
+  display: flex;
+  min-height: 148px;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.bar-card span {
-  display: block;
-  height: 22px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--graph-blue), var(--graph-cyan));
-}
-
-.bar-card span:nth-child(2) {
-  width: 76%;
-  background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
-}
-
-.bar-card span:nth-child(3) {
-  width: 60%;
-  background: linear-gradient(90deg, var(--graph-blue), var(--graph-cyan));
-}
-
-.radar-card {
-  position: relative;
-  min-height: 150px;
-}
-
-.radar-ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 160px;
-  height: 160px;
-  border: 1px solid rgba(76, 141, 255, 0.32);
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-}
-
-.radar-ring::before,
-.radar-ring::after {
-  position: absolute;
-  inset: 28px;
-  content: "";
-  border: 1px solid rgba(76, 141, 255, 0.22);
-  border-radius: 999px;
-}
-
-.radar-ring::after {
-  inset: -24px;
-  border-top-color: rgba(76, 141, 255, 0.9);
-  border-right-color: transparent;
-  transform: rotate(22deg);
+.evidence-card strong {
+  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1.25;
 }
 
 .active-card {
-  min-height: 156px;
+  min-height: 148px;
 }
 
 .active-card strong {
   display: block;
   color: var(--amber);
-  font-size: 3.6rem;
+  font-size: 3rem;
   line-height: 0.95;
   letter-spacing: 0;
 }
@@ -1971,6 +1929,10 @@ small,
 
   .dashboard-window {
     padding: 14px;
+  }
+
+  .hero-dashboard::before {
+    inset-inline: 0;
   }
 
   .capability-card,
