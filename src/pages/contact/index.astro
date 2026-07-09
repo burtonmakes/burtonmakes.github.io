@@ -2,13 +2,14 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { siteMeta } from "../../data/site";
 import "../../styles/global.css";
+import "../../styles/contact.css";
 ---
 
 <BaseLayout
   title="Contact"
   description="Contact Alex Burton about engineering roles, medical devices, wearable sensing, hardware systems, and AI tooling."
 >
-  <section class="section hero-grid">
+  <section class="section hero-grid contact-hero">
     <div class="hero-copy reveal">
       <p class="eyebrow">Contact</p>
       <h1>Reach out about a role, collaboration, or technical project.</h1>
@@ -25,9 +26,7 @@ import "../../styles/global.css";
       </div>
     </div>
 
-    <div class="interface-shell contact-shell reveal">
-      <div class="interface-topbar"><span></span><span></span><span></span></div>
-
+    <div class="contact-card reveal">
       <form class="contact-form" id="contact-form" action="https://api.web3forms.com/submit" method="POST">
         <input type="hidden" name="access_key" value="53d6c7c6-13c6-4da5-b029-517d7dc7fd0a" />
         <input type="hidden" name="subject" value="New message from burtonmakes.github.io" />
@@ -35,8 +34,8 @@ import "../../styles/global.css";
         <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" class="contact-honeypot" aria-hidden="true" />
 
         <div class="contact-form-heading">
-          <span>Direct message</span>
-          <strong>Share the context that matters.</strong>
+          <strong>Send a note.</strong>
+          <span>Context, timing, and best follow-up.</span>
         </div>
 
         <div class="contact-field-grid">
@@ -53,7 +52,7 @@ import "../../styles/global.css";
 
         <label>
           <span>Message</span>
-          <textarea name="message" rows="6" required></textarea>
+          <textarea name="message" rows="5" required></textarea>
         </label>
 
         <div class="contact-form-footer">
