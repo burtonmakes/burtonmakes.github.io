@@ -32,10 +32,15 @@ const selectedFacts = projectFacts[project.slug as keyof typeof projectFacts] ??
         <span class="tag">{project.timeline}</span>
         {project.labels.slice(0, 4).map((label) => <span class="tag">{label}</span>)}
       </div>
+
+      <div class="hero-actions project-detail-actions">
+        <a class="button button-tertiary" href="/projects/#featured-projects" data-project-back>
+          ← Back to projects
+        </a>
+      </div>
     </div>
 
-    <div class="interface-shell tilt-card reveal">
-      <div class="interface-topbar"><span></span><span></span><span></span></div>
+    <div class="feature-card project-profile-panel tilt-card reveal">
       <div class="profile-list">
         <div>
           <span>Type</span>
@@ -199,3 +204,28 @@ const selectedFacts = projectFacts[project.slug as keyof typeof projectFacts] ??
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const setupProjectBackLinks = () => {
+    document.querySelectorAll<HTMLAnchorElement>("[data-project-back]").forEach((link) => {
+      if (link.dataset.ready === "true") return;
+      link.dataset.ready = "true";
+
+      link.addEventListener("click", (event) => {
+        const referrer = document.referrer ? new URL(document.referrer) : null;
+        const cameFromProjects =
+          referrer?.origin === window.location.origin && referrer.pathname === "/projects/";
+
+        if (!cameFromProjects || window.history.length <= 1) {
+          return;
+        }
+
+        event.preventDefault();
+        window.history.back();
+      });
+    });
+  };
+
+  document.addEventListener("astro:page-load", setupProjectBackLinks);
+  setupProjectBackLinks();
+</script>

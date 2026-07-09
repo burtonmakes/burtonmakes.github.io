@@ -1288,6 +1288,16 @@ small,
   line-height: 1.2;
 }
 
+.project-profile-panel,
+.work-map-panel {
+  align-self: stretch;
+  min-height: 0;
+}
+
+.project-detail-actions {
+  margin-top: 28px;
+}
+
 .contact-shell {
   min-height: 0;
 }
