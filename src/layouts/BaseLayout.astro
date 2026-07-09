@@ -122,15 +122,40 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 
     <style is:global>
       :root {
-        --surface-window: rgba(6, 16, 28, 0.999);
-        --surface-window-strong: rgba(9, 22, 38, 0.999);
+        --bg: #000000;
+        --bg-2: #020304;
+        --surface-window: rgba(3, 8, 15, 0.999);
+        --surface-window-strong: rgba(5, 12, 20, 0.999);
         --surface-window-line: rgba(255, 255, 255, 0.16);
         --surface-window-line-soft: rgba(255, 255, 255, 0.1);
         --panel: var(--surface-window);
         --panel-strong: var(--surface-window-strong);
         --panel-soft: var(--surface-window);
+        --text: #f6faff;
+        --muted: #a9bcd7;
+        --muted-2: #e6eef8;
         --line: var(--surface-window-line);
         --line-soft: var(--surface-window-line-soft);
+        --blue-glow: rgba(76, 141, 255, 0.06);
+        --coral-glow: rgba(232, 111, 78, 0.035);
+      }
+
+      body {
+        background:
+          radial-gradient(circle at 18% 12%, rgba(76, 141, 255, 0.06), transparent 28%),
+          radial-gradient(circle at 82% 24%, rgba(111, 211, 255, 0.04), transparent 30%),
+          linear-gradient(180deg, #000000, #020304 45%, #000000) !important;
+      }
+
+      body::before {
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px) !important;
+      }
+
+      .mesh-canvas,
+      .particle-canvas {
+        opacity: 0.42 !important;
       }
 
       :is(
@@ -233,8 +258,8 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 
       body::after {
         background:
-          linear-gradient(180deg, rgba(1, 4, 9, 0.66), rgba(1, 4, 9, 0.56)),
-          radial-gradient(circle at 50% 32%, transparent 0 28%, rgba(1, 4, 9, 0.38) 68%);
+          linear-gradient(180deg, rgba(0, 0, 0, 0.76), rgba(0, 0, 0, 0.66)),
+          radial-gradient(circle at 50% 32%, transparent 0 28%, rgba(0, 0, 0, 0.42) 68%) !important;
       }
     </style>
   </body>
