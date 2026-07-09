@@ -24,12 +24,12 @@ const getYearRange = (dates: string) => {
 >
   <section class="section work-hero">
     <div class="hero-copy reveal">
-      <p class="eyebrow">Professional work</p>
-      <h1>Medical-device engineering with range across hardware, sensing, data, and validation.</h1>
+      <p class="eyebrow">Work history</p>
+      <h1>From physiological data to implantables to medical-device systems.</h1>
       <p class="hero-text">
-        My professional work centers on wearable and implantable sensing systems,
-        device reliability, clinical and home monitoring workflows, sensor integration,
-        testing, documentation, and cross-functional execution.
+        A chronological view of the technical work: sensor data, low-noise
+        electronics, wireless implantables, wearable medical devices, validation,
+        documentation, and systems that have to work outside the lab.
       </p>
     </div>
 
@@ -69,15 +69,15 @@ const getYearRange = (dates: string) => {
 
             <div class="career-scan-grid">
               <div>
-                <span>What to scan</span>
+                <span>Role focus</span>
                 <strong>{role.context}</strong>
               </div>
               <div>
-                <span>Useful evidence</span>
+                <span>Proof point</span>
                 <strong>{role.accomplishments[0]}</strong>
               </div>
               <div>
-                <span>Core range</span>
+                <span>Technical range</span>
                 <strong>{role.skills.slice(0, 4).join(" · ")}</strong>
               </div>
             </div>
@@ -90,7 +90,11 @@ const getYearRange = (dates: string) => {
   <section class="section">
     <div class="section-heading reveal">
       <p class="eyebrow">Work history</p>
-      <h2>Open a role only if you need more detail.</h2>
+      <h2>Role details, kept compact.</h2>
+      <p>
+        The timeline above gives the high-level path. Open a role here for the
+        scope, proof points, and technical tools behind it.
+      </p>
     </div>
 
     <div class="timeline-stack">
@@ -107,7 +111,7 @@ const getYearRange = (dates: string) => {
               <h3>{role.title}</h3>
               <p class="muted">{role.company} · {role.dates}</p>
             </div>
-            <span>View detail</span>
+            <span>Details</span>
           </summary>
 
           <div class="dual-list">

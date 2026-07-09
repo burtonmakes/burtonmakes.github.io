@@ -26,25 +26,63 @@ const homepageMetrics = [
     label: rhaeosAccomplishments[3],
   },
 ];
+const originStory = [
+  {
+    kicker: "Early builds",
+    title: "Electronics, mechanics, and making things move.",
+    body:
+      "Long before medical devices, I was building physical systems: 3D printing, recycled-filament extrusion, magnetic projectile / rail-gun experiments, and motion-control ideas like the LEX 3D matrix.",
+  },
+  {
+    kicker: "Biomedical pull",
+    title: "Medicine mattered, but technology kept pulling me back.",
+    body:
+      "I studied biomedical engineering because I wanted the medical side and the technical side in the same room. I considered medicine, but the work I kept coming back to was sensors, hardware, mechanics, and systems.",
+  },
+  {
+    kicker: "Current thread",
+    title: "Now I build sensing systems that have to survive real use.",
+    body:
+      "My work connects wearable and implantable hardware, physiological data, validation, documentation, clinical/home workflows, and AI-enabled tools into systems people can actually use.",
+  },
+];
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
   <section class="section studio-hero">
     <div class="hero-copy reveal">
-      <p class="eyebrow">Biomedical Systems Engineer · Medical Devices</p>
+      <p class="eyebrow">Burton Makes · biomedical systems engineer</p>
 
-      <h1>Biomedical sensing systems from prototype to clinical use.</h1>
+      <h1>A technical life built around sensors, hardware, medicine, and useful systems.</h1>
 
       <p class="hero-subtitle">
-        Biomedical engineer leading the translation of novel sensing technologies into
-        wearable and implantable medical products through miniaturized hardware,
-        AI/ML analytics, and cross-functional leadership.
+        This is both a portfolio and a personal record: early mechanical builds,
+        biomedical research, medical-device work, infrastructure projects, and the
+        thread that connects them.
       </p>
 
       <div class="hero-actions">
-        <a class="button button-primary" href="/work/">Recruiter overview</a>
-        <a class="button button-tertiary" href="/projects/">Browse projects</a>
+        <a class="button button-primary" href="/projects/">Projects</a>
+        <a class="button button-tertiary" href="/work/">Work history</a>
       </div>
+    </div>
+  </section>
+
+  <section class="section origin-section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Through line</p>
+      <h2>From building odd machines to biomedical systems.</h2>
+    </div>
+
+    <div class="capability-grid">
+      {originStory.map((item, index) => (
+        <article class="capability-card reveal">
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <p class="feature-kicker">{item.kicker}</p>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </article>
+      ))}
     </div>
   </section>
 

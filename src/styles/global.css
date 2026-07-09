@@ -972,6 +972,14 @@ small,
   letter-spacing: 0.14em;
 }
 
+.origin-section .capability-card span {
+  margin-bottom: 22px;
+}
+
+.origin-section .feature-kicker {
+  margin-bottom: 12px;
+}
+
 .capability-card p,
 .story-card p,
 .feature-card p,
