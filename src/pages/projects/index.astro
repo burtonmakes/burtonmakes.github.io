@@ -4,13 +4,14 @@ import { projects } from "../../data/site";
 import "../../styles/global.css";
 
 const featuredProjects = projects.slice(0, 6);
+const projectDomains = [...new Set(featuredProjects.map((project) => project.section))];
 ---
 
 <BaseLayout
   title="Projects"
   description="Selected engineering projects by Alex Burton across AI systems, infrastructure, hardware, CAD, sensing, and automation."
 >
-  <section class="section hero-grid">
+  <section class="section projects-hero">
     <div class="hero-copy reveal">
       <p class="eyebrow">Projects</p>
       <h1>Selected builds across AI tools, infrastructure, hardware, and sensing.</h1>
@@ -20,25 +21,31 @@ const featuredProjects = projects.slice(0, 6);
       </p>
     </div>
 
-    <div class="interface-shell tilt-card reveal">
-      <div class="interface-topbar"><span></span><span></span><span></span></div>
-      <div class="hero-panel-grid">
-        <article class="hero-stat-card">
-          <span class="label">Flagship product work</span>
-          <strong>FlowSense Clinical + Home</strong>
-        </article>
-        <article class="hero-stat-card">
-          <span class="label">Research foundation</span>
-          <strong>Wireless battery-free bioelectronics</strong>
-        </article>
-        <article class="hero-stat-card hero-stat-accent">
-          <span class="label">Platform extension</span>
-          <strong>Wound-monitoring sensing patch</strong>
-        </article>
-        <article class="hero-stat-card">
-          <span class="label">Current systems work</span>
-          <strong>AI agents + self-hosted infrastructure</strong>
-        </article>
+    <div class="project-explorer reveal" data-project-explorer>
+      <div class="project-domain-list" aria-label="Filter projects by domain">
+        <button class="domain-node is-active" type="button" data-project-domain="all" aria-pressed="true">
+          All systems
+        </button>
+        {projectDomains.map((domain) => (
+          <button class="domain-node" type="button" data-project-domain={domain} aria-pressed="false">
+            {domain}
+          </button>
+        ))}
+      </div>
+
+      <div class="project-node-field" aria-live="polite">
+        {featuredProjects.map((project) => (
+          <a
+            class="project-node"
+            href={`/projects/${project.slug}/`}
+            data-project-node
+            data-project-domain={project.section}
+          >
+            <span>{project.section}</span>
+            <strong>{project.title}</strong>
+            <small>{project.timeline}</small>
+          </a>
+        ))}
       </div>
     </div>
   </section>
@@ -71,3 +78,38 @@ const featuredProjects = projects.slice(0, 6);
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const setupProjectExplorer = () => {
+    document.querySelectorAll<HTMLElement>("[data-project-explorer]").forEach((explorer) => {
+      if (explorer.dataset.ready === "true") return;
+      explorer.dataset.ready = "true";
+
+      const filters = [...explorer.querySelectorAll<HTMLButtonElement>("[data-project-domain]")].filter(
+        (element) => element.matches("button"),
+      );
+      const nodes = [...explorer.querySelectorAll<HTMLElement>("[data-project-node]")];
+
+      const selectDomain = (domain: string) => {
+        filters.forEach((filter) => {
+          const active = filter.dataset.projectDomain === domain;
+          filter.classList.toggle("is-active", active);
+          filter.setAttribute("aria-pressed", String(active));
+        });
+        nodes.forEach((node) => {
+          const active = domain === "all" || node.dataset.projectDomain === domain;
+          node.classList.toggle("is-muted", !active);
+        });
+      };
+
+      filters.forEach((filter) => {
+        filter.addEventListener("click", () => selectDomain(filter.dataset.projectDomain || "all"));
+        filter.addEventListener("mouseenter", () => selectDomain(filter.dataset.projectDomain || "all"));
+        filter.addEventListener("focus", () => selectDomain(filter.dataset.projectDomain || "all"));
+      });
+    });
+  };
+
+  document.addEventListener("astro:page-load", setupProjectExplorer);
+  setupProjectExplorer();
+</script>

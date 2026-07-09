@@ -42,38 +42,8 @@ const homepageMetrics = [
       </p>
 
       <div class="hero-actions">
-        <a class="button button-primary" href="/work/">View work</a>
-        <a class="button button-secondary" href="/projects/">View projects</a>
-      </div>
-    </div>
-
-    <div class="hero-dashboard reveal" aria-label="Engineering summary panel">
-      <div class="dashboard-window">
-        <div class="window-dots" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-
-        <div class="dashboard-grid">
-          <article class="prototype-card">
-            <span class="card-label">Systems integrator</span>
-            <strong>Sensor to decision</strong>
-            <p>Hardware → firmware → data → validation → clinical workflow</p>
-          </article>
-
-          <article class="evidence-card">
-            <span class="card-label">Career progression</span>
-            <strong>Data analysis → bioelectronics → product R&amp;D</strong>
-            <p>2014–2025</p>
-          </article>
-
-          <article class="active-card">
-            <span class="card-label">Product translation</span>
-            <strong>R&amp;D</strong>
-            <p>Prototype → validation → clinical and home use</p>
-          </article>
-        </div>
+        <a class="button button-primary" href="/work/">Recruiter overview</a>
+        <a class="button button-tertiary" href="/projects/">Browse projects</a>
       </div>
     </div>
   </section>
@@ -128,9 +98,14 @@ const homepageMetrics = [
 
 <style>
   :global(.studio-hero) {
+    grid-template-columns: minmax(0, 1fr);
     min-height: auto;
     padding-top: clamp(6rem, 9vh, 7.5rem);
     padding-bottom: clamp(4rem, 8vh, 6rem);
+  }
+
+  :global(.studio-hero .hero-copy) {
+    max-width: 980px;
   }
 
   @media (max-width: 760px) {
