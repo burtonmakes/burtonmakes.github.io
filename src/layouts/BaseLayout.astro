@@ -135,29 +135,100 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 
       :is(
         .nav-shell,
-        [class*="card"],
-        [class*="panel"],
-        [class*="window"],
-        [class*="shell"],
-        [class*="box"],
-        [class*="tile"],
-        [class*="item"]
-      ):not(.brand-mark):not(.pill):not(.tag):not(.button):not(.bar-fill) {
+        .capability-card,
+        .feature-card,
+        .story-card,
+        .metric-card,
+        .metric-tile,
+        .publication-card,
+        .notice-card,
+        .timeline-card,
+        .timeline-item,
+        .project-card,
+        .project-feature,
+        .project-detail,
+        .project-list-card,
+        .explore-link,
+        .hero-stat-card,
+        .locked-panel,
+        .tag-panel,
+        .career-panel,
+        .career-stop,
+        .career-scan-item,
+        .branch-expansion,
+        .branch-panel,
+        .hobby-mini-card,
+        .hobby-sticky-copy,
+        .hobby-section-box,
+        .contact-card,
+        .contact-method,
+        .contact-panel,
+        .resume-card,
+        .stat-card,
+        .info-card
+      ) {
         border-color: var(--surface-window-line) !important;
         background: var(--surface-window) !important;
       }
 
       :is(
-        [class*="card"]:hover,
-        [class*="panel"]:hover,
-        [class*="window"]:hover,
-        [class*="box"]:hover,
-        [class*="tile"]:hover,
-        [class*="item"]:hover,
+        .capability-card:hover,
+        .feature-card:hover,
+        .story-card:hover,
+        .metric-card:hover,
+        .metric-tile:hover,
+        .publication-card:hover,
+        .timeline-card:hover,
+        .timeline-item:hover,
+        .project-card:hover,
+        .project-feature:hover,
+        .project-detail:hover,
+        .project-list-card:hover,
+        .explore-link:hover,
+        .hero-stat-card:hover,
+        .locked-panel:hover,
+        .career-stop:hover,
         .career-stop[aria-selected="true"],
-        .career-scan-item.is-active
-      ):not(.brand-mark):not(.pill):not(.tag):not(.button):not(.bar-fill) {
+        .career-scan-item:hover,
+        .career-scan-item.is-active,
+        .branch-panel:hover,
+        .hobby-mini-card:hover,
+        .contact-card:hover,
+        .contact-method:hover,
+        .resume-card:hover,
+        .stat-card:hover,
+        .info-card:hover
+      ) {
         background: var(--surface-window-strong) !important;
+      }
+
+      :is(
+        .capability-grid,
+        .card-grid,
+        .metrics-card-grid,
+        .project-grid,
+        .project-card-grid,
+        .branch-card-grid,
+        .career-scan-grid,
+        .hero-panel-grid,
+        .summary-grid,
+        .recruiter-grid,
+        .feature-work-grid,
+        .explore-grid,
+        .media-grid,
+        .hobby-card-grid,
+        .hobby-scroll-list,
+        .hobby-row-grid,
+        .filters-shell,
+        .profile-list,
+        .summary-blocks,
+        .compact-stack,
+        .skill-map,
+        .timeline-stack
+      ) {
+        border-color: transparent !important;
+        background: transparent !important;
+        box-shadow: none !important;
       }
 
       body::after {
