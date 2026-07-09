@@ -204,13 +204,45 @@ const getYearRange = (dates: string) => {
     overflow: hidden;
   }
 
+  .career-track {
+    align-items: stretch;
+  }
+
+  .career-stop {
+    display: grid;
+    grid-template-rows: auto minmax(2.5rem, auto) minmax(2.7rem, auto);
+    align-content: start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .career-stop span,
+  .career-stop strong,
+  .career-stop em {
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .career-panel > p,
+  .career-panel h2,
+  .career-period {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
   .branch-card-grid {
     align-items: stretch;
   }
 
   .career-scan-item {
     position: relative;
-    display: block;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    align-content: start;
+    gap: 12px;
+    min-width: 0;
     min-height: 100%;
     padding: 18px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -251,11 +283,12 @@ const getYearRange = (dates: string) => {
 
   .career-scan-item span {
     display: block;
-    margin-bottom: 10px;
+    margin: 0;
     color: #9fb0c4;
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.11em;
+    line-height: 1.25;
     text-transform: uppercase;
     transition: color 180ms ease;
   }
@@ -271,10 +304,13 @@ const getYearRange = (dates: string) => {
 
   .career-scan-item strong {
     display: block;
+    min-width: 0;
+    max-width: 100%;
     color: #edf5ff;
-    font-size: 0.95rem;
+    font-size: clamp(0.95rem, 0.92vw, 1.02rem);
     font-weight: 650;
     line-height: 1.45;
+    overflow-wrap: anywhere;
   }
 
   .branch-expansion {
@@ -338,10 +374,12 @@ const getYearRange = (dates: string) => {
   }
 
   .branch-panel-heading h3 {
+    max-width: 100%;
     margin: 0;
     color: var(--text);
     font-size: clamp(1.12rem, 1.6vw, 1.45rem);
     line-height: 1.14;
+    overflow-wrap: anywhere;
   }
 
   .branch-list {
@@ -356,6 +394,7 @@ const getYearRange = (dates: string) => {
     color: #d6e4f3;
     font-size: 0.96rem;
     line-height: 1.52;
+    overflow-wrap: anywhere;
   }
 
   .branch-list li + li {
@@ -364,6 +403,46 @@ const getYearRange = (dates: string) => {
 
   .branch-tag-row {
     margin-top: 4px;
+  }
+
+  .split-band:has(.metrics-card-grid) {
+    grid-template-columns: minmax(260px, 0.68fr) minmax(0, 1.32fr);
+  }
+
+  .metrics-card-grid {
+    align-items: stretch;
+  }
+
+  .metrics-card-grid > * {
+    min-width: 0;
+  }
+
+  .metrics-card-grid .metric-card {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-height: 172px;
+    padding: clamp(20px, 2vw, 28px);
+  }
+
+  .metrics-card-grid .metric-card strong {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(1.05rem, 1.35vw, 1.45rem);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .metrics-card-grid .metric-card p {
+    max-width: 100%;
+    margin: 0;
+    font-size: clamp(1.05rem, 1.45vw, 1.48rem);
+    line-height: 1.25;
+    overflow-wrap: anywhere;
   }
 
   @keyframes branch-panel-in {
@@ -377,7 +456,21 @@ const getYearRange = (dates: string) => {
     }
   }
 
+  @media (max-width: 1100px) {
+    .split-band:has(.metrics-card-grid) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   @media (max-width: 900px) {
+    .career-stop {
+      grid-template-rows: none;
+    }
+
+    .career-scan-item {
+      grid-template-rows: none;
+    }
+
     .branch-expansion::before,
     .branch-expansion::after {
       display: none;
