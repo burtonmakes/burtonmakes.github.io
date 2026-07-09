@@ -53,11 +53,13 @@ const originStory = [
       <h2>From early hardware curiosity to biomedical systems.</h2>
     </div>
 
-    <div class="capability-grid">
+    <div class="capability-grid origin-card-grid">
       {originStory.map((item, index) => (
-        <article class="capability-card reveal">
-          <span>{String(index + 1).padStart(2, "0")}</span>
-          <p class="feature-kicker">{item.kicker}</p>
+        <article class="capability-card origin-card reveal">
+          <div class="origin-card-meta">
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <p class="feature-kicker">{item.kicker}</p>
+          </div>
           <h3>{item.title}</h3>
           <p>{item.body}</p>
         </article>
@@ -116,70 +118,81 @@ const originStory = [
 
   :global(main > .origin-section) {
     min-height: auto;
-    padding-top: clamp(42px, 5vh, 64px);
-    padding-bottom: clamp(42px, 5vh, 64px);
+    padding-top: clamp(32px, 4vh, 52px);
+    padding-bottom: clamp(36px, 5vh, 60px);
     align-content: start !important;
   }
 
   :global(.origin-section .section-heading) {
-    margin-bottom: clamp(26px, 3.2vh, 36px);
+    margin-bottom: clamp(22px, 3vh, 34px);
   }
 
   :global(.origin-section .eyebrow) {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
 
   :global(.origin-section h2) {
     max-width: 17ch;
-    font-size: clamp(2.2rem, 3.1vw, 3.75rem);
+    font-size: clamp(2.25rem, 3.05vw, 3.55rem);
     line-height: 1.04;
   }
 
-  :global(.origin-section .capability-grid) {
+  :global(.origin-card-grid) {
     gap: clamp(18px, 1.9vw, 28px);
     align-items: stretch;
   }
 
-  :global(.origin-section .capability-card) {
+  :global(.origin-card) {
     display: grid;
-    grid-template-rows: auto auto auto 1fr;
+    grid-template-rows: 1.35rem minmax(3.35rem, auto) auto;
     align-content: start;
-    min-height: clamp(330px, 27vw, 430px);
-    padding: clamp(26px, 2.35vw, 42px);
+    min-height: 0;
+    padding: clamp(24px, 2.1vw, 34px);
     gap: 0;
   }
 
-  :global(.origin-section .capability-card span) {
-    margin-bottom: 0;
+  :global(.origin-card-meta) {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    margin-bottom: clamp(34px, 3.3vw, 50px);
+  }
+
+  :global(.origin-card-meta span) {
+    flex: 0 0 auto;
+    margin: 0;
     color: var(--accent-2);
-    font-size: clamp(0.95rem, 1.08vw, 1.12rem);
+    font-size: clamp(0.9rem, 1vw, 1rem);
     line-height: 1;
   }
 
-  :global(.origin-section .feature-kicker) {
-    margin: 0 0 clamp(26px, 3.2vw, 46px);
+  :global(.origin-card-meta .feature-kicker) {
+    margin: 0;
     color: var(--muted);
-    font-size: clamp(0.8rem, 0.9vw, 0.96rem);
-    line-height: 1.15;
-    letter-spacing: 0.1em;
+    font-size: clamp(0.76rem, 0.86vw, 0.9rem);
+    line-height: 1.1;
+    letter-spacing: 0.09em;
+    overflow-wrap: anywhere;
   }
 
-  :global(.origin-section .capability-card h3) {
-    margin-bottom: clamp(18px, 1.8vw, 24px);
-    font-size: clamp(1.52rem, 1.95vw, 2.05rem);
+  :global(.origin-card h3) {
+    margin: 0 0 clamp(16px, 1.45vw, 20px);
+    font-size: clamp(1.4rem, 1.68vw, 1.78rem);
     line-height: 1.08;
   }
 
-  :global(.origin-section .capability-card p:not(.feature-kicker)) {
-    margin-bottom: 0;
-    color: #d9e6f5;
-    font-size: clamp(1.04rem, 1.18vw, 1.18rem);
-    line-height: 1.48;
-    font-weight: 560;
+  :global(.origin-card > p:not(.feature-kicker)) {
+    margin: 0;
+    color: #d6e3f2;
+    font-size: clamp(0.96rem, 1.08vw, 1.06rem);
+    line-height: 1.42;
+    font-weight: 540;
+    overflow-wrap: anywhere;
   }
 
   @media (max-width: 1050px) {
-    :global(.origin-section .capability-grid) {
+    :global(.origin-card-grid) {
       grid-template-columns: 1fr;
     }
   }
@@ -191,6 +204,14 @@ const originStory = [
 
     :global(.origin-section h2) {
       max-width: none;
+    }
+
+    :global(.origin-card) {
+      grid-template-rows: auto auto auto;
+    }
+
+    :global(.origin-card-meta) {
+      margin-bottom: 24px;
     }
   }
 </style>
