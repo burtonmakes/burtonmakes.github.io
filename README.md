@@ -39,9 +39,9 @@ Use these values as the canonical color reference:
 ```css
 :root {
   --bg: #000000;
-  --bg-2: #020304;
-  --surface-window: rgba(3, 8, 15, 0.999);
-  --surface-window-strong: rgba(5, 12, 20, 0.999);
+  --bg-2: #010102;
+  --surface-window: rgba(1, 5, 10, 0.999);
+  --surface-window-strong: rgba(3, 9, 16, 0.999);
   --text: #f6faff;
   --muted: #a9bcd7;
   --muted-2: #e6eef8;
@@ -51,8 +51,8 @@ Use these values as the canonical color reference:
   --accent-2: #6fd3ff;
   --cta-1: #e2b869;
   --cta-2: #e86f4e;
-  --blue-glow: rgba(76, 141, 255, 0.27);
-  --coral-glow: rgba(232, 111, 78, 0.22);
+  --blue-glow: rgba(32, 64, 120, 0.27);
+  --coral-glow: rgba(92, 40, 28, 0.22);
 }
 ```
 
