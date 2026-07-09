@@ -122,17 +122,46 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 
     <style is:global>
       :root {
-        --panel: rgba(6, 16, 28, 0.44);
-        --panel-strong: rgba(9, 22, 38, 0.56);
-        --panel-soft: rgba(255, 255, 255, 0.032);
-        --line: rgba(255, 255, 255, 0.13);
-        --line-soft: rgba(255, 255, 255, 0.07);
+        --surface-window: rgba(6, 16, 28, 0.9);
+        --surface-window-strong: rgba(9, 22, 38, 0.9);
+        --surface-window-soft: rgba(255, 255, 255, 0.04);
+        --panel: var(--surface-window);
+        --panel-strong: var(--surface-window-strong);
+        --panel-soft: var(--surface-window-soft);
+        --line: rgba(255, 255, 255, 0.16);
+        --line-soft: rgba(255, 255, 255, 0.1);
+      }
+
+      :is(
+        .nav-shell,
+        .capability-card,
+        .metric-card,
+        .project-card,
+        .timeline-item,
+        .career-panel,
+        .career-stop,
+        .career-scan-item,
+        .branch-expansion,
+        .tag-panel,
+        .dog-card,
+        .hobby-mini-card,
+        .hobby-sticky-copy,
+        .hobby-section-box,
+        .contact-card,
+        .contact-method,
+        .card,
+        .panel
+      ) {
+        border-color: var(--line);
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
+          var(--surface-window);
       }
 
       body::after {
         background:
-          linear-gradient(180deg, rgba(1, 4, 9, 0.6), rgba(1, 4, 9, 0.5)),
-          radial-gradient(circle at 50% 32%, transparent 0 28%, rgba(1, 4, 9, 0.34) 68%);
+          linear-gradient(180deg, rgba(1, 4, 9, 0.66), rgba(1, 4, 9, 0.56)),
+          radial-gradient(circle at 50% 32%, transparent 0 28%, rgba(1, 4, 9, 0.38) 68%);
       }
     </style>
   </body>
