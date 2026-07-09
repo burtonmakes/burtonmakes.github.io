@@ -1,9 +1,11 @@
+[![Deploy to GitHub Pages](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml)
+
 # Alex Burton / Burton Makes
 
 Personal engineering portfolio for Alex Burton.
 
 Live site:
-[![Deploy to GitHub Pages](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml)
+
 [https://burtonmakes.github.io](https://burtonmakes.github.io)
 
 ## Site purpose
