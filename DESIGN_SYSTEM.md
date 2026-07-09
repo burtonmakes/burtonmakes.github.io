@@ -1,320 +1,177 @@
-# Final Portfolio Color System
+# Portfolio Design System
 
-Final direction: **A1 Dark Lab Interface + Signal Coral + blue/orange graph accents**
+Canonical direction: **darkest lab interface + electric blue accents + signal coral actions**.
 
-This is the final visual direction for the portfolio. Keep the original A1 Dark Lab Interface structure: dark black-blue base, electric blue system accents, light-cyan technical highlights, translucent dashboard panels, and warm CTA emphasis. The only final adjustment is replacing the original coral/orange endpoint with **Signal Coral** for a sharper and more memorable action color.
+The site should feel dark, technical, calm, and easy to read. Use a nearly black page background, nearly solid card surfaces, electric blue / light cyan for system identity, and amber-to-signal-coral only for primary actions or highlighted data.
 
-## Final Palette
+## Canonical tokens
 
 ```css
 :root {
   /* Page foundation */
-  --bg: #010409;
-  --bg-2: #06101C;
+  --bg: #000000;
+  --bg-2: #020304;
 
-  /* Panels and surfaces */
-  --panel: rgba(6, 16, 28, 0.34);
-  --panel-strong: rgba(9, 22, 38, 0.46);
+  /* Cards, panels, windows */
+  --surface-window: rgba(3, 8, 15, 0.999);
+  --surface-window-strong: rgba(5, 12, 20, 0.999);
+  --panel: var(--surface-window);
+  --panel-strong: var(--surface-window-strong);
+  --panel-soft: var(--surface-window);
 
   /* Text */
-  --text: #F6FAFF;
-  --muted: #A9BCD7;
-  --muted-2: #D3E0EE;
+  --text: #f6faff;
+  --muted: #a9bcd7;
+  --muted-2: #e6eef8;
 
-  /* Borders and grid */
-  --line: rgba(255, 255, 255, 0.10);
-  --line-soft: rgba(255, 255, 255, 0.05);
+  /* Borders */
+  --line: rgba(255, 255, 255, 0.16);
+  --line-soft: rgba(255, 255, 255, 0.10);
+  --line-strong: rgba(76, 141, 255, 0.28);
 
   /* Core system colors */
-  --accent: #4C8DFF;
-  --accent-2: #6FD3FF;
+  --accent: #4c8dff;
+  --accent-2: #6fd3ff;
 
   /* CTA colors */
-  --cta-1: #E2B869;
-  --cta-2: #E86F4E;
+  --cta-1: #e2b869;
+  --cta-2: #e86f4e;
 
   /* Graph colors */
-  --graph-blue: #4C8DFF;
-  --graph-cyan: #6FD3FF;
-  --graph-cyan-soft: #9AD8FF;
-  --graph-amber: #E2B869;
-  --graph-coral: #E86F4E;
+  --graph-blue: #4c8dff;
+  --graph-cyan: #6fd3ff;
+  --graph-cyan-soft: #9ad8ff;
+  --graph-amber: #e2b869;
+  --graph-coral: #e86f4e;
 
-  /* Glow */
-  --blue-glow: rgba(76, 141, 255, 0.27);
-  --coral-glow: rgba(232, 111, 78, 0.22);
+  /* Glows */
+  --blue-glow: rgba(76, 141, 255, 0.06);
+  --coral-glow: rgba(232, 111, 78, 0.035);
 }
 ```
 
-## Color Roles
+## Background
 
-### Background
-
-Use `--bg` and `--bg-2` for the full page background.
+Use the darkest reference for the site background.
 
 ```css
-background:
-  radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
-  radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
-  linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
+body {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(76, 141, 255, 0.06), transparent 28%),
+    radial-gradient(circle at 82% 24%, rgba(111, 211, 255, 0.04), transparent 30%),
+    linear-gradient(180deg, #000000, #020304 45%, #000000);
+}
 ```
 
-The background should stay dark, blue-led, and technical. Do not add purple, teal, or heavy orange background glows.
+The background should stay quiet. Do not use large teal, purple, or orange washes behind cards.
 
-### Panels
+## Cards and panels
 
-Use translucent dark-blue panels.
+All card-like surfaces should use the same nearly solid surface color.
 
 ```css
-background: var(--panel);
-border: 1px solid var(--line);
-box-shadow: inset 0 1px rgba(255, 255, 255, 0.05);
+.card,
+.panel,
+.window {
+  background: var(--surface-window);
+  border: 1px solid var(--line);
+}
 ```
 
-Use `--panel-strong` only for slightly emphasized dashboard modules or selected cards.
-
-### Text
-
-Use:
+Hover or active cards may use `--surface-window-strong`, but they should not become translucent or add a large parent backplate behind a card grid.
 
 ```css
-color: var(--text);
+.card:hover,
+.panel:hover,
+.card.is-active {
+  background: var(--surface-window-strong);
+}
 ```
 
-for headings and primary text.
+## Important layout rule
 
-Use:
+Do not give grid wrappers a panel background.
+
+Good:
 
 ```css
-color: var(--muted-2);
+.card-grid {
+  background: transparent;
+}
+
+.card-grid > .card {
+  background: var(--surface-window);
+}
 ```
 
-for body copy.
-
-Use:
+Bad:
 
 ```css
-color: var(--muted);
+.card-grid {
+  background: var(--surface-window);
+}
 ```
 
-for labels, metadata, dashboard captions, and navigation links.
+The page should show individual cards, not a large dark box behind a group of cards.
 
-### Blue System Accent
+## Text
 
-Use `--accent` for the main technical identity color.
+Use `--text` for headings and primary labels.
 
-Use it for:
+Use `--muted-2` for body copy. It is brighter than the old body text and reads better on dark panels without becoming pure white.
 
-* logo glow
-* primary dashboard rings
-* active system accents
-* technical lines
-* important blue data series
+Use `--muted` for small labels, metadata, and inactive navigation text.
 
 ```css
-color: var(--accent);
-box-shadow: 0 0 24px color-mix(in srgb, var(--accent), transparent 70%);
-```
+h1,
+h2,
+h3 {
+  color: var(--text);
+}
 
-Use `--accent-2` for light-blue highlights.
+p {
+  color: var(--muted-2);
+}
 
-Use it for:
-
-* eyebrow text
-* live system labels
-* secondary graph lines
-* hover glows
-* chart gradients
-
-```css
-color: var(--accent-2);
+small,
+.label,
+.meta {
+  color: var(--muted);
+}
 ```
 
 ## Buttons
 
-### Primary Button
-
-Use the amber-to-signal-coral gradient only for the main action.
+Primary actions use the amber-to-signal-coral gradient.
 
 ```css
-.btn.primary {
-  border: 1px solid color-mix(in srgb, var(--cta-1), white 15%);
+.button-primary {
+  border-color: color-mix(in srgb, var(--cta-1), white 15%);
   background: linear-gradient(135deg, var(--cta-1), var(--cta-2));
   color: #031014;
-  box-shadow: 0 18px 48px color-mix(in srgb, var(--cta-1), transparent 78%);
 }
 ```
 
-Use for:
+Use this gradient sparingly. It should not become a background color system.
 
-* `View work`
-* main recruiter-facing CTA
-* one primary action per section
+## Graph and dashboard colors
 
-Do not use this gradient everywhere.
-
-### Secondary Button
-
-Use the same warm family, but very transparent.
-
-```css
-.btn.secondary {
-  border: 1px solid color-mix(in srgb, var(--cta-1), transparent 55%);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--cta-1), transparent 87%),
-    color-mix(in srgb, var(--cta-2), transparent 90%)
-  );
-  color: var(--text);
-}
-```
-
-Use for:
-
-* `View projects`
-* supporting links
-* secondary navigation actions
-
-## Graph and Dashboard Color Rules
-
-The dashboard should remain mostly blue, with orange/coral used only for emphasis.
-
-Use this ratio:
+Use blue/cyan for most technical and data visuals. Use coral/amber only for emphasis.
 
 ```text
 80–85% blue/cyan
 15–20% amber/coral
 ```
 
-### Bar Graphs
-
-Default bars should be blue/cyan.
-
-```css
-.bar i.blue-bar {
-  background: linear-gradient(90deg, var(--graph-blue), var(--graph-cyan));
-  box-shadow: 0 0 18px rgba(111, 211, 255, 0.20);
-}
-```
-
-Highlighted bars should use amber/coral.
-
-```css
-.bar i.orange-bar {
-  background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
-  box-shadow: 0 0 18px rgba(232, 111, 78, 0.22);
-}
-```
-
-Use orange/coral only for:
-
-* selected metric
-* important comparison
-* standout result
-* warning or threshold
-* best-performing category
-
-### Line Charts
-
-Use blue for the primary line, cyan for the secondary line, and coral/amber for the highlighted comparison.
-
-```css
-.blue-line {
-  background: linear-gradient(90deg, transparent, var(--graph-blue), var(--graph-cyan));
-  box-shadow: 0 0 14px rgba(76, 141, 255, 0.26);
-}
-
-.cyan-line {
-  background: linear-gradient(90deg, transparent, rgba(111, 211, 255, 0.72), rgba(111, 211, 255, 0.2));
-}
-
-.coral-line {
-  background: linear-gradient(90deg, transparent 20%, var(--graph-amber), var(--graph-coral));
-  box-shadow: 0 0 14px rgba(232, 111, 78, 0.18);
-}
-```
-
-### Chart Dots
-
-Use blue/cyan for normal points and signal coral for the most important point.
-
-```css
-.dot-blue {
-  background: var(--graph-blue);
-  box-shadow: 0 0 18px rgba(76, 141, 255, 0.35);
-}
-
-.dot-cyan {
-  background: var(--graph-cyan);
-  box-shadow: 0 0 18px rgba(111, 211, 255, 0.35);
-}
-
-.dot-coral {
-  background: var(--graph-coral);
-  box-shadow: 0 0 18px rgba(232, 111, 78, 0.35);
-}
-```
-
-### Dashboard Modules
-
-Default modules stay dark and blue-neutral.
-
-```css
-.module {
-  border: 1px solid var(--line-soft);
-  background: color-mix(in srgb, var(--panel), transparent 12%);
-}
-```
-
-Highlighted modules use a subtle amber/coral wash.
-
-```css
-.module.highlight {
-  border-color: color-mix(in srgb, var(--graph-coral), transparent 45%);
-  background:
-    linear-gradient(135deg, rgba(226, 184, 105, 0.10), rgba(232, 111, 78, 0.08)),
-    color-mix(in srgb, var(--panel), transparent 10%);
-}
-```
-
-## Final Usage Summary
-
-Use **A1 Dark Lab Interface** as the base.
-
-Use:
-
-```css
---accent: #4C8DFF;
---accent-2: #6FD3FF;
-```
-
-for the technical system, dashboard, glows, and data visuals.
-
-Use:
-
-```css
---cta-1: #E2B869;
---cta-2: #E86F4E;
-```
-
-for the primary button and warm action states.
-
-Use **Signal Coral** sparingly. It should not become a dominant background color. It should appear mainly in:
-
-* primary CTA endpoint
-* highlighted graph series
-* selected metric
-* active state
-* key data point
-
-Final design identity:
+## Final usage summary
 
 ```text
-Dark lab background
-Electric blue system UI
-Light-cyan technical dashboard
+Nearly black site background
+99.9% opaque dark-navy cards
+No large grid backplates behind cards
+Electric blue system identity
+Light-cyan technical highlights
 Amber-to-signal-coral primary action
-Blue graphs with selective orange/coral emphasis
+Bright readable body copy
 Geist typography
-Translucent technical panels
 ```
