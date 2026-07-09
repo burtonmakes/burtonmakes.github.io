@@ -9,9 +9,9 @@
 
 :root {
   --bg: #000000;
-  --bg-2: #020304;
-  --surface-window: rgba(3, 8, 15, 0.999);
-  --surface-window-strong: rgba(5, 12, 20, 0.999);
+  --bg-2: #010102;
+  --surface-window: rgba(1, 5, 10, 0.999);
+  --surface-window-strong: rgba(3, 9, 16, 0.999);
   --text: #f6faff;
   --muted: #a9bcd7;
   --muted-2: #e6eef8;
@@ -23,8 +23,6 @@
   --cta-2: #e86f4e;
   --data-teal: #3dd6c8;
   --data-teal-2: #6fe5dd;
-  --blue-glow: rgba(76, 141, 255, 0.27);
-  --coral-glow: rgba(232, 111, 78, 0.22);
 }
 
 body {
@@ -32,9 +30,9 @@ body {
   color: var(--text);
   font-family: Geist, Inter, "Avenir Next", "Segoe UI", system-ui, sans-serif;
   background:
-    radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
-    radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
-    radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
+    radial-gradient(circle at 18% 12%, rgba(32, 64, 120, 0.27), transparent 28%),
+    radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
+    radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
     linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 }
 
@@ -301,10 +299,10 @@ pre {
   <main class="page">
     <section class="intro">
       <p class="eyebrow">Darker palette · original effect visibility</p>
-      <h1>Dark lab interface with visible grid and network.</h1>
+      <h1>Darker lab interface with visible grid and network.</h1>
       <p>
-        This preview darkens the color palette while preserving the grid, network, particles,
-        and mouse-follow visual language. Cards stay nearly solid for readability.
+        This preview darkens the page colors, card surfaces, and background glow colors while preserving the grid,
+        network, particles, and mouse-follow visual language.
       </p>
     </section>
 
@@ -350,9 +348,9 @@ pre {
     <section class="token-panel">
       <pre><code>:root {
   --bg: #000000;
-  --bg-2: #020304;
-  --surface-window: rgba(3, 8, 15, 0.999);
-  --surface-window-strong: rgba(5, 12, 20, 0.999);
+  --bg-2: #010102;
+  --surface-window: rgba(1, 5, 10, 0.999);
+  --surface-window-strong: rgba(3, 9, 16, 0.999);
   --text: #f6faff;
   --muted: #a9bcd7;
   --muted-2: #e6eef8;
@@ -362,8 +360,8 @@ pre {
   --accent-2: #6fd3ff;
   --cta-1: #e2b869;
   --cta-2: #e86f4e;
-  --blue-glow: rgba(76, 141, 255, 0.27);
-  --coral-glow: rgba(232, 111, 78, 0.22);
+  --blue-glow: rgba(32, 64, 120, 0.27);
+  --coral-glow: rgba(92, 40, 28, 0.22);
 }</code></pre>
     </section>
   </main>
