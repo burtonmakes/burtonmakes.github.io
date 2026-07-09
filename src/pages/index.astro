@@ -1,49 +1,50 @@
 ---
-import { rhaeosAccomplishments, workProofPoints } from "../data/publicFacts";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "../styles/global.css";
 
 const pageTitle = "Alex Burton | Biomedical Systems Engineer";
 const pageDescription =
   "Biomedical systems engineer building wearable and implantable medical-device sensing systems across hardware, validation, manufacturing, physiological data workflows, and ML/AI-enabled tools.";
-const workProofPointMap = new Map(workProofPoints);
-const getFirstToken = (value: string | undefined) => value?.split(" ")[0];
-const homepageMetrics = [
-  {
-    value: workProofPointMap.get("FlowSense Home reliability"),
-    label: rhaeosAccomplishments[0],
-  },
-  {
-    value: workProofPointMap.get("Clinical-study build cycle"),
-    label: rhaeosAccomplishments[1],
-  },
-  {
-    value: getFirstToken(workProofPointMap.get("Physiological/device data")),
-    label: rhaeosAccomplishments[2],
-  },
-  {
-    value: getFirstToken(workProofPointMap.get("HA Connect datasets")),
-    label: rhaeosAccomplishments[3],
-  },
-];
 const originStory = [
   {
-    kicker: "Early builds",
-    title: "Electronics, mechanics, and making things move.",
-    body:
-      "Long before medical devices, I was building physical systems: 3D printing, recycled-filament extrusion, magnetic projectile / rail-gun experiments, and motion-control ideas like the LEX 3D matrix.",
+    year: "2013 – present",
+    title: "3D printing business",
+    bullets: [
+      "Started and maintained an online page to sell 3D printed objects.",
+      "Kept learning through practical part design, customer requests, print failures, and material constraints.",
+    ],
   },
   {
-    kicker: "Biomedical pull",
-    title: "Medicine mattered, but technology kept pulling me back.",
-    body:
-      "I studied biomedical engineering because I wanted the medical side and the technical side in the same room. I considered medicine, but the work I kept coming back to was sensors, hardware, mechanics, and systems.",
+    year: "2014 – 2015",
+    title: "Built a 3D printer",
+    bullets: [
+      "Built and tuned the printer hardware.",
+      "Optimized the system to reduce vibration and improve print resolution.",
+    ],
   },
   {
-    kicker: "Current thread",
-    title: "Now I build sensing systems that have to survive real use.",
-    body:
-      "My work connects wearable and implantable hardware, physiological data, validation, documentation, clinical/home workflows, and AI-enabled tools into systems people can actually use.",
+    year: "2015",
+    title: "3D LED matrix",
+    bullets: [
+      "Designed, built, and programmed a 5×5×5 LED cube display.",
+      "Used multiplexers and control logic to drive the display.",
+    ],
+  },
+  {
+    year: "2016",
+    title: "Bio-amplifier",
+    bullets: [
+      "Built and designed a bio-amplifier to measure surface ECG signals.",
+      "This was the bridge from electronics projects into biomedical sensing.",
+    ],
+  },
+  {
+    year: "College onward",
+    title: "Biomedical systems",
+    bullets: [
+      "Chose biomedical engineering because medicine and technology both mattered to me.",
+      "Medicine was the initial pull, but sensors, hardware, mechanics, and useful systems are where I do my best work.",
+    ],
   },
 ];
 ---
@@ -71,27 +72,22 @@ const originStory = [
   <section class="section origin-section">
     <div class="section-heading reveal">
       <p class="eyebrow">Through line</p>
-      <h2>From building odd machines to biomedical systems.</h2>
+      <h2>Projects became electronics, electronics became biomedical systems.</h2>
+      <p>
+        The through line is not a single job title. It is a habit of building,
+        testing, fixing, and connecting mechanical, electrical, software, and
+        biological systems.
+      </p>
     </div>
 
-    <div class="capability-grid">
-      {originStory.map((item, index) => (
-        <article class="capability-card reveal">
-          <span>{String(index + 1).padStart(2, "0")}</span>
-          <p class="feature-kicker">{item.kicker}</p>
+    <div class="origin-grid">
+      {originStory.map((item) => (
+        <article class="origin-card reveal">
+          <span>{item.year}</span>
           <h3>{item.title}</h3>
-          <p>{item.body}</p>
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <section class="section metrics-section">
-    <div class="metrics-grid">
-      {homepageMetrics.map((metric) => (
-        <article class="metric-tile reveal">
-          <h2>{metric.value}</h2>
-          <span>{metric.label}</span>
+          <ul>
+            {item.bullets.map((bullet) => <li>{bullet}</li>)}
+          </ul>
         </article>
       ))}
     </div>
