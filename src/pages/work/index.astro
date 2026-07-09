@@ -9,6 +9,13 @@ import "../../styles/global.css";
 
 const careerTimeline = [...workHistory].reverse();
 const roleId = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+const getYearRange = (dates: string) => {
+  const years = dates.match(/\d{4}/g) ?? [];
+  if (years.length === 0) return dates;
+  const first = years[0];
+  const last = years[years.length - 1];
+  return first === last ? first : `${first}–${last}`;
+};
 ---
 
 <BaseLayout
@@ -39,8 +46,9 @@ const roleId = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-"
             tabindex={index === careerTimeline.length - 1 ? "0" : "-1"}
             data-career-tab={roleId(role.title)}
           >
-            <span>{role.dates.split("–")[0].trim()}</span>
+            <span>{getYearRange(role.dates)}</span>
             <strong>{role.title}</strong>
+            <em>{role.company}</em>
           </button>
         ))}
       </div>
@@ -58,10 +66,21 @@ const roleId = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-"
             <p class="career-period">{role.company} · {role.dates}</p>
             <h2>{role.title}</h2>
             <p>{role.summary}</p>
-            <div class="tag-row">
-              {role.skills.slice(0, 5).map((skill) => <span class="tag">{skill}</span>)}
+
+            <div class="career-scan-grid">
+              <div>
+                <span>What to scan</span>
+                <strong>{role.context}</strong>
+              </div>
+              <div>
+                <span>Useful evidence</span>
+                <strong>{role.accomplishments[0]}</strong>
+              </div>
+              <div>
+                <span>Core range</span>
+                <strong>{role.skills.slice(0, 4).join(" · ")}</strong>
+              </div>
             </div>
-            <a class="text-link" href={`#role-${roleId(role.title)}`}>View role details ↓</a>
           </article>
         ))}
       </div>
@@ -71,48 +90,46 @@ const roleId = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-"
   <section class="section">
     <div class="section-heading reveal">
       <p class="eyebrow">Work history</p>
-      <h2>Roles, responsibilities, and outcomes.</h2>
+      <h2>Open a role only if you need more detail.</h2>
     </div>
 
     <div class="timeline-stack">
       {workHistory.map((role) => (
-        <article
+        <details
           id={`role-${roleId(role.title)}`}
-          class="timeline-card reveal"
+          class="timeline-card work-detail-card reveal"
           data-analytics-impression="work-role"
           data-analytics-id={`${role.company} | ${role.title}`}
           data-analytics-label={role.dates}
         >
-          <div class="timeline-top">
+          <summary class="work-detail-summary">
             <div>
               <h3>{role.title}</h3>
               <p class="muted">{role.company} · {role.dates}</p>
             </div>
-          </div>
-
-          <p>{role.context}</p>
-          <p>{role.summary}</p>
+            <span>View detail</span>
+          </summary>
 
           <div class="dual-list">
             <div>
-              <strong>Responsibilities</strong>
+              <strong>Scope</strong>
               <ul>
-                {role.responsibilities.map((item) => <li>{item}</li>)}
+                {role.responsibilities.slice(0, 3).map((item) => <li>{item}</li>)}
               </ul>
             </div>
 
             <div>
-              <strong>Accomplishments</strong>
+              <strong>Proof</strong>
               <ul>
-                {role.accomplishments.map((item) => <li>{item}</li>)}
+                {role.accomplishments.slice(0, 3).map((item) => <li>{item}</li>)}
               </ul>
             </div>
           </div>
 
           <div class="tag-row">
-            {role.skills.map((skill) => <span class="tag">{skill}</span>)}
+            {role.skills.slice(0, 6).map((skill) => <span class="tag">{skill}</span>)}
           </div>
-        </article>
+        </details>
       ))}
     </div>
   </section>
