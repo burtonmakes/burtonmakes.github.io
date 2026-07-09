@@ -119,5 +119,21 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
         </div>
       </div>
     </footer>
+
+    <style is:global>
+      :root {
+        --panel: rgba(6, 16, 28, 0.44);
+        --panel-strong: rgba(9, 22, 38, 0.56);
+        --panel-soft: rgba(255, 255, 255, 0.032);
+        --line: rgba(255, 255, 255, 0.13);
+        --line-soft: rgba(255, 255, 255, 0.07);
+      }
+
+      body::after {
+        background:
+          linear-gradient(180deg, rgba(1, 4, 9, 0.6), rgba(1, 4, 9, 0.5)),
+          radial-gradient(circle at 50% 32%, transparent 0 28%, rgba(1, 4, 9, 0.34) 68%);
+      }
+    </style>
   </body>
 </html>
