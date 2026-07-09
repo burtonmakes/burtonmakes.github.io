@@ -32,7 +32,7 @@ Avoid adding archive, private, notes, or research sections to the main nav until
 
 ## Current visual system
 
-The current site direction is the **darkest lab interface**.
+The current site direction is a **darker lab interface**.
 
 Use these values as the canonical color reference:
 
@@ -51,12 +51,15 @@ Use these values as the canonical color reference:
   --accent-2: #6fd3ff;
   --cta-1: #e2b869;
   --cta-2: #e86f4e;
+  --blue-glow: rgba(76, 141, 255, 0.27);
+  --coral-glow: rgba(232, 111, 78, 0.22);
 }
 ```
 
 Layout rules:
 
-- Page and hero backgrounds should use the same darkest background system.
+- Page and hero backgrounds should use the same darker color palette.
+- Do not dim the grid, network, particles, or mouse-follow effect to make the page darker.
 - Cards and panels should be 99.9% opaque, not glassy.
 - Grid wrappers should stay transparent; only individual cards should have card backgrounds.
 - Body copy should use `--muted-2` for readability.
