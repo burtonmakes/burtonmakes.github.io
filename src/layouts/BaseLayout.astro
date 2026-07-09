@@ -122,70 +122,42 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 
     <style is:global>
       :root {
-        --surface-window: rgba(6, 16, 28, 0.97);
-        --surface-window-strong: rgba(9, 22, 38, 0.97);
-        --surface-window-soft: rgba(255, 255, 255, 0.035);
+        --surface-window: rgba(6, 16, 28, 0.999);
+        --surface-window-strong: rgba(9, 22, 38, 0.999);
         --surface-window-line: rgba(255, 255, 255, 0.16);
         --surface-window-line-soft: rgba(255, 255, 255, 0.1);
         --panel: var(--surface-window);
         --panel-strong: var(--surface-window-strong);
-        --panel-soft: var(--surface-window-soft);
+        --panel-soft: var(--surface-window);
         --line: var(--surface-window-line);
         --line-soft: var(--surface-window-line-soft);
       }
 
       :is(
         .nav-shell,
-        .capability-card,
-        .metric-card,
-        .project-card,
-        .project-feature,
-        .project-detail,
-        .timeline-item,
-        .timeline-card,
-        .career-panel,
-        .career-stop,
-        .career-scan-item,
-        .branch-expansion,
-        .tag-panel,
-        .dog-card,
-        .hobby-mini-card,
-        .hobby-sticky-copy,
-        .hobby-section-box,
-        .contact-card,
-        .contact-method,
-        .contact-panel,
-        .resume-card,
-        .stat-card,
-        .feature-card,
-        .archive-card,
-        .info-card,
-        .card,
-        .panel
-      ) {
+        [class*="card"],
+        [class*="panel"],
+        [class*="window"],
+        [class*="shell"],
+        [class*="box"],
+        [class*="tile"],
+        [class*="item"]
+      ):not(.brand-mark):not(.pill):not(.tag):not(.button):not(.bar-fill) {
         border-color: var(--surface-window-line) !important;
-        background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-          var(--surface-window) !important;
+        background: var(--surface-window) !important;
       }
 
       :is(
-        .capability-card:hover,
-        .metric-card:hover,
-        .project-card:hover,
-        .career-stop:hover,
+        [class*="card"]:hover,
+        [class*="panel"]:hover,
+        [class*="window"]:hover,
+        [class*="box"]:hover,
+        [class*="tile"]:hover,
+        [class*="item"]:hover,
         .career-stop[aria-selected="true"],
-        .career-scan-item:hover,
-        .career-scan-item.is-active,
-        .hobby-mini-card:hover,
-        .contact-card:hover,
-        .contact-method:hover,
-        .card:hover,
-        .panel:hover
-      ) {
-        background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.014)),
-          var(--surface-window-strong) !important;
+        .career-scan-item.is-active
+      ):not(.brand-mark):not(.pill):not(.tag):not(.button):not(.bar-fill) {
+        background: var(--surface-window-strong) !important;
       }
 
       body::after {
