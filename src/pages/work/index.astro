@@ -63,22 +63,24 @@ const getYearRange = (dates: string) => {
             hidden={index !== careerTimeline.length - 1}
             data-career-panel={roleId(role.title)}
           >
-            <p class="career-period">{role.company} · {role.dates}</p>
-            <h2>{role.title}</h2>
-            <p>{role.summary}</p>
+            <div class="career-panel-card">
+              <p class="career-period">{role.company} · {role.dates}</p>
+              <h2>{role.title}</h2>
+              <p>{role.summary}</p>
 
-            <div class="career-scan-grid">
-              <div>
-                <span>Role focus</span>
-                <strong>{role.context}</strong>
-              </div>
-              <div>
-                <span>Achievement</span>
-                <strong>{role.accomplishments[0]}</strong>
-              </div>
-              <div>
-                <span>Technical range</span>
-                <strong>{role.skills.slice(0, 4).join(" · ")}</strong>
+              <div class="career-scan-grid">
+                <div>
+                  <span>Role focus</span>
+                  <strong>{role.context}</strong>
+                </div>
+                <div>
+                  <span>Achievement</span>
+                  <strong>{role.accomplishments[0]}</strong>
+                </div>
+                <div>
+                  <span>Technical range</span>
+                  <strong>{role.skills.slice(0, 4).join(" · ")}</strong>
+                </div>
               </div>
             </div>
 
@@ -92,33 +94,40 @@ const getYearRange = (dates: string) => {
               </summary>
 
               <div class="career-detail-tree-body">
-                <div class="work-tree-root">
-                  <span>Selected role</span>
-                  <strong>{role.title}</strong>
-                  <p>{role.company} · {role.dates}</p>
-                </div>
+                <div class="resume-detail-card">
+                  <header class="resume-detail-header">
+                    <span>Role details</span>
+                    <h3>{role.title}</h3>
+                    <p>{role.company} · {role.dates}</p>
+                  </header>
 
-                <div class="work-tree-branches">
-                  <section class="work-tree-node">
-                    <span>Scope</span>
-                    <ul>
-                      {role.responsibilities.map((item) => <li>{item}</li>)}
-                    </ul>
-                  </section>
+                  <div class="resume-detail-grid">
+                    <section class="resume-block resume-summary-block">
+                      <span>Summary</span>
+                      <p>{role.context}</p>
+                    </section>
 
-                  <section class="work-tree-node">
-                    <span>Achievements</span>
-                    <ul>
-                      {role.accomplishments.map((item) => <li>{item}</li>)}
-                    </ul>
-                  </section>
+                    <section class="resume-block">
+                      <span>Scope</span>
+                      <ul>
+                        {role.responsibilities.map((item) => <li>{item}</li>)}
+                      </ul>
+                    </section>
 
-                  <section class="work-tree-node">
-                    <span>Technical range</span>
-                    <div class="tag-row tree-tag-row">
-                      {role.skills.map((skill) => <span class="tag">{skill}</span>)}
-                    </div>
-                  </section>
+                    <section class="resume-block">
+                      <span>Achievements</span>
+                      <ul>
+                        {role.accomplishments.map((item) => <li>{item}</li>)}
+                      </ul>
+                    </section>
+
+                    <section class="resume-block">
+                      <span>Technical range</span>
+                      <div class="tag-row tree-tag-row">
+                        {role.skills.map((skill) => <span class="tag">{skill}</span>)}
+                      </div>
+                    </section>
+                  </div>
                 </div>
               </div>
             </details>
@@ -171,8 +180,88 @@ const getYearRange = (dates: string) => {
 </BaseLayout>
 
 <style>
+  .career-explorer {
+    --tree-line: #9fe7ff;
+    --tree-line-soft: rgba(159, 231, 255, 0.38);
+    --tree-line-faint: rgba(159, 231, 255, 0.16);
+    position: relative;
+    overflow: visible;
+  }
+
+  .career-explorer::before {
+    position: absolute;
+    left: var(--career-line-x, 50%);
+    top: var(--career-track-bottom, 112px);
+    z-index: 2;
+    width: 2px;
+    height: 34px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--tree-line), var(--tree-line-soft));
+    box-shadow: 0 0 18px rgba(159, 231, 255, 0.38);
+    content: "";
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .career-explorer::after {
+    position: absolute;
+    left: var(--career-line-x, 50%);
+    top: calc(var(--career-track-bottom, 112px) + 26px);
+    z-index: 1;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--tree-line);
+    border-radius: 999px;
+    background: #06101c;
+    box-shadow: 0 0 20px rgba(159, 231, 255, 0.42);
+    content: "";
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .career-panel {
+    position: relative;
+  }
+
+  .career-panel-card {
+    position: relative;
+    padding: 0;
+  }
+
+  .career-panel-card::before {
+    position: absolute;
+    left: var(--career-line-x, 50%);
+    top: -44px;
+    width: 1px;
+    height: 44px;
+    background: linear-gradient(180deg, transparent, var(--tree-line-soft));
+    content: "";
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
   .career-detail-tree {
-    margin-top: 18px;
+    position: relative;
+    margin-top: 28px;
+    padding-top: 28px;
+  }
+
+  .career-detail-tree::before {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    display: none;
+    width: 2px;
+    height: 34px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--tree-line-soft), var(--tree-line));
+    box-shadow: 0 0 18px rgba(159, 231, 255, 0.28);
+    content: "";
+    transform: translateX(-50%);
+  }
+
+  .career-detail-tree[open]::before {
+    display: block;
   }
 
   .career-detail-toggle {
@@ -219,100 +308,141 @@ const getYearRange = (dates: string) => {
 
   .career-detail-tree-body {
     position: relative;
-    margin-top: 18px;
-    padding: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    background:
-      linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
-      rgba(3, 8, 15, 0.36);
+    margin-top: 24px;
   }
 
-  .work-tree-root {
+  .career-detail-tree-body::before {
+    position: absolute;
+    left: 50%;
+    top: -24px;
+    width: 1px;
+    height: 24px;
+    background: var(--tree-line-soft);
+    content: "";
+    transform: translateX(-50%);
+  }
+
+  .resume-detail-card {
+    position: relative;
+    padding: 22px;
+    border: 1px solid rgba(159, 231, 255, 0.2);
+    border-radius: 13px;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(159, 231, 255, 0.1), transparent 28%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.048), rgba(255, 255, 255, 0.014)),
+      rgba(3, 8, 15, 0.38);
+    box-shadow:
+      inset 0 1px rgba(255, 255, 255, 0.05),
+      0 18px 44px rgba(0, 0, 0, 0.18);
+  }
+
+  .resume-detail-card::before {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 112px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--tree-line-soft), transparent);
+    content: "";
+    pointer-events: none;
+  }
+
+  .resume-detail-header {
     position: relative;
     display: grid;
-    gap: 5px;
-    padding: 18px 20px;
-    border: 1px solid color-mix(in srgb, var(--accent-2), transparent 65%);
+    gap: 4px;
+    padding: 18px 18px 22px;
+    border: 1px solid color-mix(in srgb, var(--tree-line), transparent 68%);
     border-radius: 10px;
     background: rgba(76, 141, 255, 0.08);
   }
 
-  .work-tree-root::after {
+  .resume-detail-header::after {
     position: absolute;
     left: 28px;
     top: 100%;
     width: 1px;
-    height: 18px;
-    background: color-mix(in srgb, var(--accent-2), transparent 54%);
+    height: 24px;
+    background: var(--tree-line-soft);
     content: "";
   }
 
-  .work-tree-root span,
-  .work-tree-node span {
+  .resume-detail-header span,
+  .resume-block span {
     display: block;
-    color: #9fe7ff;
+    color: var(--tree-line);
     font-size: 0.72rem;
     font-weight: 850;
     letter-spacing: 0.11em;
     text-transform: uppercase;
   }
 
-  .work-tree-root strong {
+  .resume-detail-header h3 {
+    margin: 0;
     color: var(--text);
-    font-size: 1.08rem;
-    line-height: 1.2;
+    font-size: clamp(1.12rem, 1.6vw, 1.55rem);
+    line-height: 1.14;
   }
 
-  .work-tree-root p {
+  .resume-detail-header p {
     margin: 0;
     color: var(--muted);
     font-size: 0.92rem;
   }
 
-  .work-tree-branches {
+  .resume-detail-grid {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr) minmax(0, 1.1fr);
     gap: 14px;
-    margin-top: 18px;
+    margin-top: 24px;
     padding-top: 18px;
   }
 
-  .work-tree-branches::before {
+  .resume-detail-grid::before {
     position: absolute;
     left: 28px;
     right: 28px;
     top: 0;
     height: 1px;
-    background: color-mix(in srgb, var(--accent-2), transparent 72%);
+    background: var(--tree-line-soft);
     content: "";
   }
 
-  .work-tree-node {
+  .resume-block {
     position: relative;
     min-height: 100%;
     padding: 18px;
     border: 1px solid rgba(255, 255, 255, 0.095);
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.025);
+    background: rgba(255, 255, 255, 0.024);
   }
 
-  .work-tree-node::before {
+  .resume-block::before {
     position: absolute;
     left: 28px;
     bottom: 100%;
     width: 1px;
     height: 18px;
-    background: color-mix(in srgb, var(--accent-2), transparent 65%);
+    background: var(--tree-line-soft);
     content: "";
   }
 
-  .work-tree-node ul {
+  .resume-summary-block {
+    grid-column: span 3;
+  }
+
+  .resume-block p {
+    margin: 12px 0 0;
+    color: #d6e4f3;
+    line-height: 1.55;
+  }
+
+  .resume-block ul {
     margin-top: 12px;
   }
 
-  .work-tree-node li {
+  .resume-block li {
     color: #d6e4f3;
     font-size: 0.95rem;
     line-height: 1.5;
@@ -322,14 +452,29 @@ const getYearRange = (dates: string) => {
     margin-top: 14px;
   }
 
-  @media (max-width: 980px) {
-    .work-tree-branches {
+  @media (max-width: 1100px) {
+    .resume-detail-grid {
       grid-template-columns: 1fr;
     }
 
-    .work-tree-branches::before,
-    .work-tree-node::before,
-    .work-tree-root::after {
+    .resume-summary-block {
+      grid-column: auto;
+    }
+
+    .resume-detail-card::before,
+    .resume-detail-header::after,
+    .resume-detail-grid::before,
+    .resume-block::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .career-explorer::before,
+    .career-explorer::after,
+    .career-panel-card::before,
+    .career-detail-tree::before,
+    .career-detail-tree-body::before {
       display: none;
     }
   }
@@ -343,7 +488,7 @@ const getYearRange = (dates: string) => {
       width: 100%;
     }
 
-    .career-detail-tree-body {
+    .resume-detail-card {
       padding: 16px;
     }
   }
@@ -358,6 +503,19 @@ const getYearRange = (dates: string) => {
       const tabs = [...explorer.querySelectorAll<HTMLButtonElement>("[data-career-tab]")];
       const panels = [...explorer.querySelectorAll<HTMLElement>("[data-career-panel]")];
       const detailTrees = [...explorer.querySelectorAll<HTMLDetailsElement>("[data-career-tree]")];
+      const track = explorer.querySelector<HTMLElement>(".career-track");
+
+      const syncConnector = (tab: HTMLButtonElement) => {
+        const explorerRect = explorer.getBoundingClientRect();
+        const tabRect = tab.getBoundingClientRect();
+        const trackRect = track?.getBoundingClientRect();
+        explorer.style.setProperty("--career-line-x", `${tabRect.left + tabRect.width / 2 - explorerRect.left}px`);
+        if (trackRect) {
+          explorer.style.setProperty("--career-track-bottom", `${trackRect.bottom - explorerRect.top}px`);
+        }
+      };
+
+      const getActiveTab = () => tabs.find((item) => item.getAttribute("aria-selected") === "true") ?? tabs[0];
 
       const closeHiddenTrees = (activePanel: HTMLElement) => {
         detailTrees.forEach((tree) => {
@@ -377,6 +535,7 @@ const getYearRange = (dates: string) => {
           panel.hidden = !selected;
           if (selected) closeHiddenTrees(panel);
         });
+        syncConnector(tab);
       };
 
       detailTrees.forEach((tree) => {
@@ -399,6 +558,10 @@ const getYearRange = (dates: string) => {
           next.focus();
         });
       });
+
+      track?.addEventListener("scroll", () => syncConnector(getActiveTab()), { passive: true });
+      window.addEventListener("resize", () => syncConnector(getActiveTab()), { passive: true });
+      requestAnimationFrame(() => syncConnector(getActiveTab()));
     });
   };
 
