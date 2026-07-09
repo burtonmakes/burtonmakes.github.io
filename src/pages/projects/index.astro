@@ -162,7 +162,7 @@ const getProjectProof = (slug: string) =>
       filters.forEach((filter) => {
         filter.addEventListener("click", () => selectDomain(filter.dataset.projectDomain || "all"));
         filter.addEventListener("mouseenter", () => selectDomain(filter.dataset.projectDomain || "all"));
-        filter.addEventListener("focus", () => selectDomain(filter.datasetProjectDomain || "all"));
+        filter.addEventListener("focus", () => selectDomain(filter.dataset.projectDomain || "all"));
       });
     });
   };
