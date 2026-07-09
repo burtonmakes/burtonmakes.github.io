@@ -5,7 +5,7 @@ Canonical direction: **darker lab interface + electric blue system identity + si
 This file is the detailed reference for the current portfolio styling. The current direction darkens the color palette while preserving the background effects:
 
 ```text
-Nearly black site colors
+Darker page and glow colors
 Original grid / network / particle / mouse-follower visibility
 99.9% opaque card and panel surfaces
 No large grid backplates behind groups of cards
@@ -21,11 +21,11 @@ Geist typography
 :root {
   /* Page foundation */
   --bg: #000000;
-  --bg-2: #020304;
+  --bg-2: #010102;
 
   /* Cards, panels, windows */
-  --surface-window: rgba(3, 8, 15, 0.999);
-  --surface-window-strong: rgba(5, 12, 20, 0.999);
+  --surface-window: rgba(1, 5, 10, 0.999);
+  --surface-window-strong: rgba(3, 9, 16, 0.999);
   --panel: var(--surface-window);
   --panel-strong: var(--surface-window-strong);
   --panel-soft: var(--surface-window);
@@ -59,11 +59,11 @@ Geist typography
   --graph-teal: #3dd6c8;
   --graph-teal-light: #6fe5dd;
 
-  /* Glows keep original visibility */
-  --blue-glow: rgba(76, 141, 255, 0.27);
-  --cyan-glow: rgba(111, 211, 255, 0.20);
-  --coral-glow: rgba(232, 111, 78, 0.22);
-  --teal-glow: rgba(61, 214, 200, 0.24);
+  /* Darker background glow colors, same effect visibility */
+  --blue-glow: rgba(32, 64, 120, 0.27);
+  --cyan-glow: rgba(38, 85, 112, 0.22);
+  --coral-glow: rgba(92, 40, 28, 0.22);
+  --teal-glow: rgba(30, 105, 98, 0.24);
 
   /* Status */
   --danger: #ff7f8e;
@@ -90,31 +90,31 @@ Use it for:
 
 Why: this makes the palette darker without hiding the grid, network, particle field, or mouse-follow effect.
 
-### `--bg-2: #020304`
+### `--bg-2: #010102`
 
 Secondary background depth.
 
-Use it inside background gradients to keep the site from becoming visually flat while still reading as almost black.
+Use it inside background gradients to keep the site from becoming visually flat while still reading as black.
 
 Recommended page background:
 
 ```css
 body {
   background:
-    radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
-    radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
-    radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
+    radial-gradient(circle at 18% 12%, rgba(32, 64, 120, 0.27), transparent 28%),
+    radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
+    radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
     linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 }
 ```
 
-Do not lower the opacity of `body::before`, `.mesh-canvas`, `.particle-canvas`, `.spotlight`, or `body::after` to make the palette darker. Change the base colors instead.
+Do not lower the opacity of `body::before`, `.mesh-canvas`, `.particle-canvas`, `.spotlight`, or `body::after` to make the palette darker. Change colors instead.
 
 ---
 
 ## Surfaces
 
-### `--surface-window: rgba(3, 8, 15, 0.999)`
+### `--surface-window: rgba(1, 5, 10, 0.999)`
 
 Default card / panel / window surface.
 
@@ -130,9 +130,7 @@ Use it for:
 - hobby cards
 - work detail panels
 
-Why: the surface should be almost solid so text is easy to read.
-
-### `--surface-window-strong: rgba(5, 12, 20, 0.999)`
+### `--surface-window-strong: rgba(3, 9, 16, 0.999)`
 
 Hover, selected, or emphasized surface.
 
@@ -196,41 +194,15 @@ Why: a grid background creates a large dark backplate behind individual cards. T
 
 ### `--text: #f6faff`
 
-Use for:
-
-- hero headlines
-- section headings
-- card titles
-- metric values
-- primary labels
+Use for hero headlines, section headings, card titles, metric values, and primary labels.
 
 ### `--muted-2: #e6eef8`
 
-Use for body copy.
-
-This is brighter than the older body text and reads better on nearly black surfaces without becoming pure white.
-
-Use for:
-
-- card descriptions
-- hero subtitles
-- explanatory copy
-- project summaries
-- work details
+Use for body copy. This is brighter than the older body text and reads better on nearly black surfaces without becoming pure white.
 
 ### `--muted: #a9bcd7`
 
-Use for lower-emphasis text.
-
-Use for:
-
-- labels
-- metadata
-- captions
-- inactive nav text
-- small helper text
-
-Do not use muted text for long body copy.
+Use for labels, metadata, captions, inactive nav text, and small helper text. Do not use muted text for long body copy.
 
 ---
 
@@ -252,53 +224,17 @@ Use for technical hover/focus states and selected card borders.
 
 ## Accent colors
 
-### `--accent: #4c8dff`
+Use `--accent` for active system states, links, focus outlines, technical lines, and main data series.
 
-Primary system blue.
+Use `--accent-2` for eyebrows, number labels, secondary data series, and technical highlights.
 
-Use for:
-
-- active system states
-- links
-- focus outlines
-- technical lines
-- main data series
-
-### `--accent-2: #6fd3ff`
-
-Light cyan-blue highlight.
-
-Use for:
-
-- eyebrows
-- number labels
-- secondary data series
-- technical highlights
-
-### `--cta-1: #e2b869` and `--cta-2: #e86f4e`
-
-Use for the primary CTA gradient and important highlighted data.
-
-Do not use warm gradients for large backgrounds.
+Use `--cta-1` and `--cta-2` for primary CTA gradients and important highlighted data. Do not use warm gradients for large backgrounds.
 
 ---
 
 ## Optional data teal
 
 `--data-teal` and `--data-teal-2` are allowed only for chart/dashboard data signals, not for the whole site theme.
-
-Use teal for:
-
-- one dashboard series
-- one integration metric
-- one technical signal category
-
-Do not use teal for:
-
-- page backgrounds
-- card backgrounds
-- primary buttons
-- body text
 
 ---
 
@@ -308,9 +244,9 @@ Every hero page should use the same background system as the rest of the site:
 
 ```css
 background:
-  radial-gradient(circle at 18% 12%, var(--blue-glow), transparent 28%),
-  radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--accent-2), transparent 78%), transparent 30%),
-  radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--cta-2), transparent 88%), transparent 24%),
+  radial-gradient(circle at 18% 12%, rgba(32, 64, 120, 0.27), transparent 28%),
+  radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
+  radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
   linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 ```
 
