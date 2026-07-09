@@ -108,7 +108,7 @@ export const workHistory = [
   {
     title: "Research Technician",
     company: "EUNIL / University of Arizona",
-    dates: "Jan 2016 – Dec 2019",
+    dates: "Jan 2016 – Oct 2019",
     context:
       "Research role centered on non-invasive neural recording, ultrasound-modulated current-density detection, amplifier optimization, EMI control, and DSP methods.",
     summary:
