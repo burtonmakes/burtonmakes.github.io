@@ -1,0 +1,129 @@
+.contact-hero {
+  grid-template-columns: minmax(0, 0.98fr) minmax(340px, 0.58fr);
+  gap: clamp(2.25rem, 5vw, 5.5rem);
+}
+
+.contact-hero .hero-copy {
+  max-width: 760px;
+}
+
+.contact-hero h1 {
+  max-width: 15ch;
+  font-size: clamp(2.6rem, 4.2vw, 4.55rem);
+}
+
+.contact-hero .hero-text {
+  max-width: 680px;
+  margin-bottom: 28px;
+}
+
+.contact-hero .hero-actions {
+  gap: 10px;
+}
+
+.contact-hero .button {
+  min-height: 48px;
+  padding-inline: 22px;
+}
+
+.contact-card {
+  position: relative;
+  justify-self: end;
+  width: min(100%, 540px);
+  overflow: hidden;
+  padding: clamp(22px, 2.4vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(111, 211, 255, 0.08), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    rgba(6, 16, 28, 0.36);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.05),
+    0 20px 54px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+
+.contact-card::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cta-1), var(--cta-2));
+  content: "";
+}
+
+.contact-card .contact-form {
+  gap: 16px;
+}
+
+.contact-card .contact-form-heading {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 2px;
+}
+
+.contact-card .contact-form-heading strong {
+  color: var(--text);
+  font-size: clamp(1.25rem, 1.5vw, 1.55rem);
+  line-height: 1.18;
+}
+
+.contact-card .contact-form-heading span {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.contact-card .contact-field-grid {
+  gap: 12px;
+}
+
+.contact-card .contact-form label {
+  gap: 7px;
+}
+
+.contact-card .contact-form input {
+  min-height: 44px;
+}
+
+.contact-card .contact-form textarea {
+  min-height: 124px;
+}
+
+.contact-card .contact-form-footer {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.contact-card .contact-form-footer .button {
+  min-height: 48px;
+}
+
+@media (max-width: 1200px) {
+  .contact-hero {
+    grid-template-columns: minmax(0, 0.98fr) minmax(320px, 0.72fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .contact-card {
+    justify-self: stretch;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-card {
+    padding: 20px;
+  }
+
+  .contact-hero .button {
+    width: 100%;
+  }
+}
