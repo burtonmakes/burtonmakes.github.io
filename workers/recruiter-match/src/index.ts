@@ -1,6 +1,12 @@
 type Env = {
   AI: Ai;
+  RATE_LIMITER?: {
+    idFromName: (name: string) => unknown;
+    get: (id: unknown) => { fetch: (request: Request) => Promise<Response> };
+  };
   ALLOWED_ORIGINS?: string;
+  PER_CLIENT_DAILY_LIMIT?: string;
+  GLOBAL_DAILY_LIMIT?: string;
 };
 
 type Ai = {
@@ -51,6 +57,8 @@ type ModelResult = {
 const MODEL = "@cf/qwen/qwen3-30b-a3b-fp8";
 const MAX_JOB_TEXT_LENGTH = 20_000;
 const MAX_PORTFOLIO_ITEMS = 60;
+const DEFAULT_PER_CLIENT_DAILY_LIMIT = 10;
+const DEFAULT_GLOBAL_DAILY_LIMIT = 75;
 
 const classificationValue: Record<string, number> = {
   direct: 1,
@@ -158,6 +166,54 @@ const normalizeImportance = (value: unknown) => {
 };
 
 const clamp01 = (value: unknown) => Math.max(0, Math.min(1, Number(value) || 0));
+
+const getDailyKey = () => new Date().toISOString().slice(0, 10);
+
+const getLimit = (value: string | undefined, fallback: number) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
+};
+
+const hashValue = async (value: string) => {
+  const data = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+};
+
+const getClientIdentifier = async (request: Request) => {
+  const forwarded = request.headers.get("cf-connecting-ip")
+    || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || "unknown-client";
+  return hashValue(forwarded);
+};
+
+const checkRateLimit = async (request: Request, env: Env) => {
+  if (!env.RATE_LIMITER) return null;
+
+  const day = getDailyKey();
+  const id = env.RATE_LIMITER.idFromName(day);
+  const limiter = env.RATE_LIMITER.get(id);
+  const response = await limiter.fetch(new Request("https://rate-limiter/check", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      day,
+      clientId: await getClientIdentifier(request),
+      perClientDailyLimit: getLimit(env.PER_CLIENT_DAILY_LIMIT, DEFAULT_PER_CLIENT_DAILY_LIMIT),
+      globalDailyLimit: getLimit(env.GLOBAL_DAILY_LIMIT, DEFAULT_GLOBAL_DAILY_LIMIT),
+    }),
+  }));
+
+  return response.json() as Promise<{
+    allowed: boolean;
+    reason?: "client" | "global";
+    perClientRemaining: number;
+    globalRemaining: number;
+    retryAfterSeconds: number;
+  }>;
+};
 
 const scoreMath = (requirements: ExtractedRequirement[], matches: MatchResult[], gaps: GapResult[]) => {
   const matchByRequirement = new Map(matches.map((match) => [cleanText(match.requirement).toLowerCase(), match]));
@@ -275,6 +331,80 @@ Classification rules:
 - gap: no credible supplied evidence. Put these in gaps, not matches.
 Never invent projects, companies, skills, or evidence IDs. Use only evidenceIds present in the portfolio index.`;
 
+export class RateLimiter {
+  state: {
+    storage: {
+      get: <T>(key: string) => Promise<T | undefined>;
+      put: (key: string, value: unknown) => Promise<void>;
+    };
+  };
+
+  constructor(state: RateLimiter["state"]) {
+    this.state = state;
+  }
+
+  async fetch(request: Request) {
+    if (request.method !== "POST") {
+      return new Response(JSON.stringify({ allowed: false, reason: "method" }), {
+        status: 405,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    const body = await request.json() as {
+      day?: string;
+      clientId?: string;
+      perClientDailyLimit?: number;
+      globalDailyLimit?: number;
+    };
+
+    const day = cleanText(body.day || getDailyKey());
+    const clientId = cleanText(body.clientId || "unknown-client");
+    const perClientDailyLimit = getLimit(String(body.perClientDailyLimit || ""), DEFAULT_PER_CLIENT_DAILY_LIMIT);
+    const globalDailyLimit = getLimit(String(body.globalDailyLimit || ""), DEFAULT_GLOBAL_DAILY_LIMIT);
+    const dayPrefix = `day:${day}`;
+    const globalKey = `${dayPrefix}:global`;
+    const clientKey = `${dayPrefix}:client:${clientId}`;
+    const globalCount = (await this.state.storage.get<number>(globalKey)) || 0;
+    const clientCount = (await this.state.storage.get<number>(clientKey)) || 0;
+    const retryAfterSeconds = Math.max(1, Math.ceil((Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate() + 1,
+    ) - Date.now()) / 1000));
+
+    if (globalCount >= globalDailyLimit) {
+      return new Response(JSON.stringify({
+        allowed: false,
+        reason: "global",
+        perClientRemaining: Math.max(0, perClientDailyLimit - clientCount),
+        globalRemaining: 0,
+        retryAfterSeconds,
+      }), { headers: { "content-type": "application/json" } });
+    }
+
+    if (clientCount >= perClientDailyLimit) {
+      return new Response(JSON.stringify({
+        allowed: false,
+        reason: "client",
+        perClientRemaining: 0,
+        globalRemaining: Math.max(0, globalDailyLimit - globalCount),
+        retryAfterSeconds,
+      }), { headers: { "content-type": "application/json" } });
+    }
+
+    await this.state.storage.put(globalKey, globalCount + 1);
+    await this.state.storage.put(clientKey, clientCount + 1);
+
+    return new Response(JSON.stringify({
+      allowed: true,
+      perClientRemaining: Math.max(0, perClientDailyLimit - clientCount - 1),
+      globalRemaining: Math.max(0, globalDailyLimit - globalCount - 1),
+      retryAfterSeconds,
+    }), { headers: { "content-type": "application/json" } });
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env) {
     if (request.method === "OPTIONS") {
@@ -312,6 +442,25 @@ export default {
     }
 
     try {
+      const rateLimit = await checkRateLimit(request, env);
+      if (rateLimit && !rateLimit.allowed) {
+        const message = rateLimit.reason === "global"
+          ? "Daily AI Compare limit reached for the site. Please use Fuzzy Compare or reach out through Contact."
+          : "Daily AI Compare limit reached for this connection. Please use Fuzzy Compare or reach out through Contact.";
+        return jsonResponse(
+          request,
+          env,
+          {
+            error: message,
+            code: rateLimit.reason === "global" ? "global_daily_limit" : "client_daily_limit",
+            retryAfterSeconds: rateLimit.retryAfterSeconds,
+            perClientRemaining: rateLimit.perClientRemaining,
+            globalRemaining: rateLimit.globalRemaining,
+          },
+          429,
+        );
+      }
+
       const aiResponse = await env.AI.run(MODEL, {
         messages: [
           { role: "system", content: systemPrompt },
@@ -331,7 +480,13 @@ export default {
 
       const parsed = parseJsonFromModel(extractModelText(aiResponse));
       const portfolioIds = new Set(portfolio.map((item) => item.id));
-      return jsonResponse(request, env, normalizeResult(parsed, portfolioIds));
+      return jsonResponse(request, env, {
+        ...normalizeResult(parsed, portfolioIds),
+        rateLimit: rateLimit ? {
+          perClientRemaining: rateLimit.perClientRemaining,
+          globalRemaining: rateLimit.globalRemaining,
+        } : null,
+      });
     } catch (error) {
       return jsonResponse(
         request,

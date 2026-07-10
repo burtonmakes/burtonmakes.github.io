@@ -14,6 +14,24 @@ Cloudflare Worker API for the recruiter skill matcher. The Worker uses Workers A
 - It does not have private resume data unless that data is already in the site bundle.
 - It should not invent projects, companies, or evidence.
 
+## Anti-abuse limits
+
+The site uses two layers of AI Compare limits:
+
+- browser-local limit: the recruiter page tracks 10 AI submissions in `localStorage`
+- Worker-side limit: Cloudflare Durable Objects track daily counts before any model call runs
+
+Worker defaults are configured in `wrangler.toml`:
+
+```toml
+PER_CLIENT_DAILY_LIMIT = "10"
+GLOBAL_DAILY_LIMIT = "75"
+```
+
+The Worker hashes the connecting IP before counting it for the daily per-client limit. It does not expose the raw IP in the response. These limits reset by UTC day.
+
+If the Worker-side limit is reached, the API returns `429` and the site falls back to Fuzzy Compare.
+
 ## Scoring formula
 
 The Worker applies fixed weights:

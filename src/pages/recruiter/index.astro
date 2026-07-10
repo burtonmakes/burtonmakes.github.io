@@ -115,27 +115,36 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           <span class="match-character-limit" data-character-limit>0 / 20,000 characters</span>
         </label>
 
-        <div class="recruiter-context-panel" aria-label="Optional recruiter context">
+        <div class="recruiter-context-panel" aria-label="Recruiter context">
           <label for="recruiter-name">
             <span>Your name</span>
-            <input id="recruiter-name" data-recruiter-name type="text" autocomplete="name" placeholder="Optional" />
+            <input id="recruiter-name" data-recruiter-name type="text" autocomplete="name" placeholder="Recommended" />
           </label>
           <label for="recruiter-company">
             <span>Company</span>
-            <input id="recruiter-company" data-recruiter-company type="text" autocomplete="organization" placeholder="Optional" />
+            <input id="recruiter-company" data-recruiter-company type="text" autocomplete="organization" placeholder="Recommended" />
           </label>
           <label for="recruiter-role-target">
             <span>Hiring for</span>
             <input id="recruiter-role-target" data-recruiter-role-target type="text" placeholder="Sensor hardware engineer" />
           </label>
+          <div class="recruiter-context-note">
+            <p>
+              Optional context improves matching. Leave blank if you prefer; accuracy may be lower without company and role intent.
+            </p>
+            <button type="button" data-skip-context>Mark skipped</button>
+          </div>
         </div>
 
         <div class="match-actions">
-          <button class="button button-primary" type="button" data-ai-run>LLM analysis</button>
-          <button class="button button-secondary" type="button" data-extract-run>Fuzzy keyword scan</button>
+          <button class="button button-primary" type="button" data-ai-run>AI Compare</button>
+          <button class="button button-secondary" type="button" data-extract-run>Fuzzy Compare</button>
         </div>
         <p class="match-status" data-match-status>
           AI matching needs a Cloudflare Worker URL. Local fallback is available.
+        </p>
+        <p class="match-disclaimer">
+          Cloudflare Workers AI processes the pasted text; this site does not train models with it or store submissions on a server. Treat the AI comparison as a screening aid, not a final decision.
         </p>
 
         <section class="detected-skill-panel">
@@ -170,14 +179,17 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
               <div>
                 <small>Technical match</small>
                 <b>0%</b>
+                <i style="width:0%"></i>
               </div>
               <div>
                 <small>Execution readiness</small>
                 <b>0%</b>
+                <i style="width:0%"></i>
               </div>
               <div>
                 <small>Evidence strength</small>
                 <b>0%</b>
+                <i style="width:0%"></i>
               </div>
             </div>
           </div>
@@ -194,17 +206,14 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           <section class="match-list-card">
             <div class="match-list-heading">
               <h2>What matches well</h2>
-              <button type="button" data-match-toggle aria-expanded="true">Hide</button>
             </div>
-            <div data-match-details>
-              <ul data-match-list>
-                <li>Waiting for keywords.</li>
-              </ul>
-            </div>
+            <ul data-match-list>
+              <li>Waiting for keywords.</li>
+            </ul>
           </section>
 
           <section class="match-list-card">
-            <h2>Needs confirmation</h2>
+            <h2>Review manually</h2>
             <ul data-gap-list>
               <li>Nothing checked yet.</li>
             </ul>
@@ -328,6 +337,49 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     gap: 8px;
   }
 
+  .recruiter-context-note {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .recruiter-context-note p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
+  .recruiter-context-note button {
+    flex: 0 0 auto;
+    min-height: 28px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.018);
+    color: var(--accent-2);
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .recruiter-context-note button[data-skipped="true"] {
+    border-color: rgba(232, 111, 78, 0.42);
+    color: #ffb39f;
+  }
+
+  .recruiter-context-panel p {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
   .recruiter-context-panel label {
     gap: 6px;
   }
@@ -377,6 +429,13 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .match-status[data-state="ready"] {
     color: var(--accent-2);
+  }
+
+  .match-disclaimer {
+    margin: -4px 0 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
   }
 
   .detected-skill-panel {
@@ -638,14 +697,17 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .match-metric-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    gap: 9px;
     margin-top: 14px;
   }
 
   .match-metric-grid div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
     min-width: 0;
-    padding: 9px;
+    padding: 8px 9px;
     border: 1px solid var(--line);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.018);
@@ -663,10 +725,17 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .match-metric-grid b {
     display: block;
-    margin-top: 5px;
     color: var(--text);
-    font-size: 1.18rem;
+    font-size: 0.92rem;
     line-height: 1;
+  }
+
+  .match-metric-grid i {
+    grid-column: 1 / -1;
+    display: block;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
   }
 
   .match-breakdown-grid {
@@ -688,24 +757,9 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   .match-list-heading {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 12px;
     margin-bottom: 14px;
-  }
-
-  .match-list-heading button {
-    flex: 0 0 auto;
-    min-height: 30px;
-    padding: 0 11px;
-    border: 1px solid rgba(232, 111, 78, 0.42);
-    border-radius: 8px;
-    background: rgba(232, 111, 78, 0.1);
-    color: #ffb39f;
-    font-size: 0.74rem;
-    font-weight: 850;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    cursor: pointer;
   }
 
   .match-list-card ul {
@@ -1404,6 +1458,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       const recruiterNameInput = matcher.querySelector("[data-recruiter-name]");
       const recruiterCompanyInput = matcher.querySelector("[data-recruiter-company]");
       const recruiterRoleTargetInput = matcher.querySelector("[data-recruiter-role-target]");
+      const skipContextButton = matcher.querySelector("[data-skip-context]");
       const aiButton = matcher.querySelector("[data-ai-run]");
       const extractButton = matcher.querySelector("[data-extract-run]");
       const clearButton = matcher.querySelector("[data-match-clear]");
@@ -1419,13 +1474,12 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       const roleProfileSummaryElement = matcher.querySelector("[data-role-profile-summary]");
       const roleCategoriesElement = matcher.querySelector("[data-role-categories]");
       const matchList = matcher.querySelector("[data-match-list]");
-      const matchToggleButton = matcher.querySelector("[data-match-toggle]");
-      const matchDetailsElement = matcher.querySelector("[data-match-details]");
       const gapList = matcher.querySelector("[data-gap-list]");
       const evidenceList = document.querySelector("[data-evidence-list]");
       let detectedSkills = [];
       let lastRenderedResult = null;
       let restoringSavedSession = false;
+      let skippedRecruiterContext = false;
 
       const readJson = (key, fallback) => {
         try {
@@ -1465,6 +1519,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
             name: recruiterNameInput.value,
             company: recruiterCompanyInput.value,
             hiringFor: recruiterRoleTargetInput.value,
+            skipped: skippedRecruiterContext,
           },
           detectedSkills,
           lastRenderedResult,
@@ -1475,7 +1530,28 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         name: recruiterNameInput.value.trim(),
         company: recruiterCompanyInput.value.trim(),
         hiringFor: recruiterRoleTargetInput.value.trim(),
+        skipped: skippedRecruiterContext,
       });
+
+      const validateRecruiterContext = () => {
+        const context = getRecruiterContext();
+        if (!context.name || !context.company || !context.hiringFor || skippedRecruiterContext) {
+          setStatus("Running with limited recruiter context. Accuracy may be lower without company and role intent.", "error");
+        }
+        return true;
+      };
+
+      const setSkippedRecruiterContext = (value) => {
+        skippedRecruiterContext = value;
+        skipContextButton.dataset.skipped = String(value);
+        skipContextButton.textContent = value ? "Context skipped" : "Mark skipped";
+        saveSession();
+        if (value) {
+          setStatus("Context skipped. Compare will run, but accuracy may be lower without company and role intent.", "error");
+        } else {
+          setStatus(getReadyStatus());
+        }
+      };
 
       const setStatus = (message, state = "") => {
         statusElement.textContent = message;
@@ -1490,18 +1566,17 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
       const updateSubmissionState = () => {
         const remaining = getRemainingSubmissions();
-        aiButton.disabled = remaining <= 0;
         aiButton.title = remaining > 0
           ? `${remaining} LLM submission${remaining === 1 ? "" : "s"} left in this browser.`
-          : "LLM submission limit reached in this browser.";
+          : "AI Compare limit reached. Fuzzy Compare will still run.";
         return remaining;
       };
 
       const getReadyStatus = () => {
         const remaining = updateSubmissionState();
-        if (!aiMatchEndpoint) return "AI matching needs a Cloudflare Worker URL. Fuzzy keyword scan is available.";
-        if (remaining <= 0) return "LLM submission limit reached for this browser. Fuzzy keyword scan is still available.";
-        return `Ready for LLM analysis. ${remaining} of ${maxLlmSubmissions} submissions left in this browser.`;
+        if (!aiMatchEndpoint) return "AI Compare needs a Cloudflare Worker URL. Fuzzy Compare is available.";
+        if (remaining <= 0) return "AI Compare limit reached. Fuzzy Compare is available.";
+        return `Ready. ${remaining} AI submissions left.`;
       };
 
       const renderMetrics = (metrics) => {
@@ -1515,9 +1590,12 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           const tile = document.createElement("div");
           const small = document.createElement("small");
           const number = document.createElement("b");
+          const bar = document.createElement("i");
+          const percent = Math.max(0, Math.min(100, Math.round(value || 0)));
           small.textContent = label;
-          number.textContent = `${Math.max(0, Math.min(100, Math.round(value || 0)))}%`;
-          tile.append(small, number);
+          number.textContent = `${percent}%`;
+          bar.style.width = `${percent}%`;
+          tile.append(small, number, bar);
           metricGridElement.append(tile);
         });
       };
@@ -1678,8 +1756,8 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         );
         renderList(
           gapList,
-          gaps.map((item) => item.keyword),
-          "Nothing needs confirmation from the entered list.",
+          gaps.map((item) => `I would not pull a firm match on ${item.keyword} from the mapped evidence alone. Review the projects below or reach out for details.`),
+          "Nothing needs manual review from the entered list.",
         );
         renderEvidence(evidenceList, allMatches);
         lastRenderedResult = { type: "fuzzy" };
@@ -1721,8 +1799,8 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         );
         renderList(
           gapList,
-          gaps.map((item) => item.reason ? `${item.requirement}: ${item.reason}` : item.requirement),
-          "Nothing needs confirmation.",
+          gaps.map((item) => `I would not pull a firm match on ${item.requirement} from the mapped evidence alone. ${item.reason || "Review the projects below or reach out for details."}`),
+          "Nothing needs manual review.",
         );
         renderAiEvidence(evidenceList, matches);
         lastRenderedResult = { type: "llm", result };
@@ -1731,28 +1809,31 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
       const runAiMatch = async () => {
         const jobText = input.value.trim();
+        if (!validateRecruiterContext()) return;
         updateCharacterLimit();
         if (jobText.length < 20 && detectedSkills.length === 0) {
-          setStatus("Paste a role description or add skills before running AI matching.", "error");
+          setStatus("Paste a role description or add skills before running AI Compare.", "error");
           input.focus();
           return;
         }
 
         if (input.value.length > maxJobTextCharacters) {
-          setStatus("The pasted role is over the character limit. Trim it before running LLM analysis.", "error");
+          setStatus("The pasted role is over the character limit. Trim it before running AI Compare.", "error");
           input.focus();
           return;
         }
 
         if (!aiMatchEndpoint) {
-          setStatus("No Cloudflare Worker URL is configured yet. Running the local fallback instead.", "error");
+          setStatus("No Cloudflare Worker URL is configured yet. Running Fuzzy Compare instead.", "error");
           extractAndMatch();
           return;
         }
 
         const remaining = updateSubmissionState();
         if (remaining <= 0) {
-          setStatus("LLM submission limit reached for this browser. Use Fuzzy keyword scan or clear this browser's site data.", "error");
+          window.alert("It looks like you may be comparing multiple roles. The AI Compare limit was reached for this browser. Please reach out through Contact and I will be happy to talk directly or provide more detail. Fuzzy Compare will run now.");
+          setStatus("AI Compare limit reached. Running Fuzzy Compare instead.", "error");
+          extractAndMatch();
           return;
         }
 
@@ -1762,7 +1843,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
         aiButton.disabled = true;
         extractButton.disabled = true;
-        setStatus(`Analyzing requirements with Cloudflare Workers AI... ${Math.max(0, maxLlmSubmissions - nextSubmissionCount)} submissions left after this.`, "ready");
+        setStatus("Generating skills and comparing experience...", "ready");
 
         try {
           const response = await fetch(aiMatchEndpoint, {
@@ -1780,13 +1861,19 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
           const result = await response.json().catch(() => null);
           if (!response.ok) {
+            if (response.status === 429 && /daily_limit/.test(result?.code || "")) {
+              window.alert("The daily AI Compare limit has been reached. Please use Fuzzy Compare for now, or reach out through Contact and I will be happy to talk directly.");
+              setStatus("Daily AI Compare limit reached. Running Fuzzy Compare instead.", "error");
+              extractAndMatch();
+              return;
+            }
             throw new Error(result?.error || `Matcher request failed with ${response.status}`);
           }
 
           renderAiMatch(result);
-          setStatus(`LLM analysis complete. Score is calculated in the Worker, not guessed by the model. ${getRemainingSubmissions()} submissions left.`, "ready");
+          setStatus(`Skills generated. Experience compared. ${getRemainingSubmissions()} AI submissions left. AI can be wrong; final percentages use deterministic scoring after classification.`, "ready");
         } catch (error) {
-          setStatus(`${error.message || "AI matching failed"}. Local fallback is still available.`, "error");
+          setStatus(`${error.message || "AI Compare failed"}. Fuzzy Compare is still available.`, "error");
         } finally {
           updateSubmissionState();
           extractButton.disabled = false;
@@ -1794,19 +1881,15 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       };
 
       const extractAndMatch = () => {
-        setStatus("Running local fallback matcher. AI matching will be more conservative once the Worker URL is configured.");
+        if (!validateRecruiterContext()) return;
+        setStatus("Running Fuzzy Compare.");
         setDetectedSkills(extractRoleSkills(input.value));
         runMatch();
       };
 
       aiButton.addEventListener("click", runAiMatch);
       extractButton.addEventListener("click", extractAndMatch);
-      matchToggleButton.addEventListener("click", () => {
-        const expanded = matchToggleButton.getAttribute("aria-expanded") === "true";
-        matchToggleButton.setAttribute("aria-expanded", String(!expanded));
-        matchToggleButton.textContent = expanded ? "Show" : "Hide";
-        matchDetailsElement.hidden = expanded;
-      });
+      skipContextButton.addEventListener("click", () => setSkippedRecruiterContext(!skippedRecruiterContext));
       input.addEventListener("input", () => {
         updateCharacterLimit();
         saveSession();
@@ -1815,13 +1898,22 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         }
       });
       [recruiterNameInput, recruiterCompanyInput, recruiterRoleTargetInput].forEach((field) => {
-        field.addEventListener("input", saveSession);
+        field.addEventListener("input", () => {
+          if (field.value.trim() && skippedRecruiterContext) {
+            setSkippedRecruiterContext(false);
+          } else {
+            saveSession();
+          }
+        });
       });
       clearButton.addEventListener("click", () => {
         input.value = "";
         recruiterNameInput.value = "";
         recruiterCompanyInput.value = "";
         recruiterRoleTargetInput.value = "";
+        skippedRecruiterContext = false;
+        skipContextButton.dataset.skipped = "false";
+        skipContextButton.textContent = "Mark skipped";
         lastRenderedResult = null;
         setDetectedSkills([]);
         updateCharacterLimit();
@@ -1851,20 +1943,25 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         recruiterNameInput.value = String(savedSession.recruiterContext?.name || "");
         recruiterCompanyInput.value = String(savedSession.recruiterContext?.company || "");
         recruiterRoleTargetInput.value = String(savedSession.recruiterContext?.hiringFor || "");
+        skippedRecruiterContext = Boolean(savedSession.recruiterContext?.skipped);
+        skipContextButton.dataset.skipped = String(skippedRecruiterContext);
+        skipContextButton.textContent = skippedRecruiterContext ? "Context skipped" : "Mark skipped";
         setDetectedSkills(Array.isArray(savedSession.detectedSkills) ? savedSession.detectedSkills : []);
         restoringSavedSession = false;
 
         if (savedSession.lastRenderedResult?.type === "llm" && savedSession.lastRenderedResult.result) {
           renderAiMatch(savedSession.lastRenderedResult.result);
-          setStatus(`Restored saved LLM analysis. ${getRemainingSubmissions()} submissions left in this browser.`, "ready");
+          setStatus(`Restored saved AI Compare result. ${getRemainingSubmissions()} submissions left in this browser.`, "ready");
         } else if (savedSession.lastRenderedResult?.type === "fuzzy") {
           runMatch();
-          setStatus("Restored saved fuzzy keyword scan.");
+          setStatus("Restored saved Fuzzy Compare result.");
         } else {
           resetResults();
           setStatus(getReadyStatus());
         }
       } else {
+        skipContextButton.dataset.skipped = "false";
+        skipContextButton.textContent = "Mark skipped";
         setDetectedSkills([]);
         resetResults();
         setStatus(getReadyStatus());
