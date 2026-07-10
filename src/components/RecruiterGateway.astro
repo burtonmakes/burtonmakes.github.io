@@ -1,0 +1,429 @@
+<section class="recruiter-gateway-shell" data-recruiter-gateway-shell aria-labelledby="recruiter-gateway-title">
+  <div class="recruiter-gateway-card">
+    <div class="recruiter-gateway-copy">
+      <h1 id="recruiter-gateway-title">Looking for someone to fill a specific role?</h1>
+      <p>
+        Add three details so the matcher can interpret the job description and compare it with Alex Burton’s
+        work, projects, and technical evidence.
+      </p>
+    </div>
+
+    <form class="recruiter-gateway-form" data-recruiter-gateway-form novalidate>
+      <label for="gateway-recruiter-name">
+        <span>Your name</span>
+        <input
+          id="gateway-recruiter-name"
+          data-gateway-name
+          name="recruiter-name"
+          type="text"
+          autocomplete="name"
+          placeholder="Jordan Lee"
+          required
+        />
+      </label>
+
+      <label for="gateway-company">
+        <span>Company</span>
+        <input
+          id="gateway-company"
+          data-gateway-company
+          name="company"
+          type="text"
+          autocomplete="organization"
+          placeholder="Company or team"
+          required
+        />
+      </label>
+
+      <label for="gateway-role">
+        <span>Specific role to fill</span>
+        <input
+          id="gateway-role"
+          data-gateway-role
+          name="role"
+          type="text"
+          autocomplete="off"
+          placeholder="Senior sensor hardware engineer"
+          required
+        />
+      </label>
+
+      <p class="recruiter-gateway-error" data-gateway-error role="alert" hidden>
+        Complete all three fields, or choose Skip to continue without recruiter context.
+      </p>
+
+      <div class="recruiter-data-note">
+        <strong>How the data is handled</strong>
+        <p>
+          These fields are saved in this browser. Fuzzy Compare stays in the browser. AI Compare sends the
+          fields and role text to a Cloudflare Worker. Cloudflare states that Workers AI content is not used
+          to train AI models, improve services, or made available to other customers. Cloudflare also states
+          that it does not sell or rent personal information.
+        </p>
+        <div class="recruiter-data-links">
+          <a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/" target="_blank" rel="noreferrer">Workers AI data use</a>
+          <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare privacy policy</a>
+        </div>
+      </div>
+
+      <div class="recruiter-gateway-actions">
+        <button class="button button-primary" type="submit">Continue</button>
+        <button class="button button-secondary" type="button" data-gateway-skip>Skip</button>
+      </div>
+    </form>
+  </div>
+
+  <dialog class="recruiter-skip-dialog" data-gateway-dialog aria-labelledby="recruiter-skip-title">
+    <form method="dialog" class="recruiter-skip-modal">
+      <h2 id="recruiter-skip-title">Continue without recruiter context?</h2>
+      <p>
+        The comparison can still run, but it will be less accurate because it will not know the recruiter,
+        company, or specific role being filled. Do you want to continue?
+      </p>
+      <div class="recruiter-dialog-actions">
+        <button class="button button-secondary" type="submit" value="cancel">Go back</button>
+        <button class="button button-primary" type="button" data-confirm-gateway-skip>Continue without context</button>
+      </div>
+    </form>
+  </dialog>
+</section>
+
+<style is:global>
+  .recruiter-gateway-shell {
+    display: grid;
+    min-height: calc(100svh - 142px);
+    place-items: center;
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: clamp(22px, 4vh, 44px) 0 clamp(30px, 5vh, 54px);
+  }
+
+  .recruiter-gateway-shell ~ .recruiter-onepage {
+    display: none;
+  }
+
+  .recruiter-gateway-card {
+    width: min(900px, 100%);
+    padding: clamp(22px, 3vw, 34px);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .recruiter-gateway-copy {
+    margin-bottom: 22px;
+  }
+
+  .recruiter-gateway-copy h1 {
+    max-width: 17ch;
+    margin: 0 0 10px;
+    font-size: clamp(2rem, 4vw, 3.65rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  .recruiter-gateway-copy p {
+    max-width: 72ch;
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .recruiter-gateway-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .recruiter-gateway-form label {
+    display: grid;
+    gap: 7px;
+  }
+
+  .recruiter-gateway-form label > span {
+    color: var(--accent-2);
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .recruiter-gateway-form input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text);
+    font: inherit;
+    outline: none;
+  }
+
+  .recruiter-gateway-form input:focus {
+    border-color: color-mix(in srgb, var(--accent-2), white 8%);
+    box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
+  }
+
+  .recruiter-gateway-form input[aria-invalid="true"] {
+    border-color: rgba(232, 111, 78, 0.75);
+  }
+
+  .recruiter-gateway-error {
+    grid-column: 1 / -1;
+    margin: -2px 0 0;
+    color: #ffb39f;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .recruiter-data-note {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px 14px;
+    align-items: start;
+    margin-top: 2px;
+    padding: 13px 14px;
+    border: 1px solid var(--line-soft);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.018);
+  }
+
+  .recruiter-data-note strong {
+    color: var(--text);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .recruiter-data-note p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.76rem;
+    line-height: 1.42;
+  }
+
+  .recruiter-data-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: max-content;
+  }
+
+  .recruiter-data-links a {
+    color: var(--accent-2);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .recruiter-gateway-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    margin-top: 2px;
+  }
+
+  .recruiter-gateway-actions .button {
+    min-height: 44px;
+    border-radius: 8px;
+  }
+
+  .recruiter-skip-dialog {
+    width: min(520px, calc(100% - 32px));
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel-strong);
+    color: var(--text);
+    box-shadow: 0 24px 90px rgba(0, 0, 0, 0.65);
+  }
+
+  .recruiter-skip-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(5px);
+  }
+
+  .recruiter-skip-modal {
+    display: grid;
+    gap: 12px;
+    padding: clamp(22px, 4vw, 32px);
+  }
+
+  .recruiter-skip-modal h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.08;
+  }
+
+  .recruiter-skip-modal p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.93rem;
+    line-height: 1.5;
+  }
+
+  .recruiter-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 820px) {
+    .recruiter-gateway-shell {
+      min-height: auto;
+      place-items: start center;
+    }
+
+    .recruiter-gateway-form {
+      grid-template-columns: 1fr;
+    }
+
+    .recruiter-data-note {
+      grid-template-columns: 1fr;
+    }
+
+    .recruiter-data-links {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .recruiter-gateway-shell {
+      width: min(100% - 20px, 900px);
+      padding-top: 16px;
+    }
+
+    .recruiter-gateway-card {
+      padding: 18px;
+    }
+
+    .recruiter-gateway-copy {
+      margin-bottom: 18px;
+    }
+
+    .recruiter-gateway-actions,
+    .recruiter-dialog-actions {
+      flex-direction: column;
+    }
+
+    .recruiter-gateway-actions .button,
+    .recruiter-dialog-actions .button {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const recruiterGatewayStorageKey = "burton-recruiter-onepage-session-v2";
+
+  const readRecruiterSession = () => {
+    try {
+      return JSON.parse(window.localStorage.getItem(recruiterGatewayStorageKey) || "{}");
+    } catch {
+      return {};
+    }
+  };
+
+  const saveRecruiterContext = (context) => {
+    const current = readRecruiterSession();
+    try {
+      window.localStorage.setItem(recruiterGatewayStorageKey, JSON.stringify({
+        ...current,
+        recruiterContext: context,
+      }));
+    } catch {
+      // The matcher still works when browser storage is unavailable.
+    }
+  };
+
+  const openRecruiterMatcher = () => {
+    window.location.assign("/recruiter/?match=1");
+  };
+
+  const setupRecruiterGateway = () => {
+    const shell = document.querySelector("[data-recruiter-gateway-shell]");
+    if (!shell || shell.dataset.ready === "true") return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("match") === "1") {
+      shell.remove();
+      return;
+    }
+
+    shell.dataset.ready = "true";
+
+    const form = shell.querySelector("[data-recruiter-gateway-form]");
+    const nameInput = shell.querySelector("[data-gateway-name]");
+    const companyInput = shell.querySelector("[data-gateway-company]");
+    const roleInput = shell.querySelector("[data-gateway-role]");
+    const error = shell.querySelector("[data-gateway-error]");
+    const skipButton = shell.querySelector("[data-gateway-skip]");
+    const dialog = shell.querySelector("[data-gateway-dialog]");
+    const confirmSkipButton = shell.querySelector("[data-confirm-gateway-skip]");
+    const savedContext = readRecruiterSession().recruiterContext || {};
+
+    nameInput.value = String(savedContext.name || "");
+    companyInput.value = String(savedContext.company || "");
+    roleInput.value = String(savedContext.hiringFor || "");
+
+    const clearFieldError = (field) => {
+      field.removeAttribute("aria-invalid");
+      if ([nameInput, companyInput, roleInput].every((input) => input.value.trim())) {
+        error.hidden = true;
+      }
+    };
+
+    [nameInput, companyInput, roleInput].forEach((field) => {
+      field.addEventListener("input", () => clearFieldError(field));
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const fields = [nameInput, companyInput, roleInput];
+      const emptyFields = fields.filter((field) => !field.value.trim());
+      fields.forEach((field) => field.toggleAttribute("aria-invalid", emptyFields.includes(field)));
+
+      if (emptyFields.length) {
+        error.hidden = false;
+        emptyFields[0].focus();
+        return;
+      }
+
+      saveRecruiterContext({
+        name: nameInput.value.trim(),
+        company: companyInput.value.trim(),
+        hiringFor: roleInput.value.trim(),
+        skipped: false,
+      });
+      openRecruiterMatcher();
+    });
+
+    skipButton.addEventListener("click", () => {
+      if (dialog?.showModal) {
+        dialog.showModal();
+      } else if (window.confirm("Continue without recruiter context? The comparison will be less accurate.")) {
+        saveRecruiterContext({ name: "", company: "", hiringFor: "", skipped: true });
+        openRecruiterMatcher();
+      }
+    });
+
+    confirmSkipButton.addEventListener("click", () => {
+      saveRecruiterContext({ name: "", company: "", hiringFor: "", skipped: true });
+      dialog?.close();
+      openRecruiterMatcher();
+    });
+  };
+
+  document.addEventListener("astro:page-load", setupRecruiterGateway);
+  setupRecruiterGateway();
+</script>
