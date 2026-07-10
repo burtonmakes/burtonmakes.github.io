@@ -1,129 +1,579 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { capabilityTaxonomy } from "../../data/capability-map";
+import { recruiterRoleProfiles, recruiterSkillTags } from "../../data/recruiter-normalizer";
+import { projects, workHistory } from "../../data/site";
 import "../../styles/global.css";
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const sourceTagsByKey = new Map<string, string[]>();
+
+workHistory.forEach((role) => {
+  sourceTagsByKey.set(`work:${slugify(role.title)}:${slugify(role.company)}`, [...role.skills]);
+});
+
+projects.forEach((project) => {
+  sourceTagsByKey.set(`project:${project.slug}`, [
+    ...project.skills,
+    ...project.labels,
+    ...project.stack,
+    project.section,
+    project.type,
+  ]);
+});
+
+const matcherData = capabilityTaxonomy.flatMap((group) =>
+  group.nodes.map((node) => ({
+    group: group.label,
+    id: node.id,
+    label: node.label,
+    summary: node.summary,
+    yearsActive: node.yearsActive,
+    yearsScore: node.yearsScore,
+    skillTags: node.skillTags,
+    evidence: node.evidence.map((item) => ({
+      key: item.key,
+      kind: item.kind,
+      title: item.title,
+      href: item.href,
+      period: item.period,
+      summary: item.summary,
+      note: item.note,
+      highlights: item.highlights.slice(0, 2),
+      tags: sourceTagsByKey.get(item.key) ?? [],
+    })),
+  }))
+);
+
+const portfolioEvidence = new Map<string, {
+  id: string;
+  title: string;
+  kind: string;
+  href: string;
+  summary: string;
+  tags: string[];
+  highlights: readonly string[];
+  capabilities: string[];
+}>();
+
+matcherData.forEach((node) => {
+  node.evidence.forEach((item) => {
+    const current = portfolioEvidence.get(item.key);
+    portfolioEvidence.set(item.key, {
+      id: item.key,
+      title: item.title,
+      kind: item.kind,
+      href: item.href,
+      summary: item.summary,
+      tags: [...new Set([...(current?.tags ?? []), ...item.tags, ...node.skillTags, node.label, node.group])].slice(0, 18),
+      highlights: item.highlights,
+      capabilities: [...new Set([...(current?.capabilities ?? []), node.label])],
+    });
+  });
+});
+
+const matcherJson = JSON.stringify(matcherData);
+const portfolioJson = JSON.stringify([...portfolioEvidence.values()]);
+const normalizerJson = JSON.stringify(recruiterSkillTags);
+const roleProfilesJson = JSON.stringify(recruiterRoleProfiles);
+const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 ---
 
 <BaseLayout
-  title="Recruiter Context"
-  description="Optional recruiter context before using Alex Burton's candidate matching tool."
+  title="Recruiter Match"
+  description="Recruiter-facing role comparison for Alex Burton's engineering portfolio."
 >
-  <section class="section recruiter-gateway">
-    <div class="gateway-card reveal">
-      <p class="eyebrow">Recruiter fast path</p>
-      <h1>Optional context improves candidate matching.</h1>
-      <p class="gateway-copy">
-        Add your name, company, and the role you are looking to fill so the matcher can compare the
-        job text with better context. You can skip this step, but the analysis may be less accurate.
-      </p>
-      <div class="gateway-visual" aria-hidden="true">
-        <div class="gateway-node">
-          <span>Recruiter</span>
-          <small>role needs</small>
+  <section class="section recruiter-onepage" data-recruiter-onepage>
+    <div class="recruiter-shell reveal">
+      <div class="recruiter-hero-grid">
+        <div class="recruiter-hero-copy">
+          <p class="eyebrow">Recruiter fast path</p>
+          <h1>Compare your role with Alex Burton’s evidence.</h1>
+          <p>
+            Add hiring context, paste the role, and get a common-match score between the recruiter’s needs
+            and Alex’s mapped work history, projects, skills, and portfolio evidence.
+          </p>
         </div>
-        <div class="gateway-match">
-          <span>Common match</span>
-          <i></i>
-          <small>role needs + portfolio evidence</small>
-        </div>
-        <div class="gateway-node">
-          <span>Alex Burton</span>
-          <small>project evidence</small>
+
+        <div class="match-flow-card" aria-label="Recruiter role context is compared with Alex Burton portfolio evidence.">
+          <div class="flow-node">
+            <span>Recruiter</span>
+            <small>Name · company · target role</small>
+          </div>
+          <div class="flow-common">
+            <small>Metric shown below</small>
+            <strong>Common match</strong>
+            <i></i>
+            <span>role requirements ↔ evidence</span>
+          </div>
+          <div class="flow-node">
+            <span>Alex Burton</span>
+            <small>Portfolio · projects · work history</small>
+          </div>
         </div>
       </div>
 
-      <form class="gateway-form" data-recruiter-gateway>
-        <label for="gateway-name">
-          <span>Your name</span>
-          <input id="gateway-name" data-gateway-name type="text" autocomplete="name" placeholder="Optional" />
-        </label>
+      <div class="recruiter-workspace">
+        <aside class="context-panel" aria-label="Recruiter context">
+          <div class="panel-heading">
+            <span>Step 1</span>
+            <h2>Hiring context</h2>
+            <p>These details improve the comparison by telling the matcher what kind of role is being filled.</p>
+          </div>
 
-        <label for="gateway-company">
-          <span>Company</span>
-          <input id="gateway-company" data-gateway-company type="text" autocomplete="organization" placeholder="Optional" />
-        </label>
+          <div class="context-fields">
+            <label for="recruiter-name">
+              <span>Your name</span>
+              <input id="recruiter-name" data-recruiter-name type="text" autocomplete="name" placeholder="Jordan Lee" />
+            </label>
 
-        <label for="gateway-role">
-          <span>Role you are filling</span>
-          <input id="gateway-role" data-gateway-role type="text" placeholder="Sensor hardware engineer" />
-        </label>
+            <label for="recruiter-company">
+              <span>Company</span>
+              <input id="recruiter-company" data-recruiter-company type="text" autocomplete="organization" placeholder="Company or team" />
+            </label>
 
-        <p class="gateway-note">
-          Context is saved in your browser for this visit. Pasted role text is used only to compare the role
-          against Alex's portfolio. Treat the match score as a quick screening aid, not a final hiring decision.
+            <label for="recruiter-role">
+              <span>Role being filled</span>
+              <input id="recruiter-role" data-recruiter-role type="text" placeholder="Senior sensor hardware engineer" />
+            </label>
+          </div>
+
+          <button class="context-skip" type="button" data-skip-context>Skip context</button>
+
+          <div class="context-quality" data-context-quality>
+            <strong>Context improves accuracy</strong>
+            <p>Without role title, company, and recruiter intent, the matcher can still run, but the comparison has less signal.</p>
+          </div>
+
+          <div class="data-path-card">
+            <strong>Data path</strong>
+            <ul>
+              <li>Fuzzy Compare runs in the browser against Alex’s public portfolio map.</li>
+              <li>AI Compare sends the pasted role, recruiter context, and portfolio index to a Cloudflare Worker.</li>
+              <li>The Worker uses Cloudflare Workers AI: <code>@cf/qwen/qwen3-30b-a3b-fp8</code>.</li>
+              <li>Current session text can be stored in this browser so the page does not clear while reviewing.</li>
+            </ul>
+            <div class="data-link-row">
+              <a href="https://developers.cloudflare.com/workers-ai/models/qwen3-30b-a3b-fp8/" target="_blank" rel="noreferrer">Model details</a>
+              <a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/" target="_blank" rel="noreferrer">Data usage</a>
+            </div>
+          </div>
+        </aside>
+
+        <main class="matcher-panel" aria-label="Role comparison tool">
+          <div class="panel-heading matcher-heading">
+            <span>Step 2</span>
+            <h2>Role comparison</h2>
+            <p>Paste a job description, requirements section, or recruiter skill list. The result is a screening aid, not a hiring decision.</p>
+          </div>
+
+          <label class="role-text-field" for="role-text">
+            <span>Job description, requirements, or keywords</span>
+            <textarea
+              id="role-text"
+              data-match-input
+              rows="9"
+              maxlength="20000"
+              placeholder="Paste the job description, responsibilities, requirements, or comma-separated skills."
+            ></textarea>
+          </label>
+          <span class="character-limit" data-character-limit>0 / 20,000 characters</span>
+
+          <div class="manual-skill-row">
+            <label for="manual-skill">
+              <span>Add or force a skill</span>
+              <input id="manual-skill" data-manual-skill type="text" placeholder="board bring-up, FPC layout, NPI" />
+            </label>
+            <button class="button button-secondary" type="button" data-add-manual-skill>Add</button>
+          </div>
+
+          <div class="action-row">
+            <button class="button button-primary" type="button" data-ai-run>AI Compare</button>
+            <button class="button button-secondary" type="button" data-fuzzy-run>Fuzzy Compare</button>
+            <button class="button button-secondary subtle" type="button" data-clear>Clear</button>
+            <p class="match-status" data-match-status>Ready.</p>
+          </div>
+
+          <div class="detected-strip">
+            <div class="detected-heading">
+              <span>Detected role skills</span>
+              <strong data-detected-count>0 tags</strong>
+            </div>
+            <div class="detected-list" data-detected-skills>
+              <p>Paste role text and run a comparison to review the normalized skills.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <section class="results-grid" aria-live="polite">
+        <article class="score-card">
+          <span>Common match score</span>
+          <strong data-match-score>0%</strong>
+          <p data-match-summary>Paste a role and compare it against mapped portfolio evidence.</p>
+          <div class="metric-stack" data-match-metrics>
+            <div>
+              <small>Technical match</small>
+              <b>0%</b>
+              <i style="width:0%"></i>
+            </div>
+            <div>
+              <small>Execution readiness</small>
+              <b>0%</b>
+              <i style="width:0%"></i>
+            </div>
+            <div>
+              <small>Evidence strength</small>
+              <b>0%</b>
+              <i style="width:0%"></i>
+            </div>
+          </div>
+        </article>
+
+        <article class="role-read-card">
+          <span>Role read</span>
+          <strong data-role-profile>No role profile yet</strong>
+          <p data-role-profile-summary>Detected skill categories will appear after comparison.</p>
+          <div class="category-list" data-role-categories></div>
+        </article>
+
+        <article class="match-list-card">
+          <h2>What matches well</h2>
+          <ul data-match-list>
+            <li>Waiting for role text.</li>
+          </ul>
+        </article>
+
+        <article class="match-list-card">
+          <h2>Review manually</h2>
+          <ul data-gap-list>
+            <li>Nothing checked yet.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="evidence-section">
+        <div class="section-heading compact">
+          <p class="eyebrow">Evidence</p>
+          <h2>Projects and work pulled forward by the match.</h2>
+        </div>
+        <div class="evidence-grid" data-evidence-list>
+          <article class="evidence-empty">
+            <strong>No evidence selected yet.</strong>
+            <p>Run AI Compare or Fuzzy Compare to pull forward the closest work history and project evidence.</p>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <dialog class="context-dialog" data-context-dialog aria-labelledby="context-dialog-title">
+      <form method="dialog" class="context-modal">
+        <span class="warning-dot" aria-hidden="true">!</span>
+        <h2 id="context-dialog-title">Continue with less context?</h2>
+        <p>
+          The matcher can run without recruiter context, but accuracy is lower without the recruiter name,
+          company, and role being filled. Those fields help the next step compare the role against Alex’s evidence.
         </p>
-
-        <div class="gateway-actions">
-          <button class="button button-primary" type="submit">Continue to matcher</button>
-          <button class="button button-secondary" type="button" data-gateway-skip>Skip context</button>
+        <div class="dialog-actions">
+          <button class="button button-secondary" value="cancel" type="submit">Go back</button>
+          <button class="button button-primary" value="continue" type="submit" data-confirm-limited-context>Continue anyway</button>
         </div>
       </form>
-    </div>
+    </dialog>
   </section>
 </BaseLayout>
 
 <style>
-  .recruiter-gateway {
+  .recruiter-onepage {
+    align-content: start;
+    padding-top: clamp(4.6rem, 7vh, 6rem);
+  }
+
+  .recruiter-shell {
     display: grid;
-    min-height: calc(100vh - 96px);
-    place-items: center;
-    padding-top: clamp(4.5rem, 7vh, 5.8rem);
-    padding-bottom: clamp(1.8rem, 4vh, 3rem);
+    gap: clamp(18px, 3vw, 30px);
   }
 
-  .gateway-card {
-    width: min(860px, 100%);
-    padding: clamp(20px, 3vw, 34px);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: rgba(1, 5, 10, 0.98);
-    box-shadow: var(--shadow-soft);
+  .recruiter-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(360px, 0.8fr);
+    gap: clamp(18px, 3vw, 30px);
+    align-items: end;
   }
 
-  .gateway-card h1 {
+  .recruiter-hero-copy h1 {
     max-width: 15ch;
     margin-bottom: 12px;
-    font-size: clamp(2rem, 3.8vw, 3.55rem);
-    line-height: 1;
+    font-size: clamp(2.35rem, 4.8vw, 5.1rem);
+    line-height: 0.94;
   }
 
-  .gateway-copy {
-    max-width: 68ch;
-    margin-bottom: 0;
+  .recruiter-hero-copy p {
+    max-width: 66ch;
+    margin: 0;
     color: var(--muted-2);
+    font-size: 1rem;
+    line-height: 1.48;
+  }
+
+  .match-flow-card,
+  .context-panel,
+  .matcher-panel,
+  .score-card,
+  .role-read-card,
+  .match-list-card,
+  .evidence-empty,
+  .evidence-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.05), var(--shadow-soft);
+  }
+
+  .match-flow-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .flow-node,
+  .flow-common {
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.018);
+    padding: 13px;
+  }
+
+  .flow-node {
+    display: grid;
+    gap: 4px;
+  }
+
+  .flow-node span,
+  .flow-common strong {
+    color: var(--text);
+    font-size: 1.02rem;
+    font-weight: 900;
+    line-height: 1.12;
+  }
+
+  .flow-node small,
+  .flow-common small,
+  .flow-common span {
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .flow-common {
+    display: grid;
+    gap: 8px;
+    background: linear-gradient(180deg, rgba(111, 211, 255, 0.07), rgba(255, 255, 255, 0.014));
+  }
+
+  .flow-common i {
+    display: block;
+    height: 7px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
+  }
+
+  .recruiter-workspace {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.38fr) minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .context-panel,
+  .matcher-panel {
+    display: grid;
+    gap: 14px;
+    padding: clamp(16px, 2vw, 22px);
+  }
+
+  .panel-heading {
+    display: grid;
+    gap: 6px;
+  }
+
+  .panel-heading span,
+  .role-text-field span,
+  .manual-skill-row label span,
+  .score-card span,
+  .role-read-card span,
+  .detected-heading span,
+  .evidence-card span {
+    color: var(--accent-2);
+    font-size: 0.72rem;
+    font-weight: 880;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .panel-heading h2,
+  .match-list-card h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+    line-height: 1.1;
+  }
+
+  .panel-heading p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.84rem;
+    line-height: 1.42;
+  }
+
+  .context-fields,
+  .role-text-field,
+  .manual-skill-row label {
+    display: grid;
+    gap: 8px;
+  }
+
+  .context-fields {
+    gap: 10px;
+  }
+
+  .context-fields label {
+    display: grid;
+    gap: 7px;
+  }
+
+  .context-fields label span {
+    color: var(--accent-2);
+    font-size: 0.7rem;
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .context-fields input,
+  .manual-skill-row input,
+  .matcher-panel textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.018);
+    color: var(--text);
+    outline: none;
+  }
+
+  .context-fields input,
+  .manual-skill-row input {
+    min-height: 42px;
+    padding: 0 12px;
+  }
+
+  .matcher-panel textarea {
+    min-height: 210px;
+    padding: 13px;
+    font-size: 0.93rem;
+    font-weight: 560;
+    line-height: 1.42;
+    resize: vertical;
+  }
+
+  .context-fields input:focus,
+  .manual-skill-row input:focus,
+  .matcher-panel textarea:focus {
+    border-color: color-mix(in srgb, var(--accent-2), white 8%);
+    box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
+  }
+
+  .context-skip {
+    justify-self: start;
+    min-height: 34px;
+    padding: 0 11px;
+    border: 1px solid rgba(232, 111, 78, 0.34);
+    border-radius: 9px;
+    background: rgba(232, 111, 78, 0.05);
+    color: #ffb39f;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .context-skip[data-skipped="true"] {
+    background: rgba(232, 111, 78, 0.12);
+  }
+
+  .context-quality,
+  .data-path-card,
+  .detected-strip {
+    padding: 13px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.014);
+  }
+
+  .context-quality[data-state="complete"] {
+    border-color: rgba(111, 211, 255, 0.28);
+    background: rgba(111, 211, 255, 0.045);
+  }
+
+  .context-quality strong,
+  .data-path-card strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text);
     font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .context-quality p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.8rem;
     line-height: 1.4;
   }
 
-  .gateway-visual {
+  .data-path-card ul {
     display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(210px, 1fr) minmax(0, 0.8fr);
-    align-items: stretch;
-    gap: 10px;
-    margin: 16px 0 18px;
+    gap: 5px;
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted-2);
+    font-size: 0.76rem;
+    line-height: 1.38;
   }
 
-  .gateway-node,
-  .gateway-match {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.018);
-  }
-
-  .gateway-node {
-    display: grid;
-    min-height: 72px;
-    place-items: center;
-    padding: 12px;
-    text-align: center;
-  }
-
-  .gateway-node span {
+  .data-path-card code {
     color: var(--text);
-    font-weight: 850;
+    font-size: 0.74rem;
   }
 
-  .gateway-node small,
-  .gateway-match small {
+  .data-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .data-link-row a {
+    color: var(--accent-2);
+    font-size: 0.72rem;
+    font-weight: 880;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .character-limit {
+    justify-self: end;
+    margin-top: -8px;
     color: var(--muted);
     font-size: 0.7rem;
     font-weight: 800;
@@ -131,170 +581,1255 @@ import "../../styles/global.css";
     text-transform: uppercase;
   }
 
-  .gateway-match {
-    display: grid;
-    min-height: 82px;
-    align-content: center;
-    gap: 7px;
-    padding: 12px;
-    text-align: center;
+  .character-limit[data-state="warning"] {
+    color: var(--cta-1);
   }
 
-  .gateway-match span {
+  .character-limit[data-state="full"] {
+    color: var(--cta-2);
+  }
+
+  .manual-skill-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .action-row .button,
+  .manual-skill-row .button {
+    min-height: 40px;
+    border-radius: 9px;
+  }
+
+  .button.subtle {
+    opacity: 0.82;
+  }
+
+  .match-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    margin: 0;
+    padding: 0 11px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.014);
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+
+  .match-status::before {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: currentColor;
+    content: "";
+  }
+
+  .match-status[data-state="ready"] {
     color: var(--accent-2);
-    font-size: 0.76rem;
+  }
+
+  .match-status[data-state="loading"] {
+    color: var(--cta-1);
+  }
+
+  .match-status[data-state="error"] {
+    color: #ffc4b4;
+  }
+
+  .detected-strip {
+    display: grid;
+    gap: 10px;
+  }
+
+  .detected-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .detected-heading strong {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .detected-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 7px;
+    min-height: 54px;
+    max-height: 156px;
+    overflow-y: auto;
+  }
+
+  .detected-list p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.84rem;
+  }
+
+  :global(.skill-chip) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    min-height: 25px;
+    padding: 3px 7px 3px 10px;
+    border: 1px solid rgba(111, 211, 255, 0.26);
+    border-radius: 999px;
+    background: rgba(111, 211, 255, 0.06);
+    color: #e9f7ff;
+    font-size: 0.74rem;
+    font-weight: 780;
+    line-height: 1.1;
+  }
+
+  :global(.skill-chip[data-source="typed"]) {
+    border-color: rgba(232, 111, 78, 0.38);
+    background: rgba(232, 111, 78, 0.08);
+    color: #fff0ea;
+  }
+
+  :global(.skill-chip button) {
+    display: inline-grid;
+    place-items: center;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--cta-2);
+    font-size: 0.72rem;
     font-weight: 900;
-    letter-spacing: 0.1em;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.36fr) minmax(260px, 0.42fr) repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .score-card,
+  .role-read-card,
+  .match-list-card {
+    min-width: 0;
+    padding: clamp(16px, 2vw, 22px);
+  }
+
+  .score-card strong {
+    display: block;
+    margin: 10px 0 10px;
+    color: var(--text);
+    font-size: clamp(3.2rem, 6vw, 5.2rem);
+    line-height: 0.88;
+  }
+
+  .score-card p,
+  .role-read-card p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.84rem;
+    line-height: 1.38;
+  }
+
+  .metric-stack {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .metric-stack div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 9px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.018);
+  }
+
+  .metric-stack small {
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
-  .gateway-match i {
+  .metric-stack b {
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+
+  .metric-stack i {
+    grid-column: 1 / -1;
     display: block;
     height: 6px;
     border-radius: 999px;
     background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
   }
 
-  .gateway-form {
+  .role-read-card {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .gateway-form label {
-    display: grid;
+    align-content: start;
     gap: 7px;
   }
 
-  .gateway-form label span {
-    color: var(--accent-2);
-    font-size: 0.72rem;
-    font-weight: 850;
-    letter-spacing: 0.1em;
+  .role-read-card strong {
+    color: var(--text);
+    font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+    line-height: 1.16;
+  }
+
+  .category-list {
+    display: grid;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  :global(.category-row) {
+    display: grid;
+    grid-template-columns: minmax(92px, 0.38fr) minmax(0, 1fr) 42px;
+    gap: 8px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
-  .gateway-form input {
-    min-height: 42px;
-    width: 100%;
-    padding: 0 12px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.018);
+  :global(.category-bar) {
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  :global(.category-bar i) {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
+  }
+
+  .match-list-card ul {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .match-list-card :global(li) {
+    color: var(--muted-2);
+    font-size: 0.84rem;
+    line-height: 1.38;
+  }
+
+  .match-list-card :global(li + li) {
+    margin-top: 10px;
+  }
+
+  .evidence-section {
+    display: grid;
+    gap: 16px;
+  }
+
+  .section-heading.compact h2 {
+    max-width: 760px;
+  }
+
+  .evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .evidence-empty,
+  .evidence-card {
+    padding: 20px;
+  }
+
+  .evidence-empty {
+    grid-column: 1 / -1;
+  }
+
+  .evidence-empty strong,
+  .evidence-card strong {
+    display: block;
     color: var(--text);
-    outline: none;
+    font-size: 1.04rem;
+    line-height: 1.25;
   }
 
-  .gateway-form input:focus {
-    border-color: color-mix(in srgb, var(--accent-2), white 8%);
-    box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
+  .evidence-empty p,
+  .evidence-card p {
+    margin: 8px 0 0;
+    color: var(--muted-2);
+    font-size: 0.88rem;
+    line-height: 1.45;
   }
 
-  .gateway-note {
-    grid-column: 1 / -1;
-    margin: 4px 0 0;
-    color: var(--muted);
-    font-size: 0.76rem;
-    line-height: 1.36;
+  .evidence-card {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    min-height: 260px;
   }
 
-  .gateway-actions {
-    grid-column: 1 / -1;
+  .evidence-card ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted-2);
+    font-size: 0.84rem;
+    line-height: 1.38;
+  }
+
+  .evidence-card .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+  }
+
+  .evidence-card .text-link {
+    align-self: flex-start;
+  }
+
+  .context-dialog {
+    width: min(470px, calc(100% - 32px));
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(1, 5, 10, 0.98);
+    color: var(--text);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .context-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(3px);
+  }
+
+  .context-modal {
+    display: grid;
+    gap: 12px;
+    padding: 22px;
+  }
+
+  .warning-dot {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(232, 111, 78, 0.42);
+    border-radius: 999px;
+    color: #ffb39f;
+    font-weight: 950;
+  }
+
+  .context-modal h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.08;
+  }
+
+  .context-modal p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.9rem;
+    line-height: 1.44;
+  }
+
+  .dialog-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 4px;
   }
 
-  .gateway-actions .button {
-    min-height: 42px;
+  .dialog-actions .button {
+    min-height: 40px;
     border-radius: 8px;
   }
 
-  @media (max-width: 720px) {
-    .recruiter-gateway {
-      place-items: start center;
+  @media (max-width: 1240px) {
+    .results-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+  }
 
-    .gateway-card h1 {
-      max-width: none;
-    }
-
-    .gateway-visual,
-    .gateway-form {
+  @media (max-width: 1040px) {
+    .recruiter-hero-grid,
+    .recruiter-workspace,
+    .evidence-grid {
       grid-template-columns: 1fr;
     }
 
-    .gateway-visual {
-      margin: 14px 0;
+    .recruiter-hero-copy h1 {
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .results-grid,
+    .manual-skill-row {
+      grid-template-columns: 1fr;
     }
 
-    .gateway-actions {
+    .action-row,
+    .dialog-actions {
       flex-direction: column;
+      align-items: stretch;
+    }
+
+    .match-status {
+      justify-content: center;
     }
   }
 </style>
 
-<script>
-  const sessionStorageKey = "burton-recruiter-match-session-v1";
+<script define:vars={{ matcherJson, portfolioJson, normalizerJson, roleProfilesJson, recruiterMatchApi }}>
+  const matcherData = JSON.parse(matcherJson);
+  const portfolioIndex = JSON.parse(portfolioJson);
+  const normalizerTags = JSON.parse(normalizerJson);
+  const roleProfiles = JSON.parse(roleProfilesJson);
+  const aiMatchEndpoint = recruiterMatchApi;
+  const maxJobTextCharacters = 20000;
+  const maxLlmSubmissions = 10;
+  const sessionStorageKey = "burton-recruiter-onepage-session-v2";
+  const submissionStorageKey = "burton-recruiter-match-submissions-v1";
 
-  const getStoredSession = () => {
+  const normalize = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9+#.]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const tokenize = (value) => normalize(value).split(" ").filter((token) => token.length > 1);
+  const escapeRegExp = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const titleCase = (value) =>
+    normalize(value)
+      .split(" ")
+      .map((part) => {
+        if (["ble", "nfc", "fpc", "pcb", "npi", "cm", "jdm", "dsp", "ml", "ai", "ecg", "hrv", "sql", "ocr"].includes(part)) return part.toUpperCase();
+        return part.charAt(0).toUpperCase() + part.slice(1);
+      })
+      .join(" ")
+      .replace(/\bAnd\b/g, "and");
+
+  const scorePhrase = (source, target) => {
+    const a = normalize(source);
+    const b = normalize(target);
+    if (!a || !b) return 0;
+    if (a === b) return 1;
+    if (a.includes(b) || b.includes(a)) return Math.min(0.96, 0.72 + Math.min(a.length, b.length) / 220);
+    const aTokens = tokenize(a);
+    const bTokens = tokenize(b);
+    if (!aTokens.length || !bTokens.length) return 0;
+    const overlap = aTokens.filter((token) => bTokens.includes(token)).length;
+    const recall = overlap / Math.max(1, aTokens.length);
+    const precision = overlap / Math.max(1, bTokens.length);
+    return Math.min(0.94, recall * 0.62 + precision * 0.38);
+  };
+
+  const getGrade = (score) => {
+    if (score >= 86) return "Very strong match";
+    if (score >= 72) return "Strong match";
+    if (score >= 58) return "Moderate match";
+    if (score >= 40) return "Partial match";
+    return "Needs manual review";
+  };
+
+  const renderList = (element, rows, emptyText) => {
+    element.innerHTML = "";
+    const content = rows.length ? rows : [emptyText];
+    content.forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      element.append(li);
+    });
+  };
+
+  const getSubmissionCount = () => {
+    const value = Number(window.localStorage.getItem(submissionStorageKey));
+    return Number.isFinite(value) ? Math.max(0, value) : 0;
+  };
+
+  const setSubmissionCount = (value) => {
     try {
-      return JSON.parse(window.localStorage.getItem(sessionStorageKey) || "{}");
+      window.localStorage.setItem(submissionStorageKey, String(Math.max(0, value)));
     } catch {
-      return {};
+      // Browser storage is optional; the Worker still has server-side limits.
     }
   };
 
-  const saveContext = (context) => {
-    const existing = getStoredSession();
-    window.localStorage.setItem(sessionStorageKey, JSON.stringify({
-      ...existing,
-      recruiterContext: context,
-    }));
+  const getRemainingSubmissions = () => Math.max(0, maxLlmSubmissions - getSubmissionCount());
+
+  const readJson = (key, fallback) => {
+    try {
+      const value = window.localStorage.getItem(key);
+      return value ? JSON.parse(value) : fallback;
+    } catch {
+      return fallback;
+    }
   };
 
-  const goToMatcher = () => {
-    window.location.href = "/recruiter/match/";
+  const writeJson = (key, value) => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // Ignore storage failures.
+    }
   };
 
-  const setupGateway = () => {
-    const form = document.querySelector("[data-recruiter-gateway]");
-    if (!form || form.dataset.ready === "true") return;
-    form.dataset.ready = "true";
+  const setupRecruiterPage = () => {
+    const page = document.querySelector("[data-recruiter-onepage]");
+    if (!page || page.dataset.ready === "true") return;
+    page.dataset.ready = "true";
 
-    const nameInput = form.querySelector("[data-gateway-name]");
-    const companyInput = form.querySelector("[data-gateway-company]");
-    const roleInput = form.querySelector("[data-gateway-role]");
-    const skipButton = form.querySelector("[data-gateway-skip]");
-    const saved = getStoredSession().recruiterContext || {};
+    const nameInput = page.querySelector("[data-recruiter-name]");
+    const companyInput = page.querySelector("[data-recruiter-company]");
+    const roleInput = page.querySelector("[data-recruiter-role]");
+    const contextQuality = page.querySelector("[data-context-quality]");
+    const skipContextButton = page.querySelector("[data-skip-context]");
+    const contextDialog = page.querySelector("[data-context-dialog]");
+    const confirmLimitedContextButton = page.querySelector("[data-confirm-limited-context]");
+    const input = page.querySelector("[data-match-input]");
+    const characterLimitElement = page.querySelector("[data-character-limit]");
+    const manualSkillInput = page.querySelector("[data-manual-skill]");
+    const addManualSkillButton = page.querySelector("[data-add-manual-skill]");
+    const aiButton = page.querySelector("[data-ai-run]");
+    const fuzzyButton = page.querySelector("[data-fuzzy-run]");
+    const clearButton = page.querySelector("[data-clear]");
+    const statusElement = page.querySelector("[data-match-status]");
+    const detectedSkillsElement = page.querySelector("[data-detected-skills]");
+    const detectedCountElement = page.querySelector("[data-detected-count]");
+    const scoreElement = page.querySelector("[data-match-score]");
+    const summaryElement = page.querySelector("[data-match-summary]");
+    const metricGridElement = page.querySelector("[data-match-metrics]");
+    const roleProfileElement = page.querySelector("[data-role-profile]");
+    const roleProfileSummaryElement = page.querySelector("[data-role-profile-summary]");
+    const roleCategoriesElement = page.querySelector("[data-role-categories]");
+    const matchList = page.querySelector("[data-match-list]");
+    const gapList = page.querySelector("[data-gap-list]");
+    const evidenceList = page.querySelector("[data-evidence-list]");
 
-    nameInput.value = saved.name || "";
-    companyInput.value = saved.company || "";
-    roleInput.value = saved.hiringFor || "";
+    let detectedSkills = [];
+    let skippedRecruiterContext = false;
+    let pendingAction = null;
+    let lastRenderedResult = null;
+    let restoring = false;
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      saveContext({
-        name: nameInput.value.trim(),
-        company: companyInput.value.trim(),
-        hiringFor: roleInput.value.trim(),
-        skipped: false,
-      });
-      goToMatcher();
+    const setStatus = (message, state = "") => {
+      statusElement.textContent = message;
+      if (state) {
+        statusElement.dataset.state = state;
+      } else {
+        delete statusElement.dataset.state;
+      }
+    };
+
+    const getRecruiterContext = () => ({
+      name: nameInput.value.trim(),
+      company: companyInput.value.trim(),
+      hiringFor: roleInput.value.trim(),
+      skipped: skippedRecruiterContext,
     });
 
-    skipButton.addEventListener("click", () => {
-      saveContext({
-        name: "",
-        company: "",
-        hiringFor: "",
-        skipped: true,
+    const hasCompleteContext = () => {
+      const context = getRecruiterContext();
+      return Boolean(context.name && context.company && context.hiringFor);
+    };
+
+    const updateContextQuality = () => {
+      const complete = hasCompleteContext();
+      contextQuality.dataset.state = complete ? "complete" : skippedRecruiterContext ? "skipped" : "limited";
+      const title = contextQuality.querySelector("strong");
+      const copy = contextQuality.querySelector("p");
+      if (complete) {
+        title.textContent = "Context ready";
+        copy.textContent = "The comparison can use recruiter, company, and role intent to improve match accuracy.";
+      } else if (skippedRecruiterContext) {
+        title.textContent = "Context skipped";
+        copy.textContent = "The matcher will run with less signal, so review the result manually before using the score.";
+      } else {
+        title.textContent = "Context improves accuracy";
+        copy.textContent = "Without role title, company, and recruiter intent, the matcher can still run, but the comparison has less signal.";
+      }
+      skipContextButton.dataset.skipped = String(skippedRecruiterContext);
+      skipContextButton.textContent = skippedRecruiterContext ? "Context skipped" : "Skip context";
+    };
+
+    const getReadyStatus = () => {
+      const remaining = getRemainingSubmissions();
+      if (!aiMatchEndpoint) return "Ready. AI endpoint not configured; Fuzzy Compare is available.";
+      if (remaining <= 0) return "AI Compare limit reached in this browser. Fuzzy Compare is available.";
+      return `Ready. ${remaining} AI submission${remaining === 1 ? "" : "s"} left.`;
+    };
+
+    const saveSession = () => {
+      if (restoring) return;
+      writeJson(sessionStorageKey, {
+        recruiterContext: getRecruiterContext(),
+        jobText: input.value,
+        detectedSkills,
+        lastRenderedResult,
       });
-      goToMatcher();
+    };
+
+    const updateCharacterLimit = () => {
+      const count = input.value.length;
+      characterLimitElement.textContent = `${count.toLocaleString()} / ${maxJobTextCharacters.toLocaleString()} characters`;
+      if (count >= maxJobTextCharacters) {
+        characterLimitElement.dataset.state = "full";
+      } else if (count >= maxJobTextCharacters * 0.9) {
+        characterLimitElement.dataset.state = "warning";
+      } else {
+        delete characterLimitElement.dataset.state;
+      }
+    };
+
+    const requireContextOrConfirm = (action) => {
+      if (hasCompleteContext() || skippedRecruiterContext) return true;
+      pendingAction = action;
+      if (contextDialog?.showModal) {
+        contextDialog.showModal();
+      } else if (window.confirm("Continue with less context? Accuracy is lower without recruiter name, company, and role being filled.")) {
+        skippedRecruiterContext = true;
+        updateContextQuality();
+        saveSession();
+        return true;
+      }
+      return false;
+    };
+
+    const addDetectedSkill = (skills, label, source, score = 0.72, alias = "") => {
+      const normalized = normalize(label);
+      if (!normalized || normalized.length < 2) return;
+      const existing = skills.get(normalized);
+      if (!existing || score > existing.score) {
+        skills.set(normalized, { label, normalized, source, score, alias });
+      }
+    };
+
+    const parseManualSkills = (value) => [...new Set(String(value).split(/[,;\n|]+/).map((item) => item.trim()).filter(Boolean))];
+
+    const extractRoleSkills = (value) => {
+      const text = String(value || "");
+      const normalizedText = ` ${normalize(text)} `;
+      const skills = new Map();
+
+      normalizerTags.forEach((tag) => {
+        const aliases = [tag.label, ...(tag.aliases || [])];
+        let bestAlias = "";
+        let bestScore = 0;
+        aliases.forEach((alias) => {
+          const normalizedAlias = normalize(alias);
+          if (!normalizedAlias) return;
+          const pattern = new RegExp(`(^|\\s)${escapeRegExp(normalizedAlias)}(\\s|$)`);
+          if (pattern.test(normalizedText)) {
+            const aliasScore = Math.min(1, 0.72 + Number(tag.priority || 0) / 400 + Math.min(0.08, normalizedAlias.length / 240));
+            if (aliasScore > bestScore) {
+              bestScore = aliasScore;
+              bestAlias = alias;
+            }
+          }
+        });
+        if (bestScore > 0) addDetectedSkill(skills, tag.label, "normalized", bestScore, bestAlias);
+      });
+
+      if (text.length < 900 || /[,;|\n]/.test(text)) {
+        parseManualSkills(text).forEach((keyword) => {
+          const cleaned = normalize(keyword);
+          if (cleaned.length < 3 || cleaned.length > 72 || cleaned.split(" ").length > 7) return;
+          const bestTag = normalizerTags
+            .map((tag) => ({
+              tag,
+              score: Math.max(scorePhrase(cleaned, tag.label), ...(tag.aliases || []).map((alias) => scorePhrase(cleaned, alias))),
+            }))
+            .sort((a, b) => b.score - a.score)[0];
+          if (bestTag?.score >= 0.72) {
+            addDetectedSkill(skills, bestTag.tag.label, "normalized", bestTag.score, keyword);
+          } else if (text.includes(",") || text.includes(";") || text.includes("|")) {
+            addDetectedSkill(skills, titleCase(keyword), "typed", 0.58, keyword);
+          }
+        });
+      }
+
+      return [...skills.values()].sort((a, b) => b.score - a.score || a.label.localeCompare(b.label)).slice(0, 36);
+    };
+
+    const getSkillMetadata = (label) => normalizerTags.find((tag) => normalize(tag.label) === normalize(label));
+
+    const getRoleProfile = (skills) => {
+      if (!skills.length) return null;
+      const labels = skills.map((skill) => skill.label);
+      return roleProfiles
+        .map((profile) => {
+          const score = profile.terms.reduce((total, term) => {
+            const best = Math.max(...labels.map((skill) => scorePhrase(term, skill)));
+            return total + (best >= 0.86 ? 1 : best >= 0.68 ? 0.55 : 0);
+          }, 0);
+          return { ...profile, score: score / Math.max(1, profile.terms.length) };
+        })
+        .sort((a, b) => b.score - a.score)[0];
+    };
+
+    const getCategoryCoverage = (skills) => {
+      const labels = {
+        hardware: "Hardware",
+        sensors: "Sensors",
+        validation: "Validation",
+        manufacturing: "Manufacturing",
+        "software-data": "Software/data",
+        leadership: "Leadership",
+        domain: "Domain",
+      };
+      const counts = new Map();
+      skills.forEach((skill) => {
+        const category = getSkillMetadata(skill.label)?.category || "domain";
+        counts.set(category, (counts.get(category) || 0) + 1);
+      });
+      const total = Math.max(1, skills.length);
+      return [...counts.entries()]
+        .map(([category, count]) => ({
+          label: labels[category] || titleCase(category),
+          count,
+          percent: Math.round((count / total) * 100),
+          width: Math.max(12, Math.round((count / total) * 100)),
+        }))
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+    };
+
+    const renderRoleInsights = (skills, overrideTitle = "", overrideSummary = "") => {
+      const profile = getRoleProfile(skills);
+      if (overrideTitle) {
+        roleProfileElement.textContent = overrideTitle;
+        roleProfileSummaryElement.textContent = overrideSummary || "Role requirements were extracted and compared against mapped evidence.";
+      } else if (profile && profile.score > 0) {
+        roleProfileElement.textContent = profile.label;
+        roleProfileSummaryElement.textContent = profile.summary;
+      } else {
+        roleProfileElement.textContent = "No role profile yet";
+        roleProfileSummaryElement.textContent = "Detected skill categories will appear after comparison.";
+      }
+
+      roleCategoriesElement.innerHTML = "";
+      getCategoryCoverage(skills).slice(0, 5).forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "category-row";
+        const label = document.createElement("span");
+        label.textContent = item.label;
+        const bar = document.createElement("div");
+        bar.className = "category-bar";
+        const fill = document.createElement("i");
+        fill.style.width = `${item.width}%`;
+        bar.append(fill);
+        const value = document.createElement("strong");
+        value.textContent = `${item.percent}%`;
+        row.append(label, bar, value);
+        roleCategoriesElement.append(row);
+      });
+    };
+
+    const renderDetectedSkills = () => {
+      detectedSkillsElement.innerHTML = "";
+      detectedCountElement.textContent = `${detectedSkills.length} tag${detectedSkills.length === 1 ? "" : "s"}`;
+      if (!detectedSkills.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "Paste role text and run a comparison to review the normalized skills.";
+        detectedSkillsElement.append(empty);
+        return;
+      }
+
+      detectedSkills.forEach((skill) => {
+        const chip = document.createElement("span");
+        chip.className = "skill-chip";
+        chip.dataset.source = skill.source;
+        chip.title = skill.alias ? `Detected from: ${skill.alias}` : skill.label;
+        const label = document.createElement("span");
+        label.textContent = skill.label;
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.setAttribute("aria-label", `Remove ${skill.label}`);
+        remove.textContent = "×";
+        remove.addEventListener("click", () => {
+          setDetectedSkills(detectedSkills.filter((item) => item.normalized !== skill.normalized));
+          if (detectedSkills.length) runFuzzyCompare(false);
+          else resetResults();
+        });
+        chip.append(label, remove);
+        detectedSkillsElement.append(chip);
+      });
+    };
+
+    const setDetectedSkills = (skills) => {
+      const unique = new Map();
+      skills.forEach((skill) => {
+        const key = skill.normalized || normalize(skill.label);
+        if (!key) return;
+        const existing = unique.get(key);
+        if (!existing || Number(skill.score || 0) > Number(existing.score || 0)) unique.set(key, { ...skill, normalized: key });
+      });
+      detectedSkills = [...unique.values()].sort((a, b) => Number(b.score || 0) - Number(a.score || 0) || a.label.localeCompare(b.label));
+      renderDetectedSkills();
+      renderRoleInsights(detectedSkills);
+      saveSession();
+    };
+
+    const bestNodeMatch = (keyword, node) => {
+      const candidates = [
+        node.label,
+        node.group,
+        node.summary,
+        ...(node.skillTags || []),
+        ...node.evidence.flatMap((item) => [item.title, item.summary, ...(item.tags || []), ...(item.highlights || [])]),
+      ];
+      const score = Math.max(...candidates.map((candidate) => scorePhrase(keyword, candidate)));
+      return { score };
+    };
+
+    const renderMetrics = (metrics) => {
+      const items = [
+        ["Technical match", metrics.technical],
+        ["Execution readiness", metrics.execution],
+        ["Evidence strength", metrics.evidence],
+      ];
+      metricGridElement.innerHTML = "";
+      items.forEach(([label, raw]) => {
+        const percent = Math.max(0, Math.min(100, Math.round(Number(raw) || 0)));
+        const tile = document.createElement("div");
+        const small = document.createElement("small");
+        small.textContent = label;
+        const number = document.createElement("b");
+        number.textContent = `${percent}%`;
+        const bar = document.createElement("i");
+        bar.style.width = `${percent}%`;
+        tile.append(small, number, bar);
+        metricGridElement.append(tile);
+      });
+    };
+
+    const portfolioById = new Map(portfolioIndex.map((item) => [item.id, item]));
+
+    const clearEvidence = (title, copy) => {
+      evidenceList.innerHTML = "";
+      const empty = document.createElement("article");
+      empty.className = "evidence-empty";
+      const strong = document.createElement("strong");
+      strong.textContent = title;
+      const p = document.createElement("p");
+      p.textContent = copy;
+      empty.append(strong, p);
+      evidenceList.append(empty);
+    };
+
+    const renderEvidenceCards = (items) => {
+      evidenceList.innerHTML = "";
+      if (!items.length) {
+        clearEvidence("No evidence selected yet.", "Run AI Compare or Fuzzy Compare to pull forward the closest portfolio evidence.");
+        return;
+      }
+
+      items.slice(0, 6).forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "evidence-card";
+        const eyebrow = document.createElement("span");
+        eyebrow.textContent = `${item.kind || "Evidence"} · ${Math.round(Number(item.score || 0) * 100)}% evidence confidence`;
+        const title = document.createElement("strong");
+        title.textContent = item.title;
+        const summary = document.createElement("p");
+        summary.textContent = item.summary;
+        const highlights = document.createElement("ul");
+        (item.highlights || []).slice(0, 2).forEach((highlight) => {
+          const li = document.createElement("li");
+          li.textContent = highlight;
+          highlights.append(li);
+        });
+        const tags = document.createElement("div");
+        tags.className = "tag-row";
+        [...new Set([...(item.capabilities || []), ...(item.tags || []), ...(item.requirements || [])])].slice(0, 4).forEach((tag) => {
+          const chip = document.createElement("span");
+          chip.className = "tag";
+          chip.textContent = tag;
+          tags.append(chip);
+        });
+        const link = document.createElement("a");
+        link.className = "text-link";
+        link.href = item.href;
+        link.textContent = "View evidence";
+        card.append(eyebrow, title, summary, highlights, tags, link);
+        evidenceList.append(card);
+      });
+    };
+
+    const renderFuzzyEvidence = (matches) => {
+      const evidenceMap = new Map();
+      matches.forEach((match) => {
+        match.node.evidence.forEach((item) => {
+          const current = evidenceMap.get(item.key);
+          evidenceMap.set(item.key, {
+            id: item.key,
+            title: item.title,
+            kind: item.kind,
+            href: item.href,
+            summary: item.summary,
+            highlights: item.highlights,
+            tags: [...new Set([...(current?.tags || []), ...(item.tags || [])])],
+            capabilities: [...new Set([...(current?.capabilities || []), match.node.label])],
+            score: Math.max(match.score, current?.score || 0),
+          });
+        });
+      });
+      renderEvidenceCards([...evidenceMap.values()].sort((a, b) => b.score - a.score));
+    };
+
+    const renderAiEvidence = (matches) => {
+      const evidenceMap = new Map();
+      matches.forEach((match) => {
+        (Array.isArray(match.evidenceIds) ? match.evidenceIds : []).forEach((id) => {
+          const item = portfolioById.get(id);
+          if (!item) return;
+          const current = evidenceMap.get(id);
+          evidenceMap.set(id, {
+            ...item,
+            score: Math.max(Number(match.confidence) || 0, current?.score || 0),
+            requirements: [...new Set([...(current?.requirements || []), match.requirement].filter(Boolean))],
+          });
+        });
+      });
+      renderEvidenceCards([...evidenceMap.values()].sort((a, b) => b.score - a.score));
+    };
+
+    const resetResults = () => {
+      lastRenderedResult = null;
+      scoreElement.textContent = "0%";
+      summaryElement.textContent = "Paste a role and compare it against mapped portfolio evidence.";
+      renderMetrics({ technical: 0, execution: 0, evidence: 0 });
+      renderList(matchList, [], "Waiting for role text.");
+      renderList(gapList, [], "Nothing checked yet.");
+      renderRoleInsights(detectedSkills);
+      clearEvidence("No evidence selected yet.", "Run AI Compare or Fuzzy Compare to pull forward the closest work history and project evidence.");
+      saveSession();
+    };
+
+    const addManualSkills = () => {
+      const skills = parseManualSkills(manualSkillInput.value).map((item) => ({
+        label: titleCase(item),
+        normalized: normalize(item),
+        source: "typed",
+        score: 0.66,
+        alias: item,
+      })).filter((skill) => skill.label);
+      if (!skills.length) return;
+      setDetectedSkills([...detectedSkills, ...skills]);
+      manualSkillInput.value = "";
+      runFuzzyCompare(false);
+    };
+
+    const runFuzzyCompare = (shouldConfirmContext = true) => {
+      if (shouldConfirmContext && !requireContextOrConfirm("fuzzy")) return;
+      const keywords = detectedSkills.length ? detectedSkills.map((skill) => skill.label) : extractRoleSkills(input.value).map((skill) => skill.label);
+      if (!keywords.length) {
+        setStatus("Paste a role description or add skills before comparing.", "error");
+        input.focus();
+        return;
+      }
+
+      if (!detectedSkills.length) {
+        setDetectedSkills(extractRoleSkills(input.value));
+      }
+
+      const keywordResults = keywords.map((keyword) => {
+        const matches = matcherData
+          .map((node) => ({ keyword, node, ...bestNodeMatch(keyword, node) }))
+          .filter((match) => match.score >= 0.78)
+          .sort((a, b) => b.score - a.score);
+        return { keyword, best: matches[0], matches };
+      });
+
+      const matched = keywordResults.filter((item) => item.best);
+      const gaps = keywordResults.filter((item) => !item.best);
+      const weightedScore = Math.round((keywordResults.reduce((total, item) => total + Math.min(1, item.best?.score || 0), 0) / keywords.length) * 100);
+      const allMatches = matched.flatMap((item) => item.matches.slice(0, 2));
+      const executionKeywords = keywords.filter((keyword) => /npi|manufacturing|factory|vendor|cross|prototype|validation|test|quality|reliability|production/i.test(keyword));
+
+      scoreElement.textContent = `${weightedScore}%`;
+      summaryElement.textContent = `${getGrade(weightedScore)} based on ${matched.length} of ${keywords.length} role signal${keywords.length === 1 ? "" : "s"} mapping to portfolio evidence.`;
+      renderMetrics({
+        technical: weightedScore,
+        execution: Math.round((matched.filter((item) => /npi|manufacturing|factory|vendor|cross|prototype|validation|test|quality|reliability|production/i.test(item.keyword)).length / Math.max(1, executionKeywords.length || keywords.length)) * 100),
+        evidence: Math.round((allMatches.length / Math.max(1, keywords.length)) * 100),
+      });
+      renderList(matchList, matched.map((item) => `${item.keyword} → ${item.best.node.label} (${Math.round(item.best.score * 100)}% keyword overlap)`), "No mapped matches.");
+      renderList(gapList, gaps.map((item) => `Review ${item.keyword}: mapped evidence alone is not enough for a firm match.`), "Nothing needs manual review from the entered list.");
+      renderRoleInsights(detectedSkills);
+      renderFuzzyEvidence(allMatches);
+      lastRenderedResult = { type: "fuzzy" };
+      setStatus("Fuzzy Compare complete.", "ready");
+      saveSession();
+    };
+
+    const classificationLabel = (value) => {
+      const key = normalize(value);
+      if (["direct", "partial", "adjacent"].includes(key)) return key;
+      return "gap";
+    };
+
+    const normalizeAiSkill = (item) => {
+      const label = item?.label || item?.requirement || item?.skill || "";
+      return {
+        label: titleCase(label),
+        normalized: normalize(label),
+        source: "ai",
+        score: item?.importance === "high" ? 0.9 : item?.importance === "low" ? 0.64 : 0.76,
+        alias: item?.sourceText || item?.reason || "",
+      };
+    };
+
+    const scoreRequirementGroup = (requirements, matches, gaps, predicate, fallbackScore) => {
+      const selected = requirements.filter((requirement) => predicate(normalize(requirement.label || requirement.requirement || "")));
+      const scoped = selected.length ? selected : requirements;
+      if (!scoped.length) return fallbackScore;
+      const matchByRequirement = new Map(matches.map((match) => [normalize(match.requirement), match]));
+      const gapSet = new Set(gaps.map((gap) => normalize(gap.requirement)));
+      const values = { direct: 1, partial: 0.58, adjacent: 0.28, gap: 0 };
+      const total = scoped.reduce((sum, requirement) => {
+        const key = normalize(requirement.label || requirement.requirement || "");
+        const match = matchByRequirement.get(key);
+        const classification = gapSet.has(key) && !match ? "gap" : classificationLabel(match?.classification);
+        return sum + values[classification];
+      }, 0);
+      return Math.round((total / scoped.length) * 100);
+    };
+
+    const getAiMetrics = (result, score) => {
+      const requirements = Array.isArray(result.extractedRequirements) ? result.extractedRequirements : [];
+      const matches = Array.isArray(result.matches) ? result.matches : [];
+      const gaps = Array.isArray(result.gaps) ? result.gaps : [];
+      const allRequirements = requirements.length ? requirements : [...matches.map((match) => ({ label: match.requirement })), ...gaps.map((gap) => ({ label: gap.requirement }))];
+      const technicalTerms = ["sensor", "circuit", "analog", "board", "pcb", "fpc", "embedded", "opto", "electrical", "hardware", "schematic", "validation", "verification", "debug"];
+      const executionTerms = ["npi", "manufacturing", "production", "factory", "vendor", "cm", "jdm", "cross functional", "prototype", "reliability", "quality", "test", "lead"];
+      return {
+        technical: scoreRequirementGroup(allRequirements, matches, gaps, (label) => technicalTerms.some((term) => label.includes(term)), score),
+        execution: scoreRequirementGroup(allRequirements, matches, gaps, (label) => executionTerms.some((term) => label.includes(term)), score),
+        evidence: allRequirements.length ? Math.round((matches.filter((match) => Array.isArray(match.evidenceIds) && match.evidenceIds.length > 0).length / allRequirements.length) * 100) : 0,
+      };
+    };
+
+    const renderAiMatch = (result) => {
+      const extracted = Array.isArray(result.extractedRequirements) ? result.extractedRequirements : [];
+      const matches = Array.isArray(result.matches) ? result.matches : [];
+      const gaps = Array.isArray(result.gaps) ? result.gaps : [];
+      const skills = extracted.map(normalizeAiSkill).filter((skill) => skill.normalized);
+      const score = Math.max(0, Math.min(100, Math.round(Number(result.fitScore) || 0)));
+      setDetectedSkills(skills);
+      scoreElement.textContent = `${score}%`;
+      summaryElement.textContent = result.fitSummary || `${getGrade(score)} based on extracted requirements and deterministic fit scoring.`;
+      renderMetrics(getAiMetrics(result, score));
+      renderRoleInsights(skills, result.roleTitleGuess || result.roleCategory || "AI role read", result.roleCategory ? `Classified role family: ${result.roleCategory}.` : "Role requirements were extracted and compared against mapped portfolio evidence.");
+      renderList(
+        matchList,
+        matches.map((item) => {
+          const classification = classificationLabel(item.classification);
+          const confidence = Math.round(Math.max(0, Math.min(1, Number(item.confidence) || 0)) * 100);
+          const portfolioSkill = item.matchedPortfolioSkill || item.matchedCapability || "portfolio evidence";
+          return `${item.requirement} → ${portfolioSkill} (${classification}, ${confidence}%)`;
+        }),
+        "No direct, partial, or adjacent matches returned.",
+      );
+      renderList(
+        gapList,
+        gaps.map((item) => `Review ${item.requirement}: ${item.reason || "mapped evidence alone is not enough for a firm match."}`),
+        "Nothing needs manual review.",
+      );
+      renderAiEvidence(matches);
+      lastRenderedResult = { type: "llm", result };
+      saveSession();
+    };
+
+    const runAiCompare = async (shouldConfirmContext = true) => {
+      if (shouldConfirmContext && !requireContextOrConfirm("ai")) return;
+      updateCharacterLimit();
+      const jobText = input.value.trim();
+      if (jobText.length < 20 && detectedSkills.length === 0) {
+        setStatus("Paste a role description or add skills before running AI Compare.", "error");
+        input.focus();
+        return;
+      }
+      if (input.value.length > maxJobTextCharacters) {
+        setStatus("The pasted role is over the character limit. Trim it before running AI Compare.", "error");
+        input.focus();
+        return;
+      }
+      if (!aiMatchEndpoint) {
+        setStatus("No Cloudflare Worker URL is configured. Running Fuzzy Compare instead.", "error");
+        runFuzzyCompare(false);
+        return;
+      }
+      const remaining = getRemainingSubmissions();
+      if (remaining <= 0) {
+        window.alert("The AI Compare limit was reached for this browser. Fuzzy Compare will run now.");
+        runFuzzyCompare(false);
+        return;
+      }
+
+      setSubmissionCount(getSubmissionCount() + 1);
+      aiButton.disabled = true;
+      fuzzyButton.disabled = true;
+      setStatus("Generating requirements and comparing evidence...", "loading");
+
+      try {
+        const response = await fetch(aiMatchEndpoint, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            jobText,
+            recruiterContext: getRecruiterContext(),
+            manualSkills: detectedSkills.map((skill) => skill.label),
+            portfolioIndex,
+            normalizerTags,
+            roleProfiles,
+          }),
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+          if (response.status === 429 && /daily_limit/.test(result?.code || "")) {
+            window.alert("The daily AI Compare limit has been reached. Fuzzy Compare will run now.");
+            runFuzzyCompare(false);
+            return;
+          }
+          throw new Error(result?.error || `Matcher request failed with ${response.status}`);
+        }
+        renderAiMatch(result);
+        setStatus(`AI Compare complete. ${getRemainingSubmissions()} submission${getRemainingSubmissions() === 1 ? "" : "s"} left.`, "ready");
+      } catch (error) {
+        setStatus(`${error.message || "AI Compare failed"}. Fuzzy Compare is still available.`, "error");
+      } finally {
+        aiButton.disabled = false;
+        fuzzyButton.disabled = false;
+      }
+    };
+
+    const clearAll = () => {
+      nameInput.value = "";
+      companyInput.value = "";
+      roleInput.value = "";
+      input.value = "";
+      manualSkillInput.value = "";
+      skippedRecruiterContext = false;
+      setDetectedSkills([]);
+      updateContextQuality();
+      updateCharacterLimit();
+      resetResults();
+      try {
+        window.localStorage.removeItem(sessionStorageKey);
+      } catch {
+        // Ignore storage failures.
+      }
+      setStatus(getReadyStatus(), "ready");
+      input.focus();
+    };
+
+    [nameInput, companyInput, roleInput].forEach((field) => {
+      field.addEventListener("input", () => {
+        if (hasCompleteContext()) skippedRecruiterContext = false;
+        updateContextQuality();
+        saveSession();
+      });
     });
+
+    input.addEventListener("input", () => {
+      updateCharacterLimit();
+      saveSession();
+      if (input.value.trim()) setStatus(getReadyStatus(), "ready");
+    });
+
+    skipContextButton.addEventListener("click", () => {
+      pendingAction = null;
+      if (contextDialog?.showModal) {
+        contextDialog.showModal();
+      } else if (window.confirm("Continue without recruiter context? Accuracy may be lower.")) {
+        skippedRecruiterContext = true;
+        updateContextQuality();
+        saveSession();
+      }
+    });
+
+    confirmLimitedContextButton?.addEventListener("click", () => {
+      skippedRecruiterContext = true;
+      updateContextQuality();
+      saveSession();
+      const action = pendingAction;
+      pendingAction = null;
+      window.setTimeout(() => {
+        if (action === "ai") runAiCompare(false);
+        if (action === "fuzzy") runFuzzyCompare(false);
+      }, 0);
+    });
+
+    aiButton.addEventListener("click", () => runAiCompare(true));
+    fuzzyButton.addEventListener("click", () => runFuzzyCompare(true));
+    clearButton.addEventListener("click", clearAll);
+    addManualSkillButton.addEventListener("click", addManualSkills);
+    manualSkillInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addManualSkills();
+      }
+    });
+
+    const savedSession = readJson(sessionStorageKey, null);
+    if (savedSession) {
+      restoring = true;
+      nameInput.value = String(savedSession.recruiterContext?.name || "");
+      companyInput.value = String(savedSession.recruiterContext?.company || "");
+      roleInput.value = String(savedSession.recruiterContext?.hiringFor || "");
+      skippedRecruiterContext = Boolean(savedSession.recruiterContext?.skipped);
+      input.value = String(savedSession.jobText || "").slice(0, maxJobTextCharacters);
+      detectedSkills = Array.isArray(savedSession.detectedSkills) ? savedSession.detectedSkills : [];
+      lastRenderedResult = savedSession.lastRenderedResult || null;
+      restoring = false;
+      renderDetectedSkills();
+      updateContextQuality();
+      updateCharacterLimit();
+      if (lastRenderedResult?.type === "llm" && lastRenderedResult.result) {
+        renderAiMatch(lastRenderedResult.result);
+        setStatus(`Restored saved AI Compare result. ${getRemainingSubmissions()} submission${getRemainingSubmissions() === 1 ? "" : "s"} left.`, "ready");
+      } else if (lastRenderedResult?.type === "fuzzy") {
+        runFuzzyCompare(false);
+      } else {
+        renderRoleInsights(detectedSkills);
+        resetResults();
+        setStatus(getReadyStatus(), "ready");
+      }
+    } else {
+      updateContextQuality();
+      updateCharacterLimit();
+      setDetectedSkills([]);
+      resetResults();
+      setStatus(getReadyStatus(), "ready");
+    }
   };
 
-  document.addEventListener("astro:page-load", setupGateway);
-  setupGateway();
+  document.addEventListener("astro:page-load", setupRecruiterPage);
+  setupRecruiterPage();
 </script>
