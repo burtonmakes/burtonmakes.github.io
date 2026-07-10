@@ -1,89 +1,167 @@
 ---
 import "../../styles/global.css";
 import "../../styles/cocometric.css";
+
+const stages = [
+  ["01", "Complete system", "Show the complete Cocometric system"],
+  ["02", "Rack + chassis", "Show the rack and serviceable chassis"],
+  ["03", "Storage", "Show the removable storage drives"],
+  ["04", "Compute", "Show the motherboard, processors, and memory"],
+  ["05", "AI accelerators", "Show the GPU accelerator assemblies"],
+  ["06", "Cooling", "Show the fan wall and cooling assemblies"],
+  ["07", "Power + network", "Show redundant power and networking"],
+];
 ---
 
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#01050a" />
-  <meta name="description" content="Cocometric designs, builds, and supports private local infrastructure for storage, AI, networking, security, and internal tools." />
-  <title>Cocometric — Private local infrastructure</title>
-</head>
-<body>
-  <a class="skip-link" href="#contact">Skip to contact</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#01050a" />
+    <meta
+      name="description"
+      content="Cocometric designs, builds, deploys, and supports private local infrastructure for storage, AI, networking, video, and internal tools."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Cocometric — Private local infrastructure" />
+    <meta
+      property="og:description"
+      content="Purpose-built local infrastructure for storage, private AI, networking, video, and internal tools."
+    />
+    <meta property="og:url" content="https://cocometric.com/cocometric/" />
+    <link rel="canonical" href="https://cocometric.com/cocometric/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>Cocometric — Private local infrastructure</title>
+  </head>
 
-  <div class="loading" id="loading" role="status" aria-live="polite">
-    <div class="loading-inner">
-      <p class="loading-copy" id="loading-copy">Loading Cocometric hardware</p>
-      <div class="loading-track" aria-hidden="true"><div class="loading-bar" id="loading-bar"></div></div>
-    </div>
-  </div>
+  <body class="cocometric-page" data-model-status="loading">
+    <a class="skip-link" href="#contact">Skip to services and contact</a>
 
-  <header class="header">
-    <a class="brand" href="/cocometric/" aria-label="Cocometric home">
-      <span class="mark" aria-hidden="true"><i></i></span>
-      <span>Cocometric</span>
-    </a>
-    <a class="header-cta" href="#contact">Contact for services</a>
-  </header>
-
-  <div class="scene" id="scene" aria-hidden="true">
-    <canvas id="server-canvas"></canvas>
-    <div class="vignette"></div>
-  </div>
-
-  <section class="copy" id="copy" aria-live="polite">
-    <p class="step" id="stage-step">Cocometric system · 01</p>
-    <h1 id="stage-title">One system. Every layer visible.</h1>
-    <p class="copy-note" id="stage-note">Scroll through the actual server model to inspect the rack, storage, compute, accelerators, cooling, power, and network hardware.</p>
-    <div class="component-tags" id="stage-tags" aria-hidden="true">
-      <span>Rack</span><span>Storage</span><span>Compute</span><span>GPU</span>
-    </div>
-  </section>
-
-  <nav class="stage-nav" aria-label="3D server components">
-    <button type="button" class="is-active" data-stage-button="0" aria-label="Show complete system">01</button>
-    <button type="button" data-stage-button="1" aria-label="Show rack and chassis">02</button>
-    <button type="button" data-stage-button="2" aria-label="Show storage drives">03</button>
-    <button type="button" data-stage-button="3" aria-label="Show motherboard, CPU, and memory">04</button>
-    <button type="button" data-stage-button="4" aria-label="Show GPU accelerators">05</button>
-    <button type="button" data-stage-button="5" aria-label="Show cooling system">06</button>
-    <button type="button" data-stage-button="6" aria-label="Show power and networking">07</button>
-  </nav>
-
-  <div class="scroll-cue" id="scroll-cue">Scroll to inspect</div>
-
-  <main class="track" id="track">
-    <section class="beat" data-stage="0"><div class="sr-only"><h2>Complete Cocometric system</h2><p>Full exploded view of the real three-dimensional server model.</p></div></section>
-    <section class="beat" data-stage="1"><div class="sr-only"><h2>Rack and chassis</h2><p>Serviceable rack enclosure, rails, chassis, and installed server bays.</p></div></section>
-    <section class="beat" data-stage="2"><div class="sr-only"><h2>Storage</h2><p>Six removable drives for primary data, snapshots, and backup tiers.</p></div></section>
-    <section class="beat" data-stage="3"><div class="sr-only"><h2>Compute</h2><p>Motherboard, dual processors, heat sinks, and twelve memory modules.</p></div></section>
-    <section class="beat" data-stage="4"><div class="sr-only"><h2>AI accelerators</h2><p>Two GPU assemblies for local model inference and accelerated workloads.</p></div></section>
-    <section class="beat" data-stage="5"><div class="sr-only"><h2>Cooling</h2><p>Six fan assemblies and a dedicated fan wall for controlled airflow.</p></div></section>
-    <section class="beat" data-stage="6"><div class="sr-only"><h2>Power and network</h2><p>Redundant power supplies and a dedicated multi-port network interface.</p></div></section>
-
-    <section class="final" id="contact">
-      <div class="final-card">
-        <p class="step">Cocometric services</p>
-        <h2>Own the hardware, or run it as a managed system.</h2>
-        <p>Purpose-built local infrastructure for private AI, storage, video, networking, and internal tools. Each system is configured, documented, tested, and handed off with a clear support path.</p>
-        <div class="service-options">
-          <div class="service-option"><strong>Build and own it</strong><span>Hardware selection, assembly, deployment, migration, documentation, and handoff.</span></div>
-          <div class="service-option"><strong>Managed operation</strong><span>Ongoing monitoring, upgrades, backups, recovery testing, and support.</span></div>
-        </div>
-        <div class="actions">
-          <a class="button button-primary" href="/contact/?topic=cocometric-services">Scope a system</a>
-          <a class="button button-secondary" href="#track">Inspect it again</a>
+    <div class="loading" id="loading" role="status" aria-live="polite">
+      <div class="loading-inner">
+        <p class="loading-copy" id="loading-copy">Loading Cocometric hardware</p>
+        <div
+          class="loading-track"
+          id="loading-track"
+          role="progressbar"
+          aria-label="Loading 3D server model"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="8"
+        >
+          <div class="loading-bar" id="loading-bar" aria-hidden="true"></div>
         </div>
       </div>
+    </div>
+
+    <header class="header">
+      <a class="brand" href="/cocometric/" aria-label="Cocometric home">
+        <span class="mark" aria-hidden="true"><i></i></span>
+        <span>Cocometric</span>
+      </a>
+      <a class="header-cta" href="#contact">Contact for services</a>
+    </header>
+
+    <div class="scene" id="scene" aria-hidden="true">
+      <canvas id="server-canvas"></canvas>
+      <div class="vignette"></div>
+    </div>
+
+    <section class="copy" id="copy" aria-labelledby="stage-title">
+      <p class="step" id="stage-step">Cocometric system · 01</p>
+      <h1 id="stage-title">One system. Every layer visible.</h1>
+      <p class="copy-note" id="stage-note">
+        Scroll through the supplied server model to inspect the rack, storage, compute, accelerators,
+        cooling, power, and network hardware.
+      </p>
+      <div class="component-tags" id="stage-tags" aria-hidden="true">
+        <span>Rack</span><span>Storage</span><span>Compute</span><span>GPU</span>
+      </div>
     </section>
-  </main>
 
-  <noscript><p style="position:fixed;z-index:50;left:20px;bottom:20px;max-width:42ch;color:#eef3f7">JavaScript is required for the interactive server model. The service details and contact section remain available below.</p></noscript>
+    <nav class="stage-nav" aria-label="Inspect server components">
+      {stages.map(([number, label, ariaLabel], index) => (
+        <button
+          type="button"
+          class={index === 0 ? "is-active" : undefined}
+          data-stage-button={index}
+          aria-label={ariaLabel}
+          aria-current={index === 0 ? "step" : undefined}
+          title={label}
+        >
+          {number}
+        </button>
+      ))}
+    </nav>
 
-  <script src="../../scripts/cocometric-viewer.js"></script>
-</body>
+    <div class="scroll-cue" id="scroll-cue" aria-hidden="true">Scroll to inspect</div>
+
+    <main class="track" id="track">
+      <section class="beat" data-stage="0">
+        <div class="sr-only"><h2>Complete Cocometric system</h2><p>Full exploded view of the supplied three-dimensional server model.</p></div>
+      </section>
+      <section class="beat" data-stage="1">
+        <div class="sr-only"><h2>Rack and chassis</h2><p>Serviceable rack enclosure, rails, chassis, and installed server bays.</p></div>
+      </section>
+      <section class="beat" data-stage="2">
+        <div class="sr-only"><h2>Storage</h2><p>Six removable drives for primary data, snapshots, retention, and backup tiers.</p></div>
+      </section>
+      <section class="beat" data-stage="3">
+        <div class="sr-only"><h2>Compute</h2><p>Motherboard, dual processors, heat sinks, input and output, and twelve memory modules.</p></div>
+      </section>
+      <section class="beat" data-stage="4">
+        <div class="sr-only"><h2>AI accelerators</h2><p>Two GPU assemblies for local model inference, retrieval, OCR, and image processing.</p></div>
+      </section>
+      <section class="beat" data-stage="5">
+        <div class="sr-only"><h2>Cooling</h2><p>Six fan assemblies and a dedicated fan wall for controlled airflow.</p></div>
+      </section>
+      <section class="beat" data-stage="6">
+        <div class="sr-only"><h2>Power and network</h2><p>Two power supplies and a dedicated multi-port network interface.</p></div>
+      </section>
+
+      <section class="final" id="contact" aria-labelledby="contact-title">
+        <div class="final-card">
+          <p class="step">Cocometric services</p>
+          <h2 id="contact-title">Own the hardware, or run it as a managed system.</h2>
+          <p>
+            Purpose-built local infrastructure for private AI, storage, video, networking, and internal
+            tools. Each system is configured, documented, tested, and delivered with a clear support path.
+          </p>
+
+          <div class="service-options">
+            <article class="service-option">
+              <strong>Build and own it</strong>
+              <span>System design, hardware selection, assembly, deployment, migration, documentation, and handoff.</span>
+            </article>
+            <article class="service-option">
+              <strong>Managed operation</strong>
+              <span>Monitoring, upgrades, backups, recovery testing, maintenance, and ongoing support.</span>
+            </article>
+          </div>
+
+          <div class="actions">
+            <a class="button button-primary" href="/contact/?topic=cocometric-services">Scope a system</a>
+            <a class="button button-secondary" href="#track">Inspect it again</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <noscript>
+      <section class="noscript-card">
+        <h2>Private local infrastructure</h2>
+        <p>The interactive server model requires JavaScript. Service details and contact options remain available below.</p>
+        <a href="#contact">View services</a>
+      </section>
+    </noscript>
+
+    <script src="../../scripts/cocometric-viewer.js"></script>
+  </body>
 </html>
