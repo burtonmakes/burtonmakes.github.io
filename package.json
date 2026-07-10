@@ -10,10 +10,14 @@
   },
   "dependencies": {
     "@astrojs/react": "^5.0.7",
-    "astro": "^6.4.2",
+    "astro": "^6.4.6",
     "gsap": "^3.13.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "three": "^0.184.0"
+  },
+  "overrides": {
+    "astro": "^6.4.6",
+    "esbuild": "^0.27.8"
   }
 }
