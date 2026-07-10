@@ -261,6 +261,67 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
       .recruiter-onepage .matcher-heading > span {
         display: none !important;
       }
+
+      .recruiter-onepage .role-text-field > span {
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+      }
+
+      .recruiter-paste-help {
+        margin: -6px 0 2px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.4;
+      }
+
+      .recruiter-context-button,
+      .recruiter-clear-tags {
+        min-height: 38px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+      }
+
+      .recruiter-context-button,
+      .context-dialog .dialog-actions button:first-child,
+      .recruiter-dialog-back {
+        border: 1px solid rgba(255, 194, 98, 0.75) !important;
+        background: linear-gradient(135deg, var(--graph-amber), var(--graph-coral)) !important;
+        color: #07101a !important;
+      }
+
+      .context-dialog .dialog-actions button:last-child,
+      .recruiter-dialog-continue {
+        border: 1px solid var(--line) !important;
+        background: rgba(255, 255, 255, 0.025) !important;
+        color: var(--text) !important;
+      }
+
+      .detected-heading {
+        gap: 10px;
+      }
+
+      .detected-heading .recruiter-clear-tags {
+        margin-left: auto;
+      }
+
+      @media (max-width: 640px) {
+        .recruiter-onepage .action-row {
+          align-items: stretch;
+        }
+
+        .recruiter-context-button,
+        .recruiter-clear-tags {
+          width: 100%;
+        }
+
+        .detected-heading {
+          grid-template-columns: 1fr;
+        }
+
+        .detected-heading .recruiter-clear-tags {
+          margin-left: 0;
+        }
+      }
     </style>
 
     {showRecruiterGateway && (
@@ -293,6 +354,46 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
           });
         };
 
+        const setupRecruiterControls = () => {
+          const matcher = document.querySelector(".recruiter-onepage .matcher-panel");
+          if (!matcher || matcher.dataset.controlsReady === "true") return;
+          matcher.dataset.controlsReady = "true";
+
+          const label = matcher.querySelector(".role-text-field > span");
+          if (label) label.textContent = "Job description, requirements, or keywords";
+
+          const textarea = matcher.querySelector("[data-match-input]");
+          if (textarea) textarea.setAttribute("placeholder", "Paste the full job description, requirements section, or a simple list of skills.");
+
+          const help = document.createElement("p");
+          help.className = "recruiter-paste-help";
+          help.textContent = "Paste the full posting here, or only the requirements and keywords you want compared.";
+          const characterLimit = matcher.querySelector("[data-character-limit]");
+          characterLimit?.insertAdjacentElement("afterend", help);
+
+          const actionRow = matcher.querySelector(".action-row");
+          if (actionRow) {
+            const contextButton = document.createElement("button");
+            contextButton.type = "button";
+            contextButton.className = "button recruiter-context-button";
+            contextButton.textContent = "Edit recruiter context";
+            contextButton.addEventListener("click", () => window.location.assign("/recruiter/"));
+            actionRow.prepend(contextButton);
+          }
+
+          const detectedHeading = matcher.querySelector(".detected-heading");
+          if (detectedHeading) {
+            const clearTagsButton = document.createElement("button");
+            clearTagsButton.type = "button";
+            clearTagsButton.className = "button button-secondary recruiter-clear-tags";
+            clearTagsButton.textContent = "Clear all tags";
+            clearTagsButton.addEventListener("click", () => {
+              matcher.querySelectorAll("[data-detected-skills] button").forEach((button) => button.click());
+            });
+            detectedHeading.append(clearTagsButton);
+          }
+        };
+
         const setupRecruiterDeploymentState = () => {
           try {
             if (window.localStorage.getItem(recruiterBuildKey) !== recruiterBuildId) {
@@ -304,7 +405,11 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
           }
 
           simplifyManualReview();
-          const observer = new MutationObserver(simplifyManualReview);
+          setupRecruiterControls();
+          const observer = new MutationObserver(() => {
+            simplifyManualReview();
+            setupRecruiterControls();
+          });
           observer.observe(document.body, { childList: true, subtree: true, characterData: true });
         };
 
