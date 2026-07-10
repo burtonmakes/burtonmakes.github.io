@@ -1,6 +1,7 @@
 ---
 import "../../styles/global.css";
 import "../../styles/cocometric.css";
+import "../../styles/cocometric-production.css";
 
 const stages = [
   ["01", "Complete system", "Show the complete Cocometric system"],
@@ -62,11 +63,11 @@ const stages = [
     </div>
 
     <header class="header">
-      <a class="brand" href="/cocometric/" aria-label="Cocometric home">
-        <span class="mark" aria-hidden="true"><i></i></span>
-        <span>Cocometric</span>
-      </a>
-      <a class="header-cta" href="#contact">Contact for services</a>
+      <div class="header-left">
+        <a class="back-link" href="/" aria-label="Back to Burton Makes">Back</a>
+        <a class="brand" href="/cocometric/" aria-label="Cocometric home">Cocometric</a>
+      </div>
+      <a class="header-cta" href="/contact/?topic=cocometric-services">Contact</a>
     </header>
 
     <div class="scene" id="scene" aria-hidden="true">
@@ -101,7 +102,10 @@ const stages = [
       ))}
     </nav>
 
-    <div class="scroll-cue" id="scroll-cue" aria-hidden="true">Scroll to inspect</div>
+    <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
+      <span>Scroll to inspect</span>
+      <i></i>
+    </div>
 
     <main class="track" id="track">
       <section class="beat" data-stage="0">
@@ -148,7 +152,6 @@ const stages = [
 
           <div class="actions">
             <a class="button button-primary" href="/contact/?topic=cocometric-services">Scope a system</a>
-            <a class="button button-secondary" href="#track">Inspect it again</a>
           </div>
         </div>
       </section>
@@ -163,5 +166,6 @@ const stages = [
     </noscript>
 
     <script src="../../scripts/cocometric-viewer.js"></script>
+    <script src="../../scripts/cocometric-stage-polish.js"></script>
   </body>
 </html>
