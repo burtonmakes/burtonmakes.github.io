@@ -134,7 +134,7 @@ export const recruiterSkillTags: RecruiterSkillTag[] = [
       "analog",
       "analog fundamentals",
     ],
-    portfolioTerms: ["Analog sensing", "Low-noise acquisition", "Amplifier optimization"],
+    portfolioTerms: ["Circuit design", "Analog sensing", "Low-noise acquisition"],
   },
   {
     label: "Board bring-up and debugging",
@@ -389,6 +389,6 @@ export const recruiterSkillTags: RecruiterSkillTag[] = [
       "lead efforts",
       "lead technical teams",
     ],
-    portfolioTerms: ["Manufacturing readiness", "Validation", "Clinical workflow"],
+    portfolioTerms: ["Cross-functional engineering", "Technical leadership", "Design reviews", "Vendor collaboration"],
   },
 ];

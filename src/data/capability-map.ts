@@ -136,7 +136,7 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
         summary: "Bench, field, and clinical/home validation with reliability improvement baked into the workflow.",
         yearsActive: "8+ years",
         yearsScore: 82,
-        skillTags: ["Validation", "Reliability", "Clinical validation", "Preclinical validation", "Algorithms", "Algorithm validation", "Preclinical"],
+        skillTags: ["Validation", "Reliability", "Clinical validation", "Preclinical validation", "Lab and factory testing", "Algorithms", "Algorithm validation", "Preclinical"],
         evidence: [
           evidence(sources.rhaeos, "Canonical role evidence for bench, field, clinical, home, and data-review validation work."),
           evidence(sources.flowsenseClinical, "Canonical project evidence for algorithm validation and FDA-support workflows."),
@@ -223,7 +223,7 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
         summary: "Instrumenting systems so the signal is worth analyzing in the first place.",
         yearsActive: "4+ years",
         yearsScore: 44,
-        skillTags: ["Neural recording", "Amplifier optimization", "EMI control", "Phantoms", "Signal processing"],
+        skillTags: ["Circuit design", "Analog sensing", "Low-noise acquisition", "Neural recording", "Amplifier optimization", "EMI control", "Phantoms", "Signal processing"],
         evidence: [
           evidence(sources.eunil, "Canonical role evidence for amplifier optimization and EMI control."),
           evidence(sources.wirelessBatteryFree, "Canonical project evidence for implantable-system instrumentation constraints."),
@@ -233,7 +233,7 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
   },
   {
     id: "hardware-implantables",
-    label: "Hardware and implantables",
+    label: "Neural interfaces",
     summary: "Flexible, wireless, implantable, and preclinical systems that push hardware constraints.",
     nodes: [
       {
@@ -300,7 +300,7 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
         summary: "The operating layer that keeps a device program reproducible.",
         yearsActive: "3+ years",
         yearsScore: 34,
-        skillTags: ["Documentation", "Manufacturing support", "Medical devices", "Validation", "Data workflows"],
+        skillTags: ["Documentation", "Manufacturing support", "Manufacturing readiness", "Product NPI", "CM / JDM vendor collaboration", "Cross-functional engineering", "Medical devices", "Validation", "Data workflows"],
         evidence: [
           evidence(sources.rhaeos, "Canonical role evidence for requirements, test procedures, travelers, records, and design notes."),
           evidence(sources.flowsenseClinical, "Canonical project evidence for FDA-support documentation and validation tooling."),

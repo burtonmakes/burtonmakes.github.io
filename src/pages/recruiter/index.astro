@@ -103,18 +103,21 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       <div class="match-input-panel">
         <label for="recruiter-keywords">
           <span>Job description, requirements, or keywords</span>
-          <textarea
-            id="recruiter-keywords"
-            data-match-input
-            rows="8"
-            placeholder="Paste a job description, responsibilities section, or comma-separated skills."
-          ></textarea>
+          <div class="match-textarea-wrap">
+            <textarea
+              id="recruiter-keywords"
+              data-match-input
+              rows="8"
+              maxlength="20000"
+              placeholder="Paste a job description, responsibilities section, or comma-separated skills."
+            ></textarea>
+            <span class="match-character-limit" data-character-limit>0 / 20,000 characters</span>
+          </div>
         </label>
 
         <div class="match-actions">
-          <button class="button button-primary" type="button" data-ai-run>Analyze with AI</button>
-          <button class="button button-secondary" type="button" data-extract-run>Local fallback</button>
-          <button class="button button-tertiary" type="button" data-match-clear>Clear</button>
+          <button class="button button-primary" type="button" data-ai-run>LLM analysis</button>
+          <button class="button button-secondary" type="button" data-extract-run>Fuzzy keyword scan</button>
         </div>
         <p class="match-status" data-match-status>
           AI matching needs a Cloudflare Worker URL. Local fallback is available.
@@ -123,7 +126,10 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         <section class="detected-skill-panel">
           <div class="detected-skill-heading">
             <span>Detected role skills</span>
-            <strong data-detected-count>0 tags</strong>
+            <div class="detected-skill-tools">
+              <strong data-detected-count>0 tags</strong>
+              <button type="button" data-match-clear>Clear all</button>
+            </div>
           </div>
           <label class="manual-skill-field" for="manual-skill">
             <span>Add skill</span>
@@ -239,10 +245,14 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     text-transform: uppercase;
   }
 
+  .match-textarea-wrap {
+    position: relative;
+  }
+
   .match-input-panel textarea {
     width: 100%;
     min-height: 170px;
-    padding: 12px;
+    padding: 12px 12px 34px;
     border: 1px solid var(--line);
     border-radius: 9px;
     background: rgba(255, 255, 255, 0.018);
@@ -254,6 +264,28 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   .match-input-panel textarea:focus {
     border-color: color-mix(in srgb, var(--accent-2), white 8%);
     box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
+  }
+
+  .match-character-limit {
+    position: absolute;
+    right: 10px;
+    bottom: 9px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.42);
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 760;
+    line-height: 1.2;
+    pointer-events: none;
+  }
+
+  .match-character-limit[data-state="warning"] {
+    color: var(--cta-1);
+  }
+
+  .match-character-limit[data-state="full"] {
+    color: var(--cta-2);
   }
 
   .match-actions {
@@ -303,6 +335,13 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     gap: 14px;
   }
 
+  .detected-skill-tools {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+  }
+
   .detected-skill-heading span,
   .manual-skill-field span {
     color: var(--accent-2);
@@ -318,12 +357,27 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     font-weight: 800;
   }
 
+  .detected-skill-tools button {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent-2);
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
   .detected-skill-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    min-height: 36px;
-    max-height: 118px;
+    align-content: flex-start;
+    gap: 7px;
+    min-height: 64px;
+    max-height: 176px;
     overflow-y: auto;
     padding-right: 3px;
     scrollbar-color: var(--line-strong) transparent;
@@ -337,38 +391,53 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     font-size: 0.9rem;
   }
 
-  .detected-skill-chip {
+  :global(.detected-skill-chip) {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    min-height: 28px;
-    padding: 0 4px 0 9px;
+    max-width: 100%;
+    gap: 6px;
+    min-height: 25px;
+    padding: 3px 7px 3px 10px;
     border: 1px solid rgba(111, 211, 255, 0.26);
     border-radius: 999px;
     background: rgba(111, 211, 255, 0.06);
     color: #e9f7ff;
-    font-size: 0.78rem;
-    font-weight: 760;
+    font-size: 0.74rem;
+    font-weight: 780;
+    line-height: 1.1;
   }
 
-  .detected-skill-chip[data-source="typed"] {
+  :global(.detected-skill-chip[data-source="typed"]) {
     border-color: rgba(232, 111, 78, 0.38);
     background: rgba(232, 111, 78, 0.08);
     color: #fff0ea;
   }
 
-  .detected-skill-chip button {
+  :global(.detected-skill-chip > span) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.detected-skill-chip button) {
     display: inline-grid;
     place-items: center;
-    width: 16px;
-    height: 16px;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    padding: 0;
     border: 0;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-    color: currentColor;
-    font-size: 0.7rem;
+    background: transparent;
+    color: var(--cta-2);
+    font-size: 0.72rem;
+    font-weight: 900;
     line-height: 1;
     cursor: pointer;
+  }
+
+  :global(.detected-skill-chip button:hover) {
+    color: #ffb39f;
   }
 
   .manual-skill-field {
@@ -522,13 +591,13 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     list-style: none;
   }
 
-  .match-list-card li {
+  .match-list-card :global(li) {
     color: var(--muted-2);
     font-size: 0.94rem;
     line-height: 1.42;
   }
 
-  .match-list-card li + li {
+  .match-list-card :global(li + li) {
     margin-top: 10px;
   }
 
@@ -584,6 +653,90 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     padding-top: 4px;
   }
 
+  :global(.role-category-row) {
+    display: grid;
+    grid-template-columns: minmax(96px, 0.42fr) minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  :global(.role-category-bar) {
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  :global(.role-category-bar i) {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
+  }
+
+  :global(.match-evidence-card),
+  :global(.evidence-empty) {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.05), var(--shadow-soft);
+  }
+
+  :global(.evidence-empty),
+  :global(.match-evidence-card) {
+    padding: 22px;
+  }
+
+  :global(.evidence-empty) {
+    grid-column: 1 / -1;
+  }
+
+  :global(.evidence-empty strong),
+  :global(.match-evidence-card strong) {
+    display: block;
+    color: var(--text);
+    font-size: 1.08rem;
+    line-height: 1.25;
+  }
+
+  :global(.match-evidence-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 280px;
+  }
+
+  :global(.match-evidence-card span) {
+    color: var(--accent-2);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  :global(.match-evidence-card p) {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.48;
+  }
+
+  :global(.match-evidence-card ul) {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted-2);
+    font-size: 0.9rem;
+  }
+
+  :global(.match-evidence-card .tag-row) {
+    margin-top: auto;
+    padding-top: 4px;
+  }
+
   @media (max-width: 1100px) {
     .recruiter-match-shell,
     .match-evidence-grid {
@@ -613,6 +766,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   const normalizerTags = JSON.parse(normalizerJson);
   const roleProfiles = JSON.parse(roleProfilesJson);
   const aiMatchEndpoint = recruiterMatchApi;
+  const maxJobTextCharacters = 20000;
 
   const normalize = (value) =>
     String(value)
@@ -738,6 +892,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     });
 
     phrasePatterns.forEach((pattern) => {
+      if (!looksLikeSkillList) return;
       const matches = normalizedText.match(pattern) ?? [];
       matches.forEach((match) => {
         const cleaned = normalize(match);
@@ -752,7 +907,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           }))
           .sort((a, b) => b.score - a.score)[0];
 
-        if (bestTag?.score >= 0.64) {
+        if (bestTag?.score >= 0.68) {
           addDetectedSkill(skills, bestTag.tag.label, "normalized", bestTag.score, cleaned);
         } else if (tokens.some((token) => ["sensor", "sensing", "hardware", "board", "circuit", "embedded", "validation", "manufacturing", "reliability", "factory", "fpc", "pcb", "npi"].includes(token))) {
           addDetectedSkill(skills, titleCase(cleaned), "extracted", 0.52, cleaned);
@@ -816,28 +971,17 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   };
 
   const bestNodeMatch = (keyword, node) => {
-    const matchedNormalizerTag = normalizerTags.find((tag) => normalize(tag.label) === normalize(keyword));
-    const keywordTerms = [
-      { term: keyword, mapped: false },
-      ...(matchedNormalizerTag?.portfolioTerms ?? []).map((term) => ({ term, mapped: true })),
-    ];
     const candidates = [
       node.label,
       node.group,
       node.summary,
       ...node.skillTags,
-      ...node.evidence.flatMap((item) => [item.title, item.summary, item.note, ...item.highlights, ...item.tags]),
     ];
 
     const best = candidates.reduce(
       (current, candidate) => {
-        const bestTerm = keywordTerms
-          .map((item) => ({
-            mapped: item.mapped,
-            score: scorePhrase(item.term, candidate) * (item.mapped ? 0.82 : 1),
-          }))
-          .sort((a, b) => b.score - a.score)[0];
-        return bestTerm.score > current.score ? { score: bestTerm.score, label: candidate, mapped: bestTerm.mapped } : current;
+        const score = scorePhrase(keyword, candidate);
+        return score > current.score ? { score, label: candidate, mapped: false } : current;
       },
       { score: 0, label: "", mapped: false },
     );
@@ -891,7 +1035,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       const button = document.createElement("button");
       button.type = "button";
       button.setAttribute("aria-label", `Remove ${skill.label}`);
-      button.textContent = "x";
+      button.textContent = "×";
       button.addEventListener("click", () => onRemove(skill.normalized));
 
       chip.append(label, button);
@@ -1119,6 +1263,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       matcher.dataset.ready = "true";
 
       const input = matcher.querySelector("[data-match-input]");
+      const characterLimitElement = matcher.querySelector("[data-character-limit]");
       const aiButton = matcher.querySelector("[data-ai-run]");
       const extractButton = matcher.querySelector("[data-extract-run]");
       const clearButton = matcher.querySelector("[data-match-clear]");
@@ -1146,6 +1291,27 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         }
       };
 
+      const updateCharacterLimit = () => {
+        const count = input.value.length;
+        characterLimitElement.textContent = `${count.toLocaleString()} / ${maxJobTextCharacters.toLocaleString()} characters`;
+        if (count >= maxJobTextCharacters) {
+          characterLimitElement.dataset.state = "full";
+          setStatus("Character limit reached. Trim the job post or paste only the role requirements.", "error");
+        } else if (count >= maxJobTextCharacters * 0.9) {
+          characterLimitElement.dataset.state = "warning";
+        } else {
+          delete characterLimitElement.dataset.state;
+        }
+      };
+
+      const resetResults = () => {
+        scoreElement.textContent = "0%";
+        summaryElement.textContent = "Extract or enter role skills to compare them against mapped portfolio evidence.";
+        renderList(matchList, [], "Waiting for keywords.");
+        renderList(gapList, [], "Nothing checked yet.");
+        renderEvidence(evidenceList, []);
+      };
+
       const setDetectedSkills = (skills) => {
         const unique = new Map();
         skills.forEach((skill) => {
@@ -1156,8 +1322,13 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         });
         detectedSkills = [...unique.values()].sort((a, b) => b.score - a.score || a.label.localeCompare(b.label));
         renderDetectedSkills(detectedSkillsElement, detectedCountElement, detectedSkills, (normalized) => {
-          setDetectedSkills(detectedSkills.filter((skill) => skill.normalized !== normalized));
-          runMatch();
+          const nextSkills = detectedSkills.filter((skill) => skill.normalized !== normalized);
+          setDetectedSkills(nextSkills);
+          if (nextSkills.length > 0) {
+            runMatch();
+          } else {
+            resetResults();
+          }
         });
         renderRoleInsights(roleProfileElement, roleProfileSummaryElement, roleCategoriesElement, detectedSkills);
       };
@@ -1194,7 +1365,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         const keywordResults = keywords.map((keyword) => {
           const matches = matcherData
             .map((node) => ({ keyword, node, ...bestNodeMatch(keyword, node) }))
-            .filter((match) => match.score >= 0.68)
+            .filter((match) => match.score >= 0.78)
             .sort((a, b) => b.score - a.score);
 
           return {
@@ -1217,7 +1388,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
         renderList(
           matchList,
-          matched.map((item) => `${item.keyword} -> ${formatMatchLabel(item.best.label)} (${item.best.mapped ? "related evidence" : "direct match"}, ${Math.round(item.best.score * 100)}%)`),
+          matched.map((item) => `${item.keyword} -> ${formatMatchLabel(item.best.label)} (keyword overlap, ${Math.round(item.best.score * 100)}%)`),
           "No mapped matches.",
         );
         renderList(
@@ -1270,8 +1441,15 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
       const runAiMatch = async () => {
         const jobText = input.value.trim();
+        updateCharacterLimit();
         if (jobText.length < 20 && detectedSkills.length === 0) {
           setStatus("Paste a role description or add skills before running AI matching.", "error");
+          input.focus();
+          return;
+        }
+
+        if (input.value.length > maxJobTextCharacters) {
+          setStatus("The pasted role is over the character limit. Trim it before running LLM analysis.", "error");
           input.focus();
           return;
         }
@@ -1323,16 +1501,16 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       aiButton.addEventListener("click", runAiMatch);
       extractButton.addEventListener("click", extractAndMatch);
       input.addEventListener("input", () => {
+        updateCharacterLimit();
         if (input.value.trim().length > 0) {
           setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
         }
       });
       clearButton.addEventListener("click", () => {
-        input.value = "";
         setDetectedSkills([]);
+        updateCharacterLimit();
         setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
-        runMatch();
-        input.focus();
+        resetResults();
       });
 
       manualSkillInput.addEventListener("keydown", (event) => {
@@ -1345,6 +1523,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       addManualSkillButton.addEventListener("click", () => addManualSkills(manualSkillInput.value));
 
       setDetectedSkills([]);
+      updateCharacterLimit();
       setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
     });
   };
