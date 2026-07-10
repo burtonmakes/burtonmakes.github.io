@@ -3,34 +3,57 @@ import BackgroundEffects from "../../components/BackgroundEffects.jsx";
 import GlobalEffects from "../../components/GlobalEffects.jsx";
 import "../../styles/global.css";
 
+// Layers of the exploded-view server graphic in the hero.
+// Each links straight down to its matching service card by id.
+const layers = [
+  { id: "comms", label: "Team tools", tag: "Chat, files, and a shared dashboard", side: "right" },
+  { id: "ai", label: "AI compute", tag: "Local inference, no cloud required", side: "left" },
+  { id: "video", label: "Video & security", tag: "Camera storage, footage you control", side: "right" },
+  { id: "files", label: "Files & documents", tag: "Image and document storage, backed up", side: "left" },
+  { id: "network", label: "Network & access", tag: "VLANs, remote access, tunnels, DNS", side: "right" },
+  { id: "storage", label: "Storage & backup", tag: "NAS, redundancy, restore-tested", side: "left" },
+];
+
 const services = [
   {
-    label: "Local AI servers",
-    body: "On-prem or home-lab AI boxes, model serving, inference routing, storage planning, GPU/CPU tradeoffs, and private workflow design.",
+    id: "storage",
+    label: "Storage & backup",
+    body: "NAS layout, redundancy, retention windows, and restore tests you've actually run — not just backups you hope work.",
   },
   {
-    label: "Data storage",
-    body: "NAS planning, backup strategy, media/data organization, encrypted remote access, retention, restore testing, and sane documentation.",
+    id: "files",
+    label: "Files & documents",
+    body: "Central storage for images, scans, and documents with versioning, search, and access that doesn't depend on a subscription.",
   },
   {
-    label: "Frontend and backend",
-    body: "Lean web apps, dashboards, forms, APIs, databases, auth, and admin tools built around the workflow you actually need.",
+    id: "video",
+    label: "Video & security",
+    body: "Camera storage and monitoring that stays on your network: retention windows, motion alerts, and footage you control.",
   },
   {
-    label: "Deployments",
-    body: "Fast, clean deployment paths for static sites, full-stack apps, workers, containers, domains, environment variables, and monitoring.",
+    id: "ai",
+    label: "Local AI",
+    body: "On-prem AI boxes: model serving, inference routing, storage planning, GPU/CPU tradeoffs, and private workflow design.",
   },
   {
-    label: "AI integration",
-    body: "Practical AI workflows for documents, internal tools, automations, model APIs, retrieval, agents, and human review loops.",
+    id: "network",
+    label: "Network & access",
+    body: "VLAN-aware networks, remote access, DNS, tunnels, firewall rules, and service routing that holds up.",
   },
   {
-    label: "Networking",
-    body: "VLAN-aware home/small-office networks, remote access, DNS, tunnels, firewall rules, service routing, and troubleshooting.",
+    id: "comms",
+    label: "Team communication",
+    body: "Chat, file sharing, and a shared dashboard for a small team or startup — self-hosted, no per-seat pricing.",
   },
   {
+    id: "software",
+    label: "Frontend & backend",
+    body: "Lean web apps, dashboards, forms, APIs, and admin tools built around the workflow you actually run.",
+  },
+  {
+    id: "automation",
     label: "Automation",
-    body: "Scheduled jobs, file movement, alerting, backups, data cleanup, reporting, and glue code that keeps systems useful.",
+    body: "Scheduled jobs, file movement, alerting, backups, and the glue code that keeps the whole box useful.",
   },
 ];
 
@@ -42,12 +65,12 @@ const process = [
 ];
 
 const outcomes = [
-  "Frontend, backend, and deployment done quickly without overbuilding",
+  "One server doing storage, video security, and team tools instead of five subscriptions",
   "Private local AI workflow for documents or engineering notes",
-  "Reliable home or small-office storage with backup/restore plan",
-  "Internal tool or website connected to your real workflow",
-  "Remote access without punching reckless holes in the network",
-  "Clean handoff docs so the system is maintainable",
+  "Camera and video storage that stays local, with retention you set",
+  "Central image/document storage with backup and restore you've tested",
+  "Team chat and file sharing for a startup, without per-seat SaaS pricing",
+  "Clean handoff docs so the system is maintainable without you",
 ];
 ---
 
@@ -58,7 +81,7 @@ const outcomes = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Cocometric builds local AI servers, data storage, AI integrations, networking infrastructure, automation, and focused websites for individuals and small teams."
+      content="Cocometric builds and configures servers: storage and backup, video security, document storage, local AI, team communication tools, and networking for individuals and small teams."
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -91,28 +114,48 @@ const outcomes = [
     <main id="main">
       <section class="coco-hero">
         <div class="coco-hero-copy reveal">
-          <p class="eyebrow">Software and infrastructure builds</p>
-          <h1>Frontend, backend, AI, storage, and deployments. Built quickly, cleanly, and only as much as you need.</h1>
+          <p class="eyebrow">One box, built by hand</p>
+          <h1>A server, exploded. Everything I can build inside it.</h1>
           <p>
-            Cocometric helps people ship useful software and infrastructure without bloated retainers,
-            vague roadmaps, or overbuilt systems. No more, no less: the right build for the job.
+            Cocometric builds and configures physical servers — storage, local AI, video security,
+            and team tools — on the same stack I run myself. Own the hardware. Skip the subscriptions.
           </p>
           <div class="coco-actions">
             <a class="button button-primary" href="/contact/?topic=cocometric-quote">Request a quote</a>
-            <a class="button button-secondary" href="#services">See services</a>
+            <a class="button button-secondary" href="#services">See what's inside</a>
           </div>
         </div>
 
-        <div class="topology-visual reveal" aria-label="Example infrastructure topology">
-          <div class="topology-node node-source">Inputs</div>
-          <div class="topology-node node-ai">Local AI</div>
-          <div class="topology-node node-store">Storage</div>
-          <div class="topology-node node-web">Web tools</div>
-          <div class="topology-node node-access">Remote access</div>
-          <div class="topology-line line-a"></div>
-          <div class="topology-line line-b"></div>
-          <div class="topology-line line-c"></div>
-          <div class="topology-line line-d"></div>
+        <div class="server-exploded reveal">
+          <svg
+            viewBox="0 0 640 760"
+            role="img"
+            aria-label="Exploded view of a server, showing team tools, AI compute, video and security, files and documents, network and access, and storage and backup layers stacked above a chassis"
+          >
+            <line class="spine" x1="320" y1="14" x2="320" y2="662" />
+            {layers.map((layer, i) => {
+              const y = 20 + i * 108;
+              const w = 296;
+              const h = 84;
+              const x = layer.side === "left" ? 44 : 300;
+              const connectorX = layer.side === "left" ? x + w : x;
+              return (
+                <a href={`#${layer.id}`} class="layer-link" aria-label={`${layer.label}: ${layer.tag}`}>
+                  <line class="connector" x1={connectorX} y1={y + h / 2} x2="320" y2={y + h / 2} />
+                  <g class="layer-group">
+                    <rect class="layer-box" x={x} y={y} width={w} height={h} rx="6" />
+                    <text class="layer-label" x={x + 20} y={y + 32}>{layer.label}</text>
+                    <text class="layer-tag" x={x + 20} y={y + 56}>{layer.tag}</text>
+                  </g>
+                </a>
+              );
+            })}
+            <g class="chassis-group">
+              <rect class="chassis-box" x="170" y="668" width="300" height="70" rx="6" />
+              <text class="chassis-label" x="320" y="698" text-anchor="middle">Cocometric server</text>
+              <text class="chassis-tag" x="320" y="720" text-anchor="middle">Built, wired, and handed off</text>
+            </g>
+          </svg>
         </div>
       </section>
 
@@ -124,7 +167,7 @@ const outcomes = [
 
         <div class="service-grid">
           {services.map((service) => (
-            <article class="service-card reveal">
+            <article class="service-card reveal" id={service.id}>
               <h3>{service.label}</h3>
               <p>{service.body}</p>
             </article>
@@ -280,52 +323,87 @@ const outcomes = [
     margin-top: 30px;
   }
 
-  .topology-visual {
+  .server-exploded {
     position: relative;
     min-height: 560px;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 8px;
     background:
-      radial-gradient(circle at 22% 20%, rgba(111, 211, 255, 0.14), transparent 24%),
-      radial-gradient(circle at 80% 68%, rgba(232, 111, 78, 0.12), transparent 28%),
+      radial-gradient(circle at 22% 15%, rgba(111, 211, 255, 0.12), transparent 26%),
+      radial-gradient(circle at 78% 85%, rgba(232, 111, 78, 0.12), transparent 30%),
       rgba(1, 5, 10, 0.78);
   }
 
-  .topology-node {
-    position: absolute;
-    display: grid;
-    min-width: 132px;
-    min-height: 72px;
-    place-items: center;
-    border: 1px solid rgba(111, 211, 255, 0.28);
-    border-radius: 8px;
-    background: rgba(6, 16, 28, 0.96);
-    color: var(--text);
-    font-size: 0.86rem;
+  .server-exploded svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .spine {
+    stroke: rgba(111, 211, 255, 0.22);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 5;
+  }
+
+  .connector {
+    stroke: rgba(111, 211, 255, 0.4);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 4;
+  }
+
+  .layer-link {
+    cursor: pointer;
+  }
+
+  .layer-box {
+    fill: rgba(6, 16, 28, 0.96);
+    stroke: rgba(111, 211, 255, 0.28);
+    stroke-width: 1.5;
+    transition: stroke 0.15s ease, fill 0.15s ease, transform 0.15s ease;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .layer-label {
+    fill: var(--text);
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .layer-tag {
+    fill: var(--muted-2);
+    font-size: 12px;
+  }
+
+  .layer-link:hover .layer-box,
+  .layer-link:focus-visible .layer-box {
+    stroke: var(--graph-coral);
+    transform: scale(1.02);
+  }
+
+  .layer-link:hover .connector {
+    stroke: var(--graph-coral);
+  }
+
+  .chassis-box {
+    fill: rgba(6, 16, 28, 0.96);
+    stroke: rgba(232, 111, 78, 0.4);
+    stroke-width: 1.5;
+  }
+
+  .chassis-label {
+    fill: var(--text);
+    font-size: 16px;
     font-weight: 850;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
-  .node-source { left: 8%; top: 12%; }
-  .node-ai { left: 52%; top: 18%; }
-  .node-store { left: 18%; top: 48%; }
-  .node-web { right: 8%; bottom: 22%; }
-  .node-access { left: 10%; bottom: 12%; }
-
-  .topology-line {
-    position: absolute;
-    height: 2px;
-    transform-origin: left center;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(111, 211, 255, 0.72), rgba(232, 111, 78, 0.72));
+  .chassis-tag {
+    fill: var(--muted-2);
+    font-size: 12px;
   }
-
-  .line-a { left: 28%; top: 23%; width: 28%; transform: rotate(6deg); }
-  .line-b { left: 31%; top: 55%; width: 36%; transform: rotate(-24deg); }
-  .line-c { left: 31%; bottom: 26%; width: 50%; transform: rotate(-11deg); }
-  .line-d { left: 35%; top: 60%; width: 46%; transform: rotate(21deg); }
 
   .coco-section,
   .coco-band,
@@ -454,7 +532,7 @@ const outcomes = [
       grid-template-columns: 1fr;
     }
 
-    .topology-visual {
+    .server-exploded {
       min-height: 420px;
     }
 
@@ -490,14 +568,16 @@ const outcomes = [
       font-size: clamp(2.6rem, 14vw, 4.2rem);
     }
 
-    .topology-visual {
-      min-height: 360px;
+    .server-exploded {
+      min-height: 460px;
     }
 
-    .topology-node {
-      min-width: 112px;
-      min-height: 58px;
-      font-size: 0.72rem;
+    .layer-label {
+      font-size: 15px;
+    }
+
+    .layer-tag {
+      font-size: 11px;
     }
 
     .service-grid,
