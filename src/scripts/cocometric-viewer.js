@@ -14,7 +14,7 @@ const stages = [
   {
     eyebrow: "Cocometric system · 01",
     title: "One system. Every layer visible.",
-    note: "Scroll through the supplied server model to inspect the rack, storage, compute, accelerators, cooling, power, and network hardware.",
+    note: "Scroll through the server to pull each hardware layer out of the rack and inspect it.",
     tags: ["Rack", "Storage", "Compute", "GPU"],
     focus: [],
     context: [],
@@ -24,80 +24,66 @@ const stages = [
   {
     eyebrow: "Rack + chassis · 02",
     title: "A serviceable system, not a sealed appliance.",
-    note: "The enclosure, rails, chassis, and installed bays keep the system accessible for upgrades, maintenance, and replacement.",
-    tags: ["Rack enclosure", "Rails", "Chassis", "Service bays"],
-    focus: ["rack", "chassis"],
-    context: [],
+    note: "The chassis moves forward from the rack while the installed system stays visible behind it.",
+    tags: ["Rack enclosure", "Chassis", "Service bays", "Replaceable hardware"],
+    focus: ["chassis"],
+    context: ["rack"],
     camera: [-0.4, 3.5, 8.7],
     target: [-2.25, 0.05, 0.0],
   },
   {
     eyebrow: "Storage · 03",
     title: "Storage built around recovery.",
-    note: "Six removable drives support primary data, snapshots, retention windows, and restore-tested backup tiers.",
+    note: "The removable drive layer slides out for inspection, then returns before the next subsystem opens.",
     tags: ["6 removable drives", "Snapshots", "Retention", "Restore tests"],
     focus: ["storage"],
-    context: ["chassis"],
+    context: ["chassis", "rack"],
     camera: [7.0, 4.0, 8.5],
     target: [3.35, 1.12, 0.0],
   },
   {
     eyebrow: "Compute · 04",
     title: "General compute for the whole local stack.",
-    note: "The motherboard, dual processors, heat sinks, memory, and I/O run databases, indexing, automation, and internal services.",
+    note: "Processors, memory, motherboard, and I/O lift out as one compute layer while the storage layer closes.",
     tags: ["Dual CPU", "12 memory modules", "Motherboard", "I/O"],
     focus: ["compute"],
-    context: ["chassis"],
+    context: ["chassis", "rack"],
     camera: [4.3, 3.0, 7.0],
     target: [0.05, 0.55, 0.05],
   },
   {
     eyebrow: "AI accelerators · 05",
     title: "Local inference without sending data away.",
-    note: "Two GPU assemblies provide accelerated capacity for retrieval, OCR, image processing, and private model workloads.",
+    note: "The GPU assemblies move out from the installed stack for a closer look at local model capacity.",
     tags: ["2 GPU assemblies", "Local models", "OCR", "Private retrieval"],
     focus: ["gpu"],
-    context: ["chassis"],
+    context: ["chassis", "rack"],
     camera: [4.1, -0.1, 6.8],
     target: [0.25, -1.45, 0.08],
   },
   {
     eyebrow: "Cooling · 06",
     title: "Airflow designed as part of the system.",
-    note: "Six fan assemblies and a dedicated fan wall move heat through the chassis so storage and compute remain stable under sustained load.",
+    note: "The fan wall separates from the chassis to show the cooling path, then returns into the rack.",
     tags: ["6 fan assemblies", "Fan wall", "Directed airflow", "Sustained load"],
     focus: ["cooling"],
-    context: ["chassis"],
+    context: ["chassis", "rack"],
     camera: [5.8, 2.5, 7.0],
     target: [2.2, 0.12, 0.1],
   },
   {
     eyebrow: "Power + network · 07",
     title: "Redundant power and controlled access.",
-    note: "Two power modules and a dedicated network interface support reliable operation, segmentation, secure remote access, and clean service routing.",
+    note: "Power and network hardware pull away from the rack together while the rest of the system remains assembled.",
     tags: ["Dual PSU", "3-port NIC", "Segmentation", "Secure access"],
     focus: ["power-network"],
-    context: ["chassis"],
+    context: ["chassis", "rack"],
     camera: [6.7, 0.8, 7.7],
     target: [3.0, -1.15, 0.18],
   },
 ];
 
-const componentOffsets = {
-  rack: new THREE.Vector3(-0.08, 0.02, 0.18),
-  chassis: new THREE.Vector3(0.0, 0.08, 0.24),
-  storage: new THREE.Vector3(0.16, 0.08, 0.34),
-  compute: new THREE.Vector3(0.0, 0.12, 0.36),
-  gpu: new THREE.Vector3(0.0, -0.04, 0.4),
-  cooling: new THREE.Vector3(0.14, 0.0, 0.38),
-  "power-network": new THREE.Vector3(0.16, -0.04, 0.36),
-};
-
-const componentNames = Object.keys(componentOffsets);
-const focusSets = stages.map((stage, index) => new Set(index === 0 ? componentNames : stage.focus));
-const contextSets = stages.map((stage) => new Set(stage.context));
-const zeroVector = new THREE.Vector3();
-
+const componentNames = ["rack", "chassis", "storage", "compute", "gpu", "cooling", "power-network"];
 const body = document.body;
 const canvas = document.querySelector("#server-canvas");
 const loading = document.querySelector("#loading");
@@ -173,6 +159,18 @@ function stageFloat() {
   return clamp((window.scrollY - firstBeat.offsetTop) / stageHeight, 0, stages.length - 1);
 }
 
+function stageWeight(value, index) {
+  return smooth(clamp(1 - Math.abs(value - index)));
+}
+
+function componentWeight(value, component, key) {
+  let weight = 0;
+  stages.forEach((stage, index) => {
+    if (stage[key]?.includes(component)) weight = Math.max(weight, stageWeight(value, index));
+  });
+  return weight;
+}
+
 let activeStage = -1;
 function renderStageText(index) {
   const stage = stages[index];
@@ -243,16 +241,16 @@ async function decompressModel(encoded) {
   setLoadingProgress(26, "Preparing Cocometric hardware");
   const compressed = decodeBase64(encoded);
   setLoadingProgress(48, "Decompressing server model");
-
   const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream("gzip"));
   const arrayBuffer = await new Response(stream).arrayBuffer();
 
   if (arrayBuffer.byteLength < 12) throw new Error("The embedded GLB model is incomplete.");
   const header = new DataView(arrayBuffer, 0, 12);
-  const magic = header.getUint32(0, true);
-  const version = header.getUint32(4, true);
-  const declaredLength = header.getUint32(8, true);
-  if (magic !== 0x46546c67 || version !== 2 || declaredLength !== arrayBuffer.byteLength) {
+  if (
+    header.getUint32(0, true) !== 0x46546c67 ||
+    header.getUint32(4, true) !== 2 ||
+    header.getUint32(8, true) !== arrayBuffer.byteLength
+  ) {
     throw new Error("The embedded GLB model failed validation.");
   }
 
@@ -270,48 +268,71 @@ function componentFromName(name = "") {
   return "chassis";
 }
 
+function desiredCenter(component, rackCenter, rackSize) {
+  const centers = {
+    chassis: new THREE.Vector3(rackCenter.x, rackCenter.y, rackCenter.z),
+    storage: new THREE.Vector3(rackCenter.x + rackSize.x * 0.12, rackCenter.y + rackSize.y * 0.18, rackCenter.z),
+    compute: new THREE.Vector3(rackCenter.x, rackCenter.y + rackSize.y * 0.02, rackCenter.z),
+    gpu: new THREE.Vector3(rackCenter.x, rackCenter.y - rackSize.y * 0.18, rackCenter.z + rackSize.z * 0.03),
+    cooling: new THREE.Vector3(rackCenter.x + rackSize.x * 0.18, rackCenter.y, rackCenter.z - rackSize.z * 0.08),
+    "power-network": new THREE.Vector3(rackCenter.x + rackSize.x * 0.2, rackCenter.y - rackSize.y * 0.25, rackCenter.z),
+  };
+  return centers[component] || rackCenter.clone();
+}
+
+function explodeVector(component, rackSize) {
+  const vectors = {
+    chassis: new THREE.Vector3(-rackSize.x * 0.28, rackSize.y * 0.04, rackSize.z * 0.22),
+    storage: new THREE.Vector3(rackSize.x * 0.48, rackSize.y * 0.08, rackSize.z * 0.28),
+    compute: new THREE.Vector3(rackSize.x * 0.04, rackSize.y * 0.34, rackSize.z * 0.34),
+    gpu: new THREE.Vector3(rackSize.x * 0.02, -rackSize.y * 0.26, rackSize.z * 0.42),
+    cooling: new THREE.Vector3(rackSize.x * 0.42, rackSize.y * 0.02, rackSize.z * 0.28),
+    "power-network": new THREE.Vector3(rackSize.x * 0.5, -rackSize.y * 0.16, rackSize.z * 0.24),
+  };
+  return vectors[component] || new THREE.Vector3();
+}
+
 async function initializeViewer() {
   if (requiredElements.some((element) => !element)) {
     throw new Error("The Cocometric page is missing a required viewer element.");
   }
 
+  const mobile = isMobile();
   const lowPowerDevice = (navigator.hardwareConcurrency || 8) <= 4;
-  const enableShadows = !isMobile() && !lowPowerDevice;
+  const enableShadows = !mobile && !lowPowerDevice;
 
-  let renderer;
-  try {
-    renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: !isMobile(),
-      alpha: true,
-      powerPreference: "high-performance",
-      preserveDrawingBuffer: false,
-    });
-  } catch (error) {
-    throw new Error(`WebGL could not be initialized: ${error instanceof Error ? error.message : String(error)}`);
-  }
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: !mobile && !lowPowerDevice,
+    alpha: true,
+    powerPreference: mobile ? "low-power" : "high-performance",
+    preserveDrawingBuffer: false,
+  });
 
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.04;
+  renderer.toneMappingExposure = mobile ? 1.08 : 1.04;
   renderer.shadowMap.enabled = enableShadows;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x01050a, 0.027);
+  scene.fog = new THREE.FogExp2(0x01050a, mobile ? 0.021 : 0.027);
 
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const environmentTarget = pmrem.fromScene(new RoomEnvironment(), 0.04);
-  scene.environment = environmentTarget.texture;
-  pmrem.dispose();
+  let environmentTarget = null;
+  if (!mobile && !lowPowerDevice) {
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    environmentTarget = pmrem.fromScene(new RoomEnvironment(), 0.04);
+    scene.environment = environmentTarget.texture;
+    pmrem.dispose();
+  }
 
   const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 100);
   const cameraTarget = new THREE.Vector3();
 
-  scene.add(new THREE.HemisphereLight(0xc9d9e5, 0x071018, 1.45));
+  scene.add(new THREE.HemisphereLight(0xc9d9e5, 0x071018, mobile ? 1.7 : 1.45));
 
-  const key = new THREE.DirectionalLight(0xffffff, 4.2);
+  const key = new THREE.DirectionalLight(0xffffff, mobile ? 3.4 : 4.2);
   key.position.set(5, 8, 9);
   key.castShadow = enableShadows;
   key.shadow.mapSize.set(1024, 1024);
@@ -319,11 +340,11 @@ async function initializeViewer() {
   key.shadow.camera.far = 24;
   scene.add(key);
 
-  const fill = new THREE.DirectionalLight(0x6fd3ff, 1.55);
+  const fill = new THREE.DirectionalLight(0x6fd3ff, mobile ? 1.15 : 1.55);
   fill.position.set(-5, 2, 6);
   scene.add(fill);
 
-  const rim = new THREE.PointLight(0xe86f4e, 20, 18, 2);
+  const rim = new THREE.PointLight(0xe86f4e, mobile ? 9 : 20, 18, 2);
   rim.position.set(2.5, 3.5, -4.5);
   scene.add(rim);
 
@@ -375,10 +396,8 @@ async function initializeViewer() {
   }
 
   const modelBuffer = await decompressModel(modelGzipBase64);
-  setLoadingProgress(72, "Building component view");
-
-  const loader = new GLTFLoader();
-  const gltf = await new Promise((resolve, reject) => loader.parse(modelBuffer, "", resolve, reject));
+  setLoadingProgress(72, "Building assembled server view");
+  const gltf = await new Promise((resolve, reject) => new GLTFLoader().parse(modelBuffer, "", resolve, reject));
 
   modelRoot.add(gltf.scene);
   modelRoot.updateMatrixWorld(true);
@@ -393,7 +412,6 @@ async function initializeViewer() {
     const sourceMaterials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     const materials = sourceMaterials.map((material) => materialForComponent(material, component));
     mesh.material = Array.isArray(mesh.material) ? materials : materials[0];
-
     if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
     const radius = mesh.geometry.boundingSphere?.radius || 0;
     mesh.castShadow = enableShadows && radius > 0.08;
@@ -402,6 +420,31 @@ async function initializeViewer() {
   });
 
   gltf.scene.removeFromParent();
+  modelRoot.updateMatrixWorld(true);
+
+  const rackGroup = componentGroups.get("rack");
+  const rackBounds = new THREE.Box3().setFromObject(rackGroup);
+  const rackCenter = rackBounds.getCenter(new THREE.Vector3());
+  const rackSize = rackBounds.getSize(new THREE.Vector3());
+  const assembledPositions = new Map();
+  const explodedPositions = new Map();
+
+  componentGroups.forEach((group, component) => {
+    if (component === "rack") {
+      assembledPositions.set(component, new THREE.Vector3());
+      explodedPositions.set(component, new THREE.Vector3());
+      return;
+    }
+
+    const bounds = new THREE.Box3().setFromObject(group);
+    const currentCenter = bounds.getCenter(new THREE.Vector3());
+    const assembled = desiredCenter(component, rackCenter, rackSize).sub(currentCenter);
+    const exploded = assembled.clone().add(explodeVector(component, rackSize));
+    assembledPositions.set(component, assembled);
+    explodedPositions.set(component, exploded);
+    group.position.copy(assembled);
+  });
+
   body.dataset.modelStatus = "ready";
   setLoadingProgress(100, "Cocometric hardware ready");
   hideLoading();
@@ -410,15 +453,16 @@ async function initializeViewer() {
   const camB = new THREE.Vector3();
   const targetA = new THREE.Vector3();
   const targetB = new THREE.Vector3();
+  const animatedPosition = new THREE.Vector3();
 
   function resize() {
-    const mobile = isMobile();
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.35 : 1.75));
+    const phone = isMobile();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1.2 : 1.75));
     renderer.setSize(window.innerWidth, window.innerHeight, false);
     camera.aspect = window.innerWidth / window.innerHeight;
-    camera.fov = mobile ? 42 : 32;
+    camera.fov = phone ? 42 : 32;
     camera.updateProjectionMatrix();
-    modelRoot.scale.setScalar(mobile ? 0.84 : 1);
+    modelRoot.scale.setScalar(phone ? 0.84 : 1);
   }
 
   let resizeFrame = 0;
@@ -443,7 +487,7 @@ async function initializeViewer() {
     const blend = smooth(value - fromIndex);
     const from = stages[fromIndex];
     const to = stages[toIndex];
-    const nearest = updateActiveStage();
+    updateActiveStage();
 
     camA.fromArray(from.camera);
     camB.fromArray(to.camera);
@@ -458,52 +502,51 @@ async function initializeViewer() {
     }
     camera.lookAt(cameraTarget);
 
-    const focusSet = focusSets[nearest];
-    const contextSet = contextSets[nearest];
+    const overviewWeight = smooth(clamp(1 - value));
 
     componentGroups.forEach((group, component) => {
-      const selected = focusSet.has(component);
-      const targetOffset = selected && nearest !== 0 ? componentOffsets[component] : zeroVector;
-      group.position.lerp(targetOffset, reduceMotion ? 1 : 0.085);
-      const targetScale = selected && nearest !== 0 ? 1.035 : 1;
-      const scale = THREE.MathUtils.lerp(group.scale.x, targetScale, reduceMotion ? 1 : 0.085);
+      if (component === "rack") return;
+      const focusWeight = componentWeight(value, component, "focus");
+      animatedPosition.lerpVectors(
+        assembledPositions.get(component),
+        explodedPositions.get(component),
+        focusWeight
+      );
+      group.position.lerp(animatedPosition, reduceMotion ? 1 : 0.16);
+      const targetScale = 1 + focusWeight * 0.025;
+      const scale = THREE.MathUtils.lerp(group.scale.x, targetScale, reduceMotion ? 1 : 0.14);
       group.scale.setScalar(scale);
     });
 
     materialStates.forEach((state) => {
-      const overview = nearest === 0;
-      const selected = focusSet.has(state.component);
-      const context = contextSet.has(state.component);
-      const targetOpacity = overview
-        ? state.originalOpacity
-        : selected
-          ? state.originalOpacity
-          : context
-            ? Math.min(state.originalOpacity, 0.25)
-            : Math.min(state.originalOpacity, 0.075);
+      const focusWeight = componentWeight(value, state.component, "focus");
+      const contextWeight = componentWeight(value, state.component, "context");
+      const rackOpacity = state.component === "rack" ? 1 : 0;
+      const visibility = Math.max(rackOpacity, overviewWeight, focusWeight, contextWeight * 0.34, 0.025);
+      const targetOpacity = state.originalOpacity * visibility;
 
       state.material.opacity = THREE.MathUtils.lerp(
         state.material.opacity,
         targetOpacity,
-        reduceMotion ? 1 : 0.1
+        reduceMotion ? 1 : 0.16
       );
       state.material.depthWrite = targetOpacity > 0.92;
 
       if (state.material.emissive && state.originalEmissive) {
-        const targetEmissive = selected && !overview ? highlight : state.originalEmissive;
-        state.material.emissive.lerp(targetEmissive, reduceMotion ? 1 : 0.08);
-        const targetIntensity = selected && !overview
-          ? Math.max(state.originalEmissiveIntensity, 0.24)
+        const targetEmissive = focusWeight > 0.08 ? highlight : state.originalEmissive;
+        state.material.emissive.lerp(targetEmissive, reduceMotion ? 1 : 0.12);
+        const targetIntensity = focusWeight > 0.08
+          ? Math.max(state.originalEmissiveIntensity, 0.24 * focusWeight)
           : state.originalEmissiveIntensity;
         state.material.emissiveIntensity = THREE.MathUtils.lerp(
           state.material.emissiveIntensity,
           targetIntensity,
-          reduceMotion ? 1 : 0.08
+          reduceMotion ? 1 : 0.12
         );
       }
     });
 
-    if (!reduceMotion) modelRoot.rotation.y = -0.08 + Math.sin(time * 0.00018) * 0.025;
+    if (!reduceMotion) modelRoot.rotation.y = -0.08 + Math.sin(time * 0.00018) * 0.018;
 
     const finalRect = finalSection.getBoundingClientRect();
     const finalFade = clamp(1 - finalRect.top / window.innerHeight);
@@ -536,7 +579,7 @@ async function initializeViewer() {
   window.addEventListener("pagehide", () => {
     stopRendering();
     renderer.dispose();
-    environmentTarget.dispose();
+    environmentTarget?.dispose();
   }, { once: true });
 
   startRendering();
