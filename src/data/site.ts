@@ -1,5 +1,6 @@
 import {
   earlySensingAccomplishments,
+  eunilAccomplishments,
   graduateResearchAccomplishments,
   rhaeosAccomplishments,
   workProofPoints,
@@ -34,14 +35,14 @@ export const featuredWork = [
     eyebrow: "Medical devices",
     title: "FlowSense clinical and home systems",
     description:
-      "Regulated wearable sensing work across FlowSense Clinical, FlowSense Home, validation workflows, sensor integration, and home-use monitoring.",
+      "Regulated wearable sensing work across clinical validation, home-use monitoring, reliability, manufacturing readiness, and physiological ML workflows.",
     href: "/work/",
   },
   {
     eyebrow: "Implantables",
-    title: "Wireless bioelectronics",
+    title: "Wireless battery-free bioelectronics",
     description:
-      "Fully implantable wireless and battery-free photometry, stimulation, and musculoskeletal interfaces from the Ph.D. research program.",
+      "Publication-backed implantable platforms across photometry, neurostimulation, osseosurface sensing, and high-power FES.",
     href: "/projects/wireless-battery-free-bioelectronics/",
   },
   {
@@ -59,27 +60,30 @@ export const workHistory = [
     company: "Rhaeos, Inc.",
     dates: "May 2022 – Dec 2025",
     context:
-      "Medical-device engineering role across FlowSense Clinical, FlowSense Home, algorithm development, manufacturing support, and FDA-ready documentation.",
+      "Commercial wearable medical-device R&D across FlowSense Clinical, FlowSense Home, wound sensing, algorithm validation, build/reliability improvement, and FDA-ready documentation.",
     summary:
-      "Worked on sensing systems that connected hardware, software, data, documentation, and real-world use conditions.",
+      "Led technical work across wearable hardware, sensor integration, home/clinical data workflows, reliability, ML validation, and regulated documentation.",
     responsibilities: [
-      "Supported FlowSense Clinical / ACE and FlowSense Home / Lynx development.",
-      "Integrated sensors, electronics, packaging, adhesives, wireless charging, and test workflows.",
-      "Built validation workflows across bench testing, field use, clinical/home monitoring, and data review.",
-      "Created engineering documentation including requirements, test procedures, travelers, inspection records, and design notes.",
-      "Worked across hardware, firmware, software, manufacturing, quality, and clinical-facing workflows.",
+      "Supported FlowSense Clinical / ACE, FlowSense Home / Lynx, and Wound Monitoring Platform / Tabby development.",
+      "Integrated sensors, electronics, packaging, adhesives, Qi charging, motion sensing, onboard memory, and data workflows.",
+      "Built validation workflows across bench testing, clinical/home monitoring, preclinical studies, data review, and deployment checks.",
+      "Created FDA-ready engineering documentation including requirements, test protocols, assembly procedures, inspection records, BOMs, DMFEA, and design notes.",
+      "Worked across hardware, firmware, software, clinical, regulatory, manufacturing, supplier, patient, and caregiver feedback loops.",
     ],
     accomplishments: rhaeosAccomplishments,
     skills: [
       "Medical devices",
       "Wearable sensing",
       "FlowSense",
-      "Validation",
+      "Algorithm validation",
       "Reliability",
       "Sensor integration",
-      "Documentation",
-      "Manufacturing support",
-      "Data workflows",
+      "Adhesives and skin interface",
+      "Qi charging",
+      "BLE / NFC",
+      "Manufacturing readiness",
+      "FDA-ready documentation",
+      "Physiological ML",
     ],
   },
   {
@@ -87,21 +91,26 @@ export const workHistory = [
     company: "Gutruf Lab, University of Arizona",
     dates: "Dec 2018 – May 2022",
     context:
-      "Ph.D. research focused on fully implantable wireless and battery-free bioelectronics for neural, skeletal, and physiological monitoring.",
+      "Ph.D. research on wireless, battery-free implantable bioelectronics for neural recording, neuromodulation, musculoskeletal sensing, and functional electrical stimulation.",
     summary:
-      "Designed implantable wireless platforms using flexible electronics, wireless power, communication, and preclinical validation.",
+      "Designed and validated miniaturized implantable systems across wireless power, flexible interfaces, encapsulation, communication, stimulation, and preclinical workflows.",
     responsibilities: [
-      "Developed wireless battery-free photometry and stimulation systems.",
-      "Built flexible, soft, and biocompatible implantable platforms.",
-      "Supported preclinical validation in freely moving animal models.",
-      "Worked across power transfer, communication, encapsulation, and mechanics.",
+      "Developed wireless battery-free photometry, neurostimulation, osseosurface sensing, and high-power FES platforms.",
+      "Integrated rigid electronics with flexible probes, serpentine interconnects, soft packaging, and biocompatible encapsulation.",
+      "Built bench-validation infrastructure for antenna/power tuning, output characterization, fixture design, accelerated aging, and packaging validation.",
+      "Supported preclinical validation in freely moving small-animal models where device mass, packaging, wireless reliability, and surgical handling controlled study quality.",
     ],
     accomplishments: graduateResearchAccomplishments,
     skills: [
       "Implantables",
       "Wireless power",
+      "13.56 MHz coupling",
       "Flexible electronics",
       "Encapsulation",
+      "Photometry",
+      "Neurostimulation",
+      "Functional electrical stimulation",
+      "Antenna tuning",
       "Preclinical validation",
     ],
   },
@@ -110,25 +119,26 @@ export const workHistory = [
     company: "EUNIL / University of Arizona",
     dates: "Jan 2016 – Oct 2019",
     context:
-      "Research role centered on non-invasive neural recording, ultrasound-modulated current-density detection, amplifier optimization, EMI control, and DSP methods.",
+      "Research role centered on early biomedical sensing hardware, non-invasive recording, low-noise acquisition, signal processing, phantoms, and optical/microfluidic sensing.",
     summary:
-      "Developed signal-quality and experimental workflows for neural sensing and acoustoelectric measurement systems.",
+      "Built early sensing and signal-quality workflows across low-noise hardware, EMI control, phantoms, DSP, wavelets, and low-cost optical/microfluidic analysis.",
     responsibilities: [
-      "Worked on non-invasive neural recording experiments and related phantoms.",
-      "Improved amplifier performance and EMI/noise control.",
-      "Used wavelet and DSP methods to improve signal interpretation.",
-      "Supported experimental setups for current-density detection research.",
+      "Designed and optimized non-invasive biomedical recording hardware and algorithms.",
+      "Improved signal quality through amplifier optimization, EMI control, DSP, and wavelet-based processing.",
+      "Built phantoms and experimental tools for sensing and recording studies.",
+      "Supported ultrasound/acoustoelectric sensing and current-density detection workflows.",
+      "Developed optical/microfluidic nanoparticle analysis using fluorescence microscopy and Brownian-motion tracking.",
     ],
-    accomplishments: [
-      "Built practical experience in low-noise sensing and experimental debugging.",
-      "Strengthened the bridge between signal quality, hardware setup, and analysis.",
-    ],
+    accomplishments: eunilAccomplishments,
     skills: [
-      "Neural recording",
-      "Signal processing",
+      "Low-noise acquisition",
+      "Analog sensing",
       "Amplifier optimization",
       "EMI control",
-      "Phantoms",
+      "DSP / wavelets",
+      "Experimental phantoms",
+      "Microfluidics",
+      "Optical sensing",
     ],
   },
   {
@@ -136,20 +146,23 @@ export const workHistory = [
     company: "iCAMP Research Group, University of Arizona",
     dates: "Sep 2014 – Jan 2017",
     context:
-      "Early physiological-sensing role focused on chest-worn sensor data, environmental stress, fall-risk/frailty studies, calibration, labeling, and prediction workflows.",
+      "Early physiological-sensing role focused on chest-worn ECG/accelerometer data, environmental stress, fall-risk/frailty studies, calibration, labeling, and prediction workflows.",
     summary:
-      "Built a foundation in noisy human physiological data, sensor calibration, and early predictive analysis.",
+      "Built a foundation in noisy human wearable data, ECG/HRV feature extraction, accelerometer calibration, labeling, and early predictive modeling support.",
     responsibilities: [
-      "Supported chest-worn physiological sensor studies and data preparation.",
-      "Worked on calibration, labeling, and prediction workflows for human sensor data.",
-      "Analyzed environmental stress and fall-risk / frailty signals.",
-      "Helped structure real-world time-series data for downstream analysis.",
+      "Analyzed chest-worn ECG and acceleration data from wearable physiological studies.",
+      "Performed ECG filtering, R-wave detection, R-R interval correction, and HRV feature generation in time and frequency domains.",
+      "Calibrated and reoriented 3D acceleration data for windowed posture/activity classification.",
+      "Supported wearable-data feature extraction for environmental stress and fall-risk/frailty modeling.",
     ],
     accomplishments: earlySensingAccomplishments,
     skills: [
       "Physiological sensing",
+      "ECG / HRV",
+      "Accelerometers",
       "Data labeling",
       "Calibration",
+      "Feature engineering",
       "Prediction workflows",
       "Time-series analysis",
     ],
@@ -169,13 +182,18 @@ export const skillsDemonstrated = [
   "Encapsulation",
   "Wireless power",
   "BLE / NFC",
+  "Qi charging",
   "Validation and verification",
   "Algorithm validation",
   "Thermal transport",
   "Physiological signal processing",
   "Reliability debugging",
-  "Manufacturing support",
-  "Documentation",
+  "Manufacturing readiness",
+  "FDA-ready documentation",
+  "Preclinical validation",
+  "Implantable stimulation",
+  "Photometry",
+  "Low-noise acquisition",
   "Data analysis",
   "AI tooling",
   "Self-hosted infrastructure",
@@ -210,23 +228,31 @@ export const projects: Project[] = [
     status: "completed",
     timeline: "2022–2025",
     summary:
-      "Clinical-grade wearable system for noninvasive assessment of CSF shunt patency using thermal transport, with algorithm validation and FDA-ready workflows.",
+      "Clinical wearable and DSP/ML workflow for noninvasive CSF shunt-flow assessment; improved from a 74% baseline to 0.81 AUC / 82% blinded validation accuracy.",
     skills: ["Wearable sensing", "Thermal physiology", "ML/DSP", "Clinical validation"],
     labels: ["Medical devices", "Algorithms", "Validation", "Thermal sensing"],
     links: [],
     why:
-      "I wanted a practical system for turning noisy physiological data into a validated, clinically useful shunt-monitoring workflow.",
+      "Clinical shunt-flow assessment needed repeatable model development from noisy thermal physiology instead of manual thresholds alone.",
     built:
-      "Clinical and home-use sensing workflows, model-training pipelines, feature engineering, validation tooling, and FDA-support documentation.",
+      "Automated ingestion, provenance, labeling, QC, dataset versioning, feature generation, validation, bias checks, explainability, and deployment-check workflows.",
     worked:
-      "The strongest part was connecting thermal sensor physics, model validation, and real-world patient data into one workflow.",
+      "The strongest result was connecting sensor physics, clinical usability, small-dataset controls, and deterministic deployment checks into one regulated workflow.",
     failed:
-      "Small and biased datasets required careful grouping, leakage control, and feature selection to avoid overfitting.",
+      "Small, correlated clinical datasets required patient grouping, leakage checks, bias review, feature-correlation checks, and overfitting controls.",
     learned:
-      "Algorithm work is strongest when it is grounded in the sensing physics and the clinical workflow, not just model metrics.",
-    stack: ["Thermal sensing", "Feature engineering", "ONNX", "Python", "Validation", "FDA documentation"],
+      "Physiological ML is strongest when feature design, validation, and deployment checks stay grounded in sensing physics and clinical workflow constraints.",
+    stack: [
+      "Thermal sensing",
+      "Feature engineering",
+      "MATLAB",
+      "Python",
+      "TypeScript deployment checks",
+      "Validation",
+      "FDA-ready documentation",
+    ],
     nextSteps:
-      "Carry the same validation pattern into adjacent hydrocephalus and wearable-monitoring problems.",
+      "Use the same sensor-physics-first validation pattern for adjacent wearable physiological monitoring problems.",
   },
   {
     slug: "flowsense-home-lynx",
@@ -236,23 +262,32 @@ export const projects: Project[] = [
     status: "completed",
     timeline: "2023–2025",
     summary:
-      "Longitudinal home-use wearable for continuous hydrocephalus monitoring in daily life and sleep.",
-    skills: ["Wearable sensing", "Home-use workflow", "Thermal visualization", "Data organization"],
-    labels: ["Wearables", "Home monitoring", "Thermal sensing", "Clinical workflow"],
+      "Home-use hydrocephalus wearable advanced across 3 design generations, 100+ units, 200+ participants, 2,800+ wear hours, and 70% → 96% reliability improvement.",
+    skills: ["Wearable sensing", "Home-use workflow", "Reliability", "Data organization"],
+    labels: ["Wearables", "Home monitoring", "Thermal sensing", "Reliability"],
     links: [],
     why:
-      "I wanted to move FlowSense from in-clinic spot checks into a durable home-use wearable system.",
+      "FlowSense needed to move from in-clinic spot checks into long-duration home monitoring for patients with implanted CSF shunts.",
     built:
-      "Wearable device builds, data organization workflows, thermal visualization, charging and adhesive iteration, and home-use study support.",
+      "Wearable builds, adhesive/sensor layout iterations, modular electronics/sensor/battery architecture, Qi charging, motion sensing, onboard memory, data encryption, remote collection, and thermal visualization scripts.",
     worked:
-      "The system became useful because it translated patient and clinician feedback into better placement, charging, and data-quality decisions.",
+      "Reliability improved because patient, caregiver, clinician, software, and hardware feedback directly informed form factor, placement, charging, adhesive, and data-quality decisions.",
     failed:
-      "Home-use wearables expose edge cases around placement, motion, charging, and adhesion that are hard to see in the lab.",
+      "Home-use wearables exposed edge cases around placement, motion, charging, adhesive wear, shipping, support, and data quality that were not visible in lab use.",
     learned:
-      "Successful home monitoring depends as much on workflow and usability as it does on sensor performance.",
-    stack: ["Wearable sensing", "Qi charging", "Thermal maps", "Patient feedback", "Home-use study", "Signal quality"],
+      "Home monitoring is an integrated system problem: sensor performance, usability, reliability, and remote workflows have to improve together.",
+    stack: [
+      "Wearable sensing",
+      "Qi charging",
+      "Motion sensing",
+      "Onboard memory",
+      "Data encryption",
+      "Thermal maps",
+      "DMFEA",
+      "Remote support",
+    ],
     nextSteps:
-      "Keep simplifying the user workflow and expand the same sensing platform to adjacent use cases.",
+      "Keep the public summary focused on reliability, build cycle, home-use data scale, and workflow translation.",
   },
   {
     slug: "wound-monitoring-platform-tabby",
@@ -262,49 +297,223 @@ export const projects: Project[] = [
     status: "completed",
     timeline: "2024–2025",
     summary:
-      "Soft multimodal sensing patch for continuous wound monitoring and prediction of wound-healing progression.",
+      "NIH R43 Phase I multimodal wound patch with thermal/humidity/temperature sensing, 40 mAh battery, 20-subject dataset, 172 logs, and 5-fold wound-model validation.",
     skills: ["Thermal sensing", "Humidity sensing", "Soft patch design", "Animal models"],
     labels: ["Wearables", "Wound monitoring", "Thermal sensing", "Preclinical"],
     links: [],
     why:
-      "I wanted to adapt the FlowSense sensing stack to a different physiological monitoring problem with a soft wearable patch.",
+      "The program needed a fast path from sensor concept to preclinical study device and grant deliverables in about one year.",
     built:
-      "Sensor selection, prototype fabrication, thermal-transfer simulation, wound-data collection, and preclinical analysis workflows.",
+      "Sensor selection, adhesive fabrication, product design, testing, thermal-transfer simulation, diffusivity back-calculation, preclinical data collection, and multimodal analysis workflows.",
     worked:
-      "The platform showed how thermal, humidity, and temperature sensing could track wound-healing progression over time.",
+      "Thermal response, humidity dynamics, and peripheral temperature features created a quantitative path from raw patch signals to wound-healing progression.",
     failed:
-      "The problem space is messy because wound healing changes with physiology, movement, and tissue context.",
+      "Wound physiology is noisy: exudate, perfusion, epidermal thickening, movement, tissue composition, and animal-to-animal variation all affect the signal.",
     learned:
-      "A platform approach works best when the sensing, analysis, and study workflow are designed together.",
-    stack: ["Thermal conductivity", "Humidity sensing", "Temperature sensing", "Diffusivity analysis", "Soft patch design"],
+      "The best sensing platforms are built with the study workflow and feature model from the beginning, not after hardware is finished.",
+    stack: [
+      "Thermal conductivity",
+      "Humidity sensing",
+      "Temperature sensing",
+      "Thermal diffusivity",
+      "IQR normalization",
+      "Linear regression",
+      "5-fold CV",
+      "BLE / NFC",
+    ],
     nextSteps:
-      "Promote the strongest experiments into a concise public summary and keep the rest as internal notes.",
+      "Keep the page quantitative: device metrics, study size, feature set, and validation method.",
   },
   {
     slug: "wireless-battery-free-bioelectronics",
     title: "Wireless Battery-Free Bioelectronics",
     section: "Implantables",
-    type: "research",
+    type: "research platform",
     status: "completed",
     timeline: "2018–2022",
     summary:
-      "Fully implantable wireless and battery-free bioelectronics for neural, skeletal, and physiological monitoring.",
+      "Shared Ph.D. implantable platform work across 14 journal articles, 20+ fixtures, 6 tuned antennas, 3 simulation frameworks, <50 mg implants, and up to 2 m wireless power.",
     skills: ["Implantables", "Wireless power", "Flexible electronics", "Preclinical validation"],
     labels: ["Implantables", "Wireless power", "Biointerfaces", "Flexible electronics"],
     links: [],
     why:
-      "I wanted to build chronic sensing and stimulation platforms that worked without tethers or batteries.",
+      "Chronic small-animal sensing and stimulation needed implantable platforms without tethers, batteries, or percutaneous connectors.",
     built:
-      "Wireless photometry, neurostimulation, and osseosurface systems using flexible circuits, soft materials, and biocompatible encapsulation.",
+      "Wireless photometry, neurostimulation, osseosurface sensing, and FES systems using miniaturized circuits, flexible interconnects, soft packaging, and biocompatible encapsulation.",
     worked:
-      "The strongest part was proving that tiny implantable systems could still harvest power, communicate, and operate chronically.",
+      "The reusable engineering base made it possible to translate wireless power, communication, packaging, and validation methods across multiple implantable publications.",
     failed:
-      "Implantable systems make every constraint harder: geometry, heating, encapsulation, and in vivo behavior all matter.",
+      "Every implant constraint compounded: geometry, heat, encapsulation, power range, communication, tissue mechanics, surgical handling, and in vivo reliability.",
     learned:
-      "Wireless implantable work is a good test of whether a system is actually engineered, not just assembled.",
-    stack: ["Flexible electronics", "Wireless power", "Photometry", "Neurostimulation", "Encapsulation", "Preclinical validation"],
+      "Implantable engineering succeeds when power, mechanics, packaging, test fixtures, and preclinical workflow are designed as one system.",
+    stack: [
+      "13.56 MHz wireless power",
+      "Flexible electronics",
+      "Photometry",
+      "Neurostimulation",
+      "FES",
+      "Antenna tuning",
+      "Encapsulation",
+      "Preclinical validation",
+    ],
     nextSteps:
-      "Keep the best exemplars visible and leave the lower-signal experiments in the source knowledge folder.",
+      "Use this as the platform overview and use the publication-specific pages for exact device details.",
+  },
+  {
+    slug: "subdermal-photometry-implant",
+    title: "Subdermal Photometry Implant",
+    section: "Implantables",
+    type: "publication-backed research",
+    status: "completed",
+    timeline: "2020",
+    summary:
+      "PNAS wireless battery-free subdermal photometry platform for chronic neural recording; approximately 10.5 mm × 7 mm with ~27 Hz, 12-bit data streaming.",
+    skills: ["Photometry", "Wireless power", "Miniaturized electronics", "Preclinical validation"],
+    labels: ["Implantables", "Photometry", "Wireless power", "Neural recording"],
+    links: [],
+    why:
+      "Chronic neural photometry needed a fully implantable system without a tether, head-mounted hardware, battery, or percutaneous connector.",
+    built:
+      "Optical source/detector hardware, miniaturized electronics, wireless power, flexible probe mechanics, communication, implant packaging, and validation workflows.",
+    worked:
+      "The platform connected optical readout, flexible probe placement, wireless power, and chronic packaging into a small subdermal system.",
+    failed:
+      "Optical sensitivity, probe alignment, packaging, targeting, and freely moving animal constraints all had to be controlled at the same time.",
+    learned:
+      "Miniaturized optical implants need mechanical, optical, wireless, and surgical constraints resolved together.",
+    stack: ["Optical sensing", "Photometry", "Wireless power", "Flexible probes", "12-bit readout", "Fixture validation"],
+    nextSteps:
+      "Keep the page focused on implantable optical sensing and chronic neural-recording system integration.",
+  },
+  {
+    slug: "implantable-electrical-neurostimulation",
+    title: "Implantable Electrical Neurostimulation",
+    section: "Implantables",
+    type: "publication-backed research",
+    status: "completed",
+    timeline: "2021",
+    summary:
+      "Microsystems & Nanoengineering wireless battery-free neurostimulation platform with ~5.5 V compliance and ~18 mW wireless harvesting in relevant test conditions.",
+    skills: ["Neurostimulation", "Wireless power", "Electrical output", "Preclinical validation"],
+    labels: ["Implantables", "Neurostimulation", "Wireless power", "Electrical systems"],
+    links: [],
+    why:
+      "Freely moving stimulation studies needed programmable implantable electrical stimulation without external tethers or onboard batteries.",
+    built:
+      "Wireless power harvesting, stimulation electronics, programmable biphasic stimulation control, implant packaging, flexible electrode mechanics, and validation workflows.",
+    worked:
+      "The system linked power harvesting, output characterization, communication/control, packaging, and flexible electrode handling into a fully implantable workflow.",
+    failed:
+      "Wireless power, stimulation output, packaging, targeting, and chronic reliability had to be verified under implant constraints rather than benchtop-only conditions.",
+    learned:
+      "Implantable stimulation design depends on output repeatability, handling workflow, and packaging reliability as much as circuit function.",
+    stack: ["Biphasic stimulation", "Wireless harvesting", "5.5 V compliance", "18 mW power", "Flexible electrodes", "Output fixtures"],
+    nextSteps:
+      "Use this page for neuromodulation, implantable electrical output, and wireless-power evidence.",
+  },
+  {
+    slug: "osseosurface-electronics",
+    title: "Osseosurface Electronics",
+    section: "Implantables",
+    type: "publication-backed research",
+    status: "completed",
+    timeline: "2021",
+    summary:
+      "Nature Communications thin wireless battery-free osseosurface biointerface with multimodal sensing and up to ~87 Hz, 14-bit communication/readout.",
+    skills: ["Musculoskeletal sensing", "Strain sensing", "Flexible electronics", "Wireless readout"],
+    labels: ["Implantables", "Musculoskeletal", "Strain sensing", "Biointerfaces"],
+    links: [],
+    why:
+      "Musculoskeletal monitoring needed thin, conformal electronics that could interface with bone and surrounding tissue without bulky batteries or tethers.",
+    built:
+      "Osseosurface-compatible mechanics, strain/physiological sensing, wireless power, wireless readout, flexible packaging, and preclinical validation workflows.",
+    worked:
+      "The device connected thin mechanical design, sensor placement, wireless readout, encapsulation, and bone-interface coupling into one biointerface.",
+    failed:
+      "Bone curvature, soft tissue, encapsulation, surgical handling, and sensor-to-bone coupling all constrained the device design.",
+    learned:
+      "Mechanical interface design is central to implantable sensing when the target is a moving biological structure.",
+    stack: ["Strain sensing", "14-bit readout", "87 Hz communication", "Wireless power", "Flexible packaging", "Preclinical validation"],
+    nextSteps:
+      "Use this page for flexible musculoskeletal biointerfaces and mechanically constrained implantable sensing.",
+  },
+  {
+    slug: "high-power-fes-implant",
+    title: "High-Power FES Implant",
+    section: "Implantables",
+    type: "publication-backed research",
+    status: "completed",
+    timeline: "2023",
+    summary:
+      "Nature Communications fully implanted battery-free high-power FES platform with ~20 V compliance, 10 µA–1 mA spinal output, and 1–5 mA muscle output.",
+    skills: ["Functional electrical stimulation", "High-output electronics", "Wireless power", "Preclinical validation"],
+    labels: ["Implantables", "FES", "Neurostimulation", "Wireless power"],
+    links: [],
+    why:
+      "Chronic spinal and muscular functional electrical stimulation needed higher output from a fully implanted battery-free system.",
+    built:
+      "Wireless power transfer, high-compliance stimulation electronics, current-controlled output, stimulation leads/interfaces, implant packaging, antenna tuning, and chronic validation workflows.",
+    worked:
+      "The system connected high-output stimulation, DAC-tuned current control, antenna magnetic-field tuning, wireless power optimization, and chronic preclinical operation.",
+    failed:
+      "High-power implantable stimulation increased constraints around compliance voltage, output current, heat, packaging, wireless range, and safety.",
+    learned:
+      "High-output implants need output characterization and wireless-power validation treated as core system design, not late-stage testing.",
+    stack: ["20 V compliance", "10 µA–1 mA spinal", "1–5 mA muscle", "4–100 Hz", "DAC-tuned output", "Antenna tuning"],
+    nextSteps:
+      "Use this page for high-output implantable stimulation and chronic battery-free FES evidence.",
+  },
+  {
+    slug: "early-biomedical-sensing-hardware",
+    title: "Early Biomedical Sensing Hardware",
+    section: "Biomedical sensing",
+    type: "research hardware",
+    status: "completed",
+    timeline: "2016–2019",
+    summary:
+      "EUNIL work across low-noise biomedical acquisition, amplifier optimization, EMI control, DSP/wavelets, phantoms, and a <$5-per-chamber nanoparticle analyzer.",
+    skills: ["Low-noise acquisition", "DSP", "Optical sensing", "Microfluidics"],
+    labels: ["Sensing", "Low-noise hardware", "DSP", "Microfluidics"],
+    links: [],
+    why:
+      "Early biomedical sensing projects needed reliable low-noise acquisition, artifact control, experimental phantoms, and low-cost sensing approaches.",
+    built:
+      "Non-invasive recording workflows, amplifier/noise-control methods, DSP and wavelet processing, phantoms, and optical/microfluidic nanoparticle-analysis methods.",
+    worked:
+      "The strongest evidence was practical signal-quality improvement through hardware setup, EMI control, processing, and controlled experimental tools.",
+    failed:
+      "Early sensing work was sensitive to noise, coupling, phantom setup, and analysis assumptions, so hardware and DSP had to be debugged together.",
+    learned:
+      "Good physiological sensing starts with low-noise acquisition and testable experimental setups before advanced analysis.",
+    stack: ["Analog sensing", "Low-noise amplifiers", "EMI control", "DSP", "Wavelets", "Phantoms", "Fluorescence microscopy"],
+    nextSteps:
+      "Use this page as supporting evidence for long-term biomedical sensing and signal-quality depth.",
+  },
+  {
+    slug: "wearable-physiological-data-analysis",
+    title: "Wearable Physiological Data Analysis",
+    section: "Biomedical sensing",
+    type: "data analysis",
+    status: "completed",
+    timeline: "2014–2017",
+    summary:
+      "iCAMP analysis of 800+ hours of chest-worn ECG/accelerometer data across 31 subjects, supporting fall-risk modeling from 0.73 baseline AUC to 0.969 mixed-model AUC.",
+    skills: ["ECG/HRV", "Accelerometers", "Feature engineering", "Prediction workflows"],
+    labels: ["Wearables", "Physiological data", "ECG", "AUC"],
+    links: [],
+    why:
+      "Wearable physiological studies needed reliable feature extraction, calibration, labeling, and model-support workflows from noisy human sensor data.",
+    built:
+      "ECG filtering, R-wave detection, R-R interval correction, HRV feature generation, accelerometer calibration/reorientation, posture/activity classification, labeling, and prediction support.",
+    worked:
+      "The pipeline converted raw chest-worn ECG and acceleration into model-ready physiological, posture, and activity features.",
+    failed:
+      "Human wearable data required careful calibration, labeling, windowing, and artifact handling before model metrics were meaningful.",
+    learned:
+      "Physiological modeling depends on signal preparation and context labeling as much as the downstream classifier.",
+    stack: ["ECG", "HRV", "Accelerometry", "R-wave detection", "Feature extraction", "Labeling", "AUC analysis"],
+    nextSteps:
+      "Use this page as early evidence for wearable physiological data and feature-engineering experience.",
   },
   {
     slug: "openclaw-ai-agent-system",
