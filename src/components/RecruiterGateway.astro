@@ -66,8 +66,10 @@
 <style is:global>
   .recruiter-gateway-shell {
     width: min(1100px, calc(100% - 32px));
+    min-height: calc(100svh - var(--notice-height, 43px));
     margin: 0 auto;
-    padding: clamp(12px, 2vh, 20px) 0 32px;
+    padding: clamp(24px, 5vh, 56px) 0 48px;
+    scroll-margin-top: calc(var(--notice-height, 43px) + 16px);
   }
 
   .recruiter-gateway-shell ~ .recruiter-onepage { display: none; }
@@ -230,7 +232,11 @@
   }
 
   @media (max-width: 540px) {
-    .recruiter-gateway-shell { width: min(100% - 20px, 900px); padding-top: 8px; }
+    .recruiter-gateway-shell {
+      width: min(100% - 20px, 900px);
+      min-height: auto;
+      padding-top: 20px;
+    }
     .recruiter-gateway-card { padding: 18px; }
     .recruiter-gateway-actions { flex-direction: column; }
     .recruiter-gateway-actions .button { width: 100%; }
@@ -262,6 +268,11 @@
     if (params.get("match") === "1") { shell.remove(); return; }
 
     shell.dataset.ready = "true";
+
+    if (window.scrollY > 0) {
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+    }
+
     const form = shell.querySelector("[data-recruiter-gateway-form]");
     const nameInput = shell.querySelector("[data-gateway-name]");
     const companyInput = shell.querySelector("[data-gateway-company]");
