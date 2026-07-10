@@ -11,76 +11,13 @@ import modelPart5 from "../data/cocometric-model/part-5.js";
 const modelGzipBase64 = [modelPart0, modelPart1, modelPart2, modelPart3, modelPart4, modelPart5].join("");
 
 const stages = [
-  {
-    eyebrow: "Cocometric system · 01",
-    title: "One system. Every layer visible.",
-    note: "Scroll through the server to pull each hardware layer out of the rack and inspect it.",
-    tags: ["Rack", "Storage", "Compute", "GPU"],
-    focus: [],
-    context: [],
-    camera: [9.8, 5.7, 13.2],
-    target: [0.15, 0.0, 0.0],
-  },
-  {
-    eyebrow: "Rack + chassis · 02",
-    title: "A serviceable system, not a sealed appliance.",
-    note: "The chassis moves forward from the rack while the installed system stays visible behind it.",
-    tags: ["Rack enclosure", "Chassis", "Service bays", "Replaceable hardware"],
-    focus: ["chassis"],
-    context: ["rack"],
-    camera: [-0.4, 3.5, 8.7],
-    target: [-2.25, 0.05, 0.0],
-  },
-  {
-    eyebrow: "Storage · 03",
-    title: "Storage built around recovery.",
-    note: "The removable drive layer slides out for inspection, then returns before the next subsystem opens.",
-    tags: ["6 removable drives", "Snapshots", "Retention", "Restore tests"],
-    focus: ["storage"],
-    context: ["chassis", "rack"],
-    camera: [7.0, 4.0, 8.5],
-    target: [3.35, 1.12, 0.0],
-  },
-  {
-    eyebrow: "Compute · 04",
-    title: "General compute for the whole local stack.",
-    note: "Processors, memory, motherboard, and I/O lift out as one compute layer while the storage layer closes.",
-    tags: ["Dual CPU", "12 memory modules", "Motherboard", "I/O"],
-    focus: ["compute"],
-    context: ["chassis", "rack"],
-    camera: [4.3, 3.0, 7.0],
-    target: [0.05, 0.55, 0.05],
-  },
-  {
-    eyebrow: "AI accelerators · 05",
-    title: "Local inference without sending data away.",
-    note: "The GPU assemblies move out from the installed stack for a closer look at local model capacity.",
-    tags: ["2 GPU assemblies", "Local models", "OCR", "Private retrieval"],
-    focus: ["gpu"],
-    context: ["chassis", "rack"],
-    camera: [4.1, -0.1, 6.8],
-    target: [0.25, -1.45, 0.08],
-  },
-  {
-    eyebrow: "Cooling · 06",
-    title: "Airflow designed as part of the system.",
-    note: "The fan wall separates from the chassis to show the cooling path, then returns into the rack.",
-    tags: ["6 fan assemblies", "Fan wall", "Directed airflow", "Sustained load"],
-    focus: ["cooling"],
-    context: ["chassis", "rack"],
-    camera: [5.8, 2.5, 7.0],
-    target: [2.2, 0.12, 0.1],
-  },
-  {
-    eyebrow: "Power + network · 07",
-    title: "Redundant power and controlled access.",
-    note: "Power and network hardware pull away from the rack together while the rest of the system remains assembled.",
-    tags: ["Dual PSU", "3-port NIC", "Segmentation", "Secure access"],
-    focus: ["power-network"],
-    context: ["chassis", "rack"],
-    camera: [6.7, 0.8, 7.7],
-    target: [3.0, -1.15, 0.18],
-  },
+  { eyebrow: "Cocometric system · 01", title: "One system. Every layer visible.", note: "Scroll through the server to pull each hardware layer out of the rack and inspect it.", tags: ["Rack", "Storage", "Compute", "GPU"], focus: [], context: [], camera: [9.8, 5.7, 13.2], target: [0.15, 0, 0] },
+  { eyebrow: "Rack + chassis · 02", title: "A serviceable system, not a sealed appliance.", note: "The chassis slides straight out of the rack on a clear service path.", tags: ["Rack enclosure", "Chassis", "Service bays", "Replaceable hardware"], focus: ["chassis"], context: ["rack"], camera: [5.8, 3.5, 10.8], target: [0.15, 0.05, 1.5] },
+  { eyebrow: "Storage · 03", title: "Storage built around recovery.", note: "The removable drive layer clears the rack face before it is presented for inspection.", tags: ["6 removable drives", "Snapshots", "Retention", "Restore tests"], focus: ["storage"], context: ["rack", "chassis"], camera: [6.8, 3.8, 10.4], target: [0.8, 1.0, 1.7] },
+  { eyebrow: "Compute · 04", title: "General compute for the whole local stack.", note: "Processors, memory, motherboard, and I/O move forward as one assembly and remain outside the rack.", tags: ["Dual CPU", "12 memory modules", "Motherboard", "I/O"], focus: ["compute"], context: ["rack", "chassis"], camera: [6.4, 3.3, 9.8], target: [0.2, 0.65, 1.9] },
+  { eyebrow: "AI accelerators · 05", title: "Local inference without sending data away.", note: "The GPU assemblies slide fully clear of the chassis before the camera settles on them.", tags: ["2 GPU assemblies", "Local models", "OCR", "Private retrieval"], focus: ["gpu"], context: ["rack", "chassis"], camera: [6.3, 1.3, 9.7], target: [0.35, -1.2, 2.0] },
+  { eyebrow: "Cooling · 06", title: "Airflow designed as part of the system.", note: "The fan wall moves forward on the service axis instead of intersecting the rack structure.", tags: ["6 fan assemblies", "Fan wall", "Directed airflow", "Sustained load"], focus: ["cooling"], context: ["rack", "chassis"], camera: [6.8, 2.7, 10.2], target: [1.25, 0.1, 1.9] },
+  { eyebrow: "Power + network · 07", title: "Redundant power and controlled access.", note: "Power and network hardware clear the rack before separating slightly for inspection.", tags: ["Dual PSU", "3-port NIC", "Segmentation", "Secure access"], focus: ["power-network"], context: ["rack", "chassis"], camera: [7.0, 1.6, 10.2], target: [1.15, -1.15, 2.0] },
 ];
 
 const componentNames = ["rack", "chassis", "storage", "compute", "gpu", "cooling", "power-network"];
@@ -104,31 +41,9 @@ const finalSection = document.querySelector("#contact");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = () => window.innerWidth <= 820;
 
-const requiredElements = [
-  canvas,
-  loading,
-  loadingBar,
-  loadingTrack,
-  loadingCopy,
-  sceneElement,
-  copy,
-  scrollCue,
-  stageNav,
-  stageStep,
-  stageTitle,
-  stageNote,
-  stageTags,
-  finalSection,
-];
-
-function clamp(value, min = 0, max = 1) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function smooth(value) {
-  const x = clamp(value);
-  return x * x * (3 - 2 * x);
-}
+function clamp(value, min = 0, max = 1) { return Math.max(min, Math.min(max, value)); }
+function smooth(value) { const x = clamp(value); return x * x * (3 - 2 * x); }
+function dampFactor(speed, deltaSeconds) { return reduceMotion ? 1 : 1 - Math.exp(-speed * deltaSeconds); }
 
 function setLoadingProgress(value, message) {
   const progress = Math.round(clamp(value, 0, 100));
@@ -159,14 +74,17 @@ function stageFloat() {
   return clamp((window.scrollY - firstBeat.offsetTop) / stageHeight, 0, stages.length - 1);
 }
 
-function stageWeight(value, index) {
-  return smooth(clamp(1 - Math.abs(value - index)));
+function inspectionWeight(value, index) {
+  const distance = Math.abs(value - index);
+  if (distance <= 0.24) return 1;
+  if (distance >= 0.48) return 0;
+  return smooth((0.48 - distance) / 0.24);
 }
 
 function componentWeight(value, component, key) {
   let weight = 0;
   stages.forEach((stage, index) => {
-    if (stage[key]?.includes(component)) weight = Math.max(weight, stageWeight(value, index));
+    if (stage[key]?.includes(component)) weight = Math.max(weight, inspectionWeight(value, index));
   });
   return weight;
 }
@@ -175,18 +93,10 @@ let activeStage = -1;
 function renderStageText(index) {
   const stage = stages[index];
   if (!stage) return;
-
   stageStep.textContent = stage.eyebrow;
   stageTitle.textContent = stage.title;
   stageNote.textContent = stage.note;
-  stageTags.replaceChildren(
-    ...stage.tags.map((tag) => {
-      const element = document.createElement("span");
-      element.textContent = tag;
-      return element;
-    })
-  );
-
+  stageTags.replaceChildren(...stage.tags.map((tag) => Object.assign(document.createElement("span"), { textContent: tag })));
   stageButtons.forEach((button, buttonIndex) => {
     const isActive = buttonIndex === index;
     button.classList.toggle("is-active", isActive);
@@ -197,33 +107,19 @@ function renderStageText(index) {
 
 function updateActiveStage() {
   const nearest = Math.round(stageFloat());
-  if (nearest === activeStage) return nearest;
-  activeStage = nearest;
-  renderStageText(nearest);
+  if (nearest !== activeStage) {
+    activeStage = nearest;
+    renderStageText(nearest);
+  }
   return nearest;
 }
 
 stageButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const index = Number(button.dataset.stageButton);
-    const target = beats[index];
-    if (!target) return;
-    window.scrollTo({ top: target.offsetTop, behavior: reduceMotion ? "auto" : "smooth" });
+    const target = beats[Number(button.dataset.stageButton)];
+    if (target) window.scrollTo({ top: target.offsetTop, behavior: reduceMotion ? "auto" : "smooth" });
   });
 });
-
-let textUpdateFrame = 0;
-window.addEventListener(
-  "scroll",
-  () => {
-    if (textUpdateFrame) return;
-    textUpdateFrame = window.requestAnimationFrame(() => {
-      textUpdateFrame = 0;
-      updateActiveStage();
-    });
-  },
-  { passive: true }
-);
 renderStageText(0);
 
 function decodeBase64(encoded) {
@@ -234,26 +130,17 @@ function decodeBase64(encoded) {
 }
 
 async function decompressModel(encoded) {
-  if (!("DecompressionStream" in window)) {
-    throw new Error("This browser does not support the model decompression required by this page.");
-  }
-
+  if (!("DecompressionStream" in window)) throw new Error("This browser cannot load the interactive model.");
   setLoadingProgress(26, "Preparing Cocometric hardware");
   const compressed = decodeBase64(encoded);
   setLoadingProgress(48, "Decompressing server model");
   const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream("gzip"));
   const arrayBuffer = await new Response(stream).arrayBuffer();
-
   if (arrayBuffer.byteLength < 12) throw new Error("The embedded GLB model is incomplete.");
   const header = new DataView(arrayBuffer, 0, 12);
-  if (
-    header.getUint32(0, true) !== 0x46546c67 ||
-    header.getUint32(4, true) !== 2 ||
-    header.getUint32(8, true) !== arrayBuffer.byteLength
-  ) {
+  if (header.getUint32(0, true) !== 0x46546c67 || header.getUint32(4, true) !== 2 || header.getUint32(8, true) !== arrayBuffer.byteLength) {
     throw new Error("The embedded GLB model failed validation.");
   }
-
   return arrayBuffer;
 }
 
@@ -268,47 +155,36 @@ function componentFromName(name = "") {
   return "chassis";
 }
 
-function desiredCenter(component, rackCenter, rackSize) {
-  const centers = {
-    chassis: new THREE.Vector3(rackCenter.x, rackCenter.y, rackCenter.z),
-    storage: new THREE.Vector3(rackCenter.x + rackSize.x * 0.12, rackCenter.y + rackSize.y * 0.18, rackCenter.z),
-    compute: new THREE.Vector3(rackCenter.x, rackCenter.y + rackSize.y * 0.02, rackCenter.z),
-    gpu: new THREE.Vector3(rackCenter.x, rackCenter.y - rackSize.y * 0.18, rackCenter.z + rackSize.z * 0.03),
-    cooling: new THREE.Vector3(rackCenter.x + rackSize.x * 0.18, rackCenter.y, rackCenter.z - rackSize.z * 0.08),
-    "power-network": new THREE.Vector3(rackCenter.x + rackSize.x * 0.2, rackCenter.y - rackSize.y * 0.25, rackCenter.z),
+function extractionOffset(component, componentBounds, rackBounds, rackSize) {
+  const rearToFrontClearance = Math.max(0, rackBounds.max.z - componentBounds.min.z);
+  const marginByComponent = {
+    chassis: rackSize.z * 0.34,
+    storage: rackSize.z * 0.52,
+    compute: rackSize.z * 0.58,
+    gpu: rackSize.z * 0.62,
+    cooling: rackSize.z * 0.54,
+    "power-network": rackSize.z * 0.6,
   };
-  return centers[component] || rackCenter.clone();
-}
-
-function explodeVector(component, rackSize) {
-  const vectors = {
-    chassis: new THREE.Vector3(-rackSize.x * 0.28, rackSize.y * 0.04, rackSize.z * 0.22),
-    storage: new THREE.Vector3(rackSize.x * 0.48, rackSize.y * 0.08, rackSize.z * 0.28),
-    compute: new THREE.Vector3(rackSize.x * 0.04, rackSize.y * 0.34, rackSize.z * 0.34),
-    gpu: new THREE.Vector3(rackSize.x * 0.02, -rackSize.y * 0.26, rackSize.z * 0.42),
-    cooling: new THREE.Vector3(rackSize.x * 0.42, rackSize.y * 0.02, rackSize.z * 0.28),
-    "power-network": new THREE.Vector3(rackSize.x * 0.5, -rackSize.y * 0.16, rackSize.z * 0.24),
+  const presentationOffset = {
+    chassis: [0, 0, 0],
+    storage: [rackSize.x * 0.18, rackSize.y * 0.06, 0],
+    compute: [-rackSize.x * 0.08, rackSize.y * 0.16, 0],
+    gpu: [rackSize.x * 0.08, -rackSize.y * 0.1, 0],
+    cooling: [rackSize.x * 0.22, 0, 0],
+    "power-network": [rackSize.x * 0.22, -rackSize.y * 0.08, 0],
   };
-  return vectors[component] || new THREE.Vector3();
+  const [x, y] = presentationOffset[component] || [0, 0];
+  return new THREE.Vector3(x, y, rearToFrontClearance + (marginByComponent[component] || rackSize.z * 0.5));
 }
 
 async function initializeViewer() {
-  if (requiredElements.some((element) => !element)) {
-    throw new Error("The Cocometric page is missing a required viewer element.");
-  }
+  const required = [canvas, loading, loadingBar, loadingTrack, loadingCopy, sceneElement, copy, scrollCue, stageNav, stageStep, stageTitle, stageNote, stageTags, finalSection];
+  if (required.some((element) => !element)) throw new Error("The Cocometric page is missing a required viewer element.");
 
   const mobile = isMobile();
   const lowPowerDevice = (navigator.hardwareConcurrency || 8) <= 4;
   const enableShadows = !mobile && !lowPowerDevice;
-
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: !mobile && !lowPowerDevice,
-    alpha: true,
-    powerPreference: mobile ? "low-power" : "high-performance",
-    preserveDrawingBuffer: false,
-  });
-
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile && !lowPowerDevice, alpha: true, powerPreference: mobile ? "low-power" : "high-performance" });
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -317,8 +193,7 @@ async function initializeViewer() {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x01050a, mobile ? 0.021 : 0.027);
-
+  scene.fog = new THREE.FogExp2(0x01050a, mobile ? 0.018 : 0.024);
   let environmentTarget = null;
   if (!mobile && !lowPowerDevice) {
     const pmrem = new THREE.PMREMGenerator(renderer);
@@ -329,29 +204,20 @@ async function initializeViewer() {
 
   const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 100);
   const cameraTarget = new THREE.Vector3();
-
   scene.add(new THREE.HemisphereLight(0xc9d9e5, 0x071018, mobile ? 1.7 : 1.45));
-
   const key = new THREE.DirectionalLight(0xffffff, mobile ? 3.4 : 4.2);
   key.position.set(5, 8, 9);
   key.castShadow = enableShadows;
   key.shadow.mapSize.set(1024, 1024);
-  key.shadow.camera.near = 0.1;
-  key.shadow.camera.far = 24;
   scene.add(key);
-
   const fill = new THREE.DirectionalLight(0x6fd3ff, mobile ? 1.15 : 1.55);
   fill.position.set(-5, 2, 6);
   scene.add(fill);
-
   const rim = new THREE.PointLight(0xe86f4e, mobile ? 9 : 20, 18, 2);
   rim.position.set(2.5, 3.5, -4.5);
   scene.add(rim);
 
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(34, 24),
-    new THREE.MeshStandardMaterial({ color: 0x02070c, metalness: 0.08, roughness: 0.9 })
-  );
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(34, 24), new THREE.MeshStandardMaterial({ color: 0x02070c, metalness: 0.08, roughness: 0.9 }));
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -2.24;
   floor.receiveShadow = enableShadows;
@@ -372,25 +238,13 @@ async function initializeViewer() {
   const materialStates = [];
   const materialCache = new WeakMap();
   const highlight = new THREE.Color(0x123244);
-
   function materialForComponent(material, component) {
     let componentMap = materialCache.get(material);
-    if (!componentMap) {
-      componentMap = new Map();
-      materialCache.set(material, componentMap);
-    }
+    if (!componentMap) { componentMap = new Map(); materialCache.set(material, componentMap); }
     if (componentMap.has(component)) return componentMap.get(component);
-
     const cloned = material.clone();
     cloned.transparent = true;
-    const state = {
-      material: cloned,
-      component,
-      originalOpacity: material.opacity ?? 1,
-      originalEmissive: cloned.emissive ? cloned.emissive.clone() : null,
-      originalEmissiveIntensity: cloned.emissiveIntensity ?? 0,
-    };
-    materialStates.push(state);
+    materialStates.push({ material: cloned, component, originalOpacity: material.opacity ?? 1, originalEmissive: cloned.emissive ? cloned.emissive.clone() : null, originalEmissiveIntensity: cloned.emissiveIntensity ?? 0 });
     componentMap.set(component, cloned);
     return cloned;
   }
@@ -398,15 +252,11 @@ async function initializeViewer() {
   const modelBuffer = await decompressModel(modelGzipBase64);
   setLoadingProgress(72, "Building assembled server view");
   const gltf = await new Promise((resolve, reject) => new GLTFLoader().parse(modelBuffer, "", resolve, reject));
-
   modelRoot.add(gltf.scene);
   modelRoot.updateMatrixWorld(true);
 
   const meshes = [];
-  gltf.scene.traverse((object) => {
-    if (object.isMesh) meshes.push(object);
-  });
-
+  gltf.scene.traverse((object) => { if (object.isMesh) meshes.push(object); });
   meshes.forEach((mesh) => {
     const component = componentFromName(mesh.name);
     const sourceMaterials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
@@ -418,30 +268,24 @@ async function initializeViewer() {
     mesh.receiveShadow = enableShadows;
     componentGroups.get(component).attach(mesh);
   });
-
   gltf.scene.removeFromParent();
   modelRoot.updateMatrixWorld(true);
 
   const rackGroup = componentGroups.get("rack");
   const rackBounds = new THREE.Box3().setFromObject(rackGroup);
-  const rackCenter = rackBounds.getCenter(new THREE.Vector3());
   const rackSize = rackBounds.getSize(new THREE.Vector3());
   const assembledPositions = new Map();
-  const explodedPositions = new Map();
+  const extractedPositions = new Map();
 
   componentGroups.forEach((group, component) => {
+    const assembled = new THREE.Vector3(0, 0, 0);
+    assembledPositions.set(component, assembled);
     if (component === "rack") {
-      assembledPositions.set(component, new THREE.Vector3());
-      explodedPositions.set(component, new THREE.Vector3());
+      extractedPositions.set(component, assembled.clone());
       return;
     }
-
-    const bounds = new THREE.Box3().setFromObject(group);
-    const currentCenter = bounds.getCenter(new THREE.Vector3());
-    const assembled = desiredCenter(component, rackCenter, rackSize).sub(currentCenter);
-    const exploded = assembled.clone().add(explodeVector(component, rackSize));
-    assembledPositions.set(component, assembled);
-    explodedPositions.set(component, exploded);
+    const componentBounds = new THREE.Box3().setFromObject(group);
+    extractedPositions.set(component, extractionOffset(component, componentBounds, rackBounds, rackSize));
     group.position.copy(assembled);
   });
 
@@ -453,34 +297,26 @@ async function initializeViewer() {
   const camB = new THREE.Vector3();
   const targetA = new THREE.Vector3();
   const targetB = new THREE.Vector3();
-  const animatedPosition = new THREE.Vector3();
+  const targetPosition = new THREE.Vector3();
+  const clock = new THREE.Clock();
 
   function resize() {
     const phone = isMobile();
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1.2 : 1.75));
     renderer.setSize(window.innerWidth, window.innerHeight, false);
     camera.aspect = window.innerWidth / window.innerHeight;
-    camera.fov = phone ? 42 : 32;
+    camera.fov = phone ? 44 : 32;
     camera.updateProjectionMatrix();
-    modelRoot.scale.setScalar(phone ? 0.84 : 1);
+    modelRoot.scale.setScalar(phone ? 0.8 : 1);
   }
-
-  let resizeFrame = 0;
-  window.addEventListener("resize", () => {
-    if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
-    resizeFrame = window.requestAnimationFrame(() => {
-      resizeFrame = 0;
-      resize();
-    });
-  });
+  window.addEventListener("resize", resize, { passive: true });
   resize();
 
   let animationFrame = 0;
   let running = false;
-
   function render(time) {
     if (!running) return;
-
+    const delta = Math.min(clock.getDelta(), 0.05);
     const value = stageFloat();
     const fromIndex = Math.floor(value);
     const toIndex = Math.min(stages.length - 1, fromIndex + 1);
@@ -495,98 +331,53 @@ async function initializeViewer() {
     targetB.fromArray(to.target);
     camera.position.lerpVectors(camA, camB, blend);
     cameraTarget.lerpVectors(targetA, targetB, blend);
-
-    if (isMobile()) {
-      camera.position.multiplyScalar(1.24);
-      cameraTarget.y += 0.42;
-    }
+    if (isMobile()) { camera.position.multiplyScalar(1.25); cameraTarget.y += 0.38; }
     camera.lookAt(cameraTarget);
 
     const overviewWeight = smooth(clamp(1 - value));
-
     componentGroups.forEach((group, component) => {
       if (component === "rack") return;
       const focusWeight = componentWeight(value, component, "focus");
-      animatedPosition.lerpVectors(
-        assembledPositions.get(component),
-        explodedPositions.get(component),
-        focusWeight
-      );
-      group.position.lerp(animatedPosition, reduceMotion ? 1 : 0.16);
-      const targetScale = 1 + focusWeight * 0.025;
-      const scale = THREE.MathUtils.lerp(group.scale.x, targetScale, reduceMotion ? 1 : 0.14);
-      group.scale.setScalar(scale);
+      targetPosition.lerpVectors(assembledPositions.get(component), extractedPositions.get(component), focusWeight);
+      group.position.lerp(targetPosition, dampFactor(9.5, delta));
+      const targetScale = 1 + focusWeight * 0.018;
+      group.scale.setScalar(THREE.MathUtils.lerp(group.scale.x, targetScale, dampFactor(8, delta)));
     });
 
     materialStates.forEach((state) => {
       const focusWeight = componentWeight(value, state.component, "focus");
       const contextWeight = componentWeight(value, state.component, "context");
       const rackOpacity = state.component === "rack" ? 1 : 0;
-      const visibility = Math.max(rackOpacity, overviewWeight, focusWeight, contextWeight * 0.34, 0.025);
+      const visibility = Math.max(rackOpacity, overviewWeight, focusWeight, contextWeight * 0.5, 0.08);
       const targetOpacity = state.originalOpacity * visibility;
-
-      state.material.opacity = THREE.MathUtils.lerp(
-        state.material.opacity,
-        targetOpacity,
-        reduceMotion ? 1 : 0.16
-      );
-      state.material.depthWrite = targetOpacity > 0.92;
-
+      state.material.opacity = THREE.MathUtils.lerp(state.material.opacity, targetOpacity, dampFactor(10, delta));
+      state.material.depthWrite = targetOpacity > 0.9;
       if (state.material.emissive && state.originalEmissive) {
-        const targetEmissive = focusWeight > 0.08 ? highlight : state.originalEmissive;
-        state.material.emissive.lerp(targetEmissive, reduceMotion ? 1 : 0.12);
-        const targetIntensity = focusWeight > 0.08
-          ? Math.max(state.originalEmissiveIntensity, 0.24 * focusWeight)
-          : state.originalEmissiveIntensity;
-        state.material.emissiveIntensity = THREE.MathUtils.lerp(
-          state.material.emissiveIntensity,
-          targetIntensity,
-          reduceMotion ? 1 : 0.12
-        );
+        state.material.emissive.lerp(focusWeight > 0.08 ? highlight : state.originalEmissive, dampFactor(8, delta));
+        const targetIntensity = focusWeight > 0.08 ? Math.max(state.originalEmissiveIntensity, 0.2 * focusWeight) : state.originalEmissiveIntensity;
+        state.material.emissiveIntensity = THREE.MathUtils.lerp(state.material.emissiveIntensity, targetIntensity, dampFactor(8, delta));
       }
     });
 
-    if (!reduceMotion) modelRoot.rotation.y = -0.08 + Math.sin(time * 0.00018) * 0.018;
-
+    if (!reduceMotion) modelRoot.rotation.y = -0.08 + Math.sin(time * 0.00018) * 0.012;
     const finalRect = finalSection.getBoundingClientRect();
     const finalFade = clamp(1 - finalRect.top / window.innerHeight);
     sceneElement.style.opacity = String(clamp(1 - finalFade));
     copy.style.opacity = String(clamp(1 - finalFade * 1.3));
     stageNav.style.opacity = String(clamp(1 - finalFade * 1.4));
     scrollCue.style.opacity = window.scrollY < window.innerHeight * 0.35 ? "1" : "0";
-
     renderer.render(scene, camera);
     animationFrame = window.requestAnimationFrame(render);
   }
 
-  function startRendering() {
-    if (running) return;
-    running = true;
-    animationFrame = window.requestAnimationFrame(render);
-  }
-
-  function stopRendering() {
-    running = false;
-    if (animationFrame) window.cancelAnimationFrame(animationFrame);
-    animationFrame = 0;
-  }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stopRendering();
-    else startRendering();
-  });
-
-  window.addEventListener("pagehide", () => {
-    stopRendering();
-    renderer.dispose();
-    environmentTarget?.dispose();
-  }, { once: true });
-
+  function startRendering() { if (!running) { running = true; clock.start(); animationFrame = window.requestAnimationFrame(render); } }
+  function stopRendering() { running = false; if (animationFrame) window.cancelAnimationFrame(animationFrame); animationFrame = 0; clock.stop(); }
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stopRendering(); else startRendering(); });
+  window.addEventListener("pagehide", () => { stopRendering(); renderer.dispose(); environmentTarget?.dispose(); }, { once: true });
   startRendering();
 }
 
 initializeViewer().catch((error) => {
   console.error("Unable to initialize the Cocometric server viewer", error);
-  const reason = error instanceof Error ? error.message : String(error);
-  showModelFailure(`3D model unavailable — ${reason}`);
+  showModelFailure(`3D model unavailable — ${error instanceof Error ? error.message : String(error)}`);
 });
