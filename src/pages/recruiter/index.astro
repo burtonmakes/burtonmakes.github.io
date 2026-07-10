@@ -111,9 +111,24 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
               maxlength="20000"
               placeholder="Paste a job description, responsibilities section, or comma-separated skills."
             ></textarea>
-            <span class="match-character-limit" data-character-limit>0 / 20,000 characters</span>
           </div>
+          <span class="match-character-limit" data-character-limit>0 / 20,000 characters</span>
         </label>
+
+        <div class="recruiter-context-panel" aria-label="Optional recruiter context">
+          <label for="recruiter-name">
+            <span>Your name</span>
+            <input id="recruiter-name" data-recruiter-name type="text" autocomplete="name" placeholder="Optional" />
+          </label>
+          <label for="recruiter-company">
+            <span>Company</span>
+            <input id="recruiter-company" data-recruiter-company type="text" autocomplete="organization" placeholder="Optional" />
+          </label>
+          <label for="recruiter-role-target">
+            <span>Hiring for</span>
+            <input id="recruiter-role-target" data-recruiter-role-target type="text" placeholder="Sensor hardware engineer" />
+          </label>
+        </div>
 
         <div class="match-actions">
           <button class="button button-primary" type="button" data-ai-run>LLM analysis</button>
@@ -151,6 +166,20 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
             <span>Candidate match</span>
             <strong data-match-score>0%</strong>
             <p data-match-summary>Extract or enter role skills to compare them against mapped portfolio evidence.</p>
+            <div class="match-metric-grid" data-match-metrics>
+              <div>
+                <small>Technical match</small>
+                <b>0%</b>
+              </div>
+              <div>
+                <small>Execution readiness</small>
+                <b>0%</b>
+              </div>
+              <div>
+                <small>Evidence strength</small>
+                <b>0%</b>
+              </div>
+            </div>
           </div>
 
           <div class="role-insight-card">
@@ -163,14 +192,19 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
         <div class="match-breakdown-grid">
           <section class="match-list-card">
-            <h2>Matched / partial</h2>
-            <ul data-match-list>
-              <li>Waiting for keywords.</li>
-            </ul>
+            <div class="match-list-heading">
+              <h2>What matches well</h2>
+              <button type="button" data-match-toggle aria-expanded="true">Hide</button>
+            </div>
+            <div data-match-details>
+              <ul data-match-list>
+                <li>Waiting for keywords.</li>
+              </ul>
+            </div>
           </section>
 
           <section class="match-list-card">
-            <h2>Gaps</h2>
+            <h2>Needs confirmation</h2>
             <ul data-gap-list>
               <li>Nothing checked yet.</li>
             </ul>
@@ -183,7 +217,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   <section class="section match-evidence-section">
     <div class="section-heading reveal">
       <p class="eyebrow">Evidence</p>
-      <h2>Relevant work and projects appear here after matching.</h2>
+      <h2>Projects and work that showcase the match.</h2>
     </div>
 
     <div class="match-evidence-grid reveal" data-evidence-list>
@@ -252,11 +286,14 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   .match-input-panel textarea {
     width: 100%;
     min-height: 170px;
-    padding: 12px 12px 34px;
+    padding: 12px;
     border: 1px solid var(--line);
     border-radius: 9px;
     background: rgba(255, 255, 255, 0.018);
     color: var(--text);
+    font-size: 0.92rem;
+    font-weight: 560;
+    line-height: 1.42;
     resize: vertical;
     outline: none;
   }
@@ -267,17 +304,14 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   }
 
   .match-character-limit {
-    position: absolute;
-    right: 10px;
-    bottom: 9px;
-    padding: 2px 6px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.42);
+    justify-self: end;
+    margin-top: -4px;
     color: var(--muted);
     font-size: 0.72rem;
     font-weight: 760;
+    letter-spacing: 0.04em;
     line-height: 1.2;
-    pointer-events: none;
+    text-transform: uppercase;
   }
 
   .match-character-limit[data-state="warning"] {
@@ -286,6 +320,32 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .match-character-limit[data-state="full"] {
     color: var(--cta-2);
+  }
+
+  .recruiter-context-panel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .recruiter-context-panel label {
+    gap: 6px;
+  }
+
+  .recruiter-context-panel input {
+    min-height: 34px;
+    width: 100%;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.018);
+    color: var(--text);
+    outline: none;
+  }
+
+  .recruiter-context-panel input:focus {
+    border-color: color-mix(in srgb, var(--accent-2), white 8%);
+    box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
   }
 
   .match-actions {
@@ -484,17 +544,20 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .match-summary-grid {
     display: grid;
-    grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
+    grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
     gap: 10px;
+    min-width: 0;
   }
 
   .match-score-card {
     padding: clamp(14px, 1.6vw, 18px);
+    min-width: 0;
   }
 
   .role-insight-card {
     display: grid;
     gap: 7px;
+    min-width: 0;
     padding: 14px;
     border: 1px solid var(--line);
     border-radius: 10px;
@@ -513,6 +576,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     color: var(--text);
     font-size: clamp(1rem, 1.18vw, 1.2rem);
     line-height: 1.16;
+    overflow-wrap: anywhere;
   }
 
   .role-insight-card p {
@@ -530,7 +594,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .role-category-row {
     display: grid;
-    grid-template-columns: minmax(96px, 0.42fr) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(92px, 0.38fr) minmax(0, 1fr) 42px;
     gap: 8px;
     align-items: center;
     color: var(--muted);
@@ -558,16 +622,51 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     display: block;
     margin: 8px 0 8px;
     color: var(--text);
-    font-size: clamp(3.2rem, 6.8vw, 5.8rem);
+    font-size: clamp(3rem, 5.4vw, 4.8rem);
     line-height: 0.88;
     letter-spacing: 0;
+    white-space: nowrap;
   }
 
   .match-score-card p {
     max-width: 58ch;
     margin: 0;
-    font-size: 0.88rem;
-    line-height: 1.4;
+    font-size: 0.82rem;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+  }
+
+  .match-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .match-metric-grid div {
+    min-width: 0;
+    padding: 9px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.018);
+  }
+
+  .match-metric-grid small {
+    display: block;
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  .match-metric-grid b {
+    display: block;
+    margin-top: 5px;
+    color: var(--text);
+    font-size: 1.18rem;
+    line-height: 1;
   }
 
   .match-breakdown-grid {
@@ -578,11 +677,35 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .match-list-card {
     padding: 20px;
+    min-width: 0;
   }
 
   .match-list-card h2 {
-    margin-bottom: 14px;
+    margin-bottom: 0;
     font-size: clamp(1.18rem, 1.5vw, 1.45rem);
+  }
+
+  .match-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .match-list-heading button {
+    flex: 0 0 auto;
+    min-height: 30px;
+    padding: 0 11px;
+    border: 1px solid rgba(232, 111, 78, 0.42);
+    border-radius: 8px;
+    background: rgba(232, 111, 78, 0.1);
+    color: #ffb39f;
+    font-size: 0.74rem;
+    font-weight: 850;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
   }
 
   .match-list-card ul {
@@ -593,8 +716,9 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .match-list-card :global(li) {
     color: var(--muted-2);
-    font-size: 0.94rem;
-    line-height: 1.42;
+    font-size: 0.86rem;
+    line-height: 1.36;
+    overflow-wrap: anywhere;
   }
 
   .match-list-card :global(li + li) {
@@ -655,7 +779,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   :global(.role-category-row) {
     display: grid;
-    grid-template-columns: minmax(96px, 0.42fr) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(92px, 0.38fr) minmax(0, 1fr) 42px;
     gap: 8px;
     align-items: center;
     color: var(--muted);
@@ -663,6 +787,10 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+  }
+
+  :global(.role-category-row strong) {
+    text-align: right;
   }
 
   :global(.role-category-bar) {
@@ -746,7 +874,12 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   @media (max-width: 720px) {
     .match-summary-grid,
-    .match-breakdown-grid {
+    .match-breakdown-grid,
+    .recruiter-context-panel {
+      grid-template-columns: 1fr;
+    }
+
+    .match-metric-grid {
       grid-template-columns: 1fr;
     }
 
@@ -1081,13 +1214,14 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       counts.set(category, (counts.get(category) || 0) + 1);
     });
 
-    const max = Math.max(1, ...counts.values());
+    const total = Math.max(1, skills.length);
     return [...counts.entries()]
       .map(([category, count]) => ({
         category,
         label: labels[category] || titleCase(category),
         count,
-        width: Math.max(18, Math.round((count / max) * 100)),
+        percent: Math.round((count / total) * 100),
+        width: Math.max(12, Math.round((count / total) * 100)),
       }))
       .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
   };
@@ -1111,7 +1245,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       row.innerHTML = `
         <span>${item.label}</span>
         <div class="role-category-bar" aria-hidden="true"><i style="width:${item.width}%"></i></div>
-        <strong>${item.count}</strong>
+        <strong>${item.percent}%</strong>
       `;
       categoriesElement.append(row);
     });
@@ -1267,6 +1401,9 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
       const input = matcher.querySelector("[data-match-input]");
       const characterLimitElement = matcher.querySelector("[data-character-limit]");
+      const recruiterNameInput = matcher.querySelector("[data-recruiter-name]");
+      const recruiterCompanyInput = matcher.querySelector("[data-recruiter-company]");
+      const recruiterRoleTargetInput = matcher.querySelector("[data-recruiter-role-target]");
       const aiButton = matcher.querySelector("[data-ai-run]");
       const extractButton = matcher.querySelector("[data-extract-run]");
       const clearButton = matcher.querySelector("[data-match-clear]");
@@ -1277,10 +1414,13 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       const detectedCountElement = matcher.querySelector("[data-detected-count]");
       const scoreElement = matcher.querySelector("[data-match-score]");
       const summaryElement = matcher.querySelector("[data-match-summary]");
+      const metricGridElement = matcher.querySelector("[data-match-metrics]");
       const roleProfileElement = matcher.querySelector("[data-role-profile]");
       const roleProfileSummaryElement = matcher.querySelector("[data-role-profile-summary]");
       const roleCategoriesElement = matcher.querySelector("[data-role-categories]");
       const matchList = matcher.querySelector("[data-match-list]");
+      const matchToggleButton = matcher.querySelector("[data-match-toggle]");
+      const matchDetailsElement = matcher.querySelector("[data-match-details]");
       const gapList = matcher.querySelector("[data-gap-list]");
       const evidenceList = document.querySelector("[data-evidence-list]");
       let detectedSkills = [];
@@ -1321,10 +1461,21 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         if (restoringSavedSession) return;
         writeJson(sessionStorageKey, {
           jobText: input.value,
+          recruiterContext: {
+            name: recruiterNameInput.value,
+            company: recruiterCompanyInput.value,
+            hiringFor: recruiterRoleTargetInput.value,
+          },
           detectedSkills,
           lastRenderedResult,
         });
       };
+
+      const getRecruiterContext = () => ({
+        name: recruiterNameInput.value.trim(),
+        company: recruiterCompanyInput.value.trim(),
+        hiringFor: recruiterRoleTargetInput.value.trim(),
+      });
 
       const setStatus = (message, state = "") => {
         statusElement.textContent = message;
@@ -1353,6 +1504,69 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         return `Ready for LLM analysis. ${remaining} of ${maxLlmSubmissions} submissions left in this browser.`;
       };
 
+      const renderMetrics = (metrics) => {
+        const items = [
+          ["Technical match", metrics.technical],
+          ["Execution readiness", metrics.execution],
+          ["Evidence strength", metrics.evidence],
+        ];
+        metricGridElement.innerHTML = "";
+        items.forEach(([label, value]) => {
+          const tile = document.createElement("div");
+          const small = document.createElement("small");
+          const number = document.createElement("b");
+          small.textContent = label;
+          number.textContent = `${Math.max(0, Math.min(100, Math.round(value || 0)))}%`;
+          tile.append(small, number);
+          metricGridElement.append(tile);
+        });
+      };
+
+      const scoreRequirementGroup = (requirements, matches, gaps, predicate, fallbackScore) => {
+        const matchByRequirement = new Map(matches.map((match) => [normalize(match.requirement), match]));
+        const gapSet = new Set(gaps.map((gap) => normalize(gap.requirement)));
+        const selected = requirements.filter((requirement) => predicate(normalize(requirement.label || requirement.requirement || "")));
+        const scoped = selected.length ? selected : requirements;
+        if (scoped.length === 0) return fallbackScore;
+
+        const values = {
+          direct: 1,
+          partial: 0.58,
+          adjacent: 0.28,
+          gap: 0,
+        };
+
+        const total = scoped.reduce((sum, requirement) => {
+          const key = normalize(requirement.label || requirement.requirement || "");
+          const match = matchByRequirement.get(key);
+          const classification = gapSet.has(key) && !match ? "gap" : classificationLabel(match?.classification);
+          return sum + values[classification];
+        }, 0);
+
+        return Math.round((total / scoped.length) * 100);
+      };
+
+      const getAiMetrics = (result, score) => {
+        const requirements = Array.isArray(result.extractedRequirements) ? result.extractedRequirements : [];
+        const matches = Array.isArray(result.matches) ? result.matches : [];
+        const gaps = Array.isArray(result.gaps) ? result.gaps : [];
+        const allRequirements = requirements.length
+          ? requirements
+          : [...matches.map((match) => ({ label: match.requirement })), ...gaps.map((gap) => ({ label: gap.requirement }))];
+
+        const technicalTerms = ["sensor", "circuit", "analog", "board", "pcb", "fpc", "embedded", "opto", "electrical", "hardware", "schematic", "validation", "verification", "debug"];
+        const executionTerms = ["npi", "manufacturing", "production", "factory", "vendor", "cm", "jdm", "cross functional", "prototype", "reliability", "quality", "test", "lead"];
+        const evidenceStrength = allRequirements.length
+          ? Math.round((matches.filter((match) => Array.isArray(match.evidenceIds) && match.evidenceIds.length > 0).length / allRequirements.length) * 100)
+          : 0;
+
+        return {
+          technical: scoreRequirementGroup(allRequirements, matches, gaps, (label) => technicalTerms.some((term) => label.includes(term)), score),
+          execution: scoreRequirementGroup(allRequirements, matches, gaps, (label) => executionTerms.some((term) => label.includes(term)), score),
+          evidence: evidenceStrength,
+        };
+      };
+
       const updateCharacterLimit = () => {
         const count = input.value.length;
         characterLimitElement.textContent = `${count.toLocaleString()} / ${maxJobTextCharacters.toLocaleString()} characters`;
@@ -1370,8 +1584,9 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         lastRenderedResult = null;
         scoreElement.textContent = "0%";
         summaryElement.textContent = "Extract or enter role skills to compare them against mapped portfolio evidence.";
+        renderMetrics({ technical: 0, execution: 0, evidence: 0 });
         renderList(matchList, [], "Waiting for keywords.");
-        renderList(gapList, [], "Nothing checked yet.");
+        renderList(gapList, [], "Nothing needs confirmation yet.");
         renderEvidence(evidenceList, []);
         saveSession();
       };
@@ -1450,6 +1665,11 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
         scoreElement.textContent = `${weightedScore}%`;
         summaryElement.textContent = `${getGrade(weightedScore)} based on ${matched.length} of ${keywords.length} entered keyword${keywords.length === 1 ? "" : "s"} mapping to portfolio evidence.`;
+        renderMetrics({
+          technical: weightedScore,
+          execution: Math.round((matched.filter((item) => /npi|manufacturing|factory|vendor|cross|prototype|validation|test|quality|reliability/i.test(item.keyword)).length / Math.max(1, keywords.filter((keyword) => /npi|manufacturing|factory|vendor|cross|prototype|validation|test|quality|reliability/i.test(keyword)).length || keywords.length)) * 100),
+          evidence: Math.round((allMatches.length / Math.max(1, keywords.length)) * 100),
+        });
 
         renderList(
           matchList,
@@ -1459,7 +1679,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         renderList(
           gapList,
           gaps.map((item) => item.keyword),
-          "No obvious gaps from the entered list.",
+          "Nothing needs confirmation from the entered list.",
         );
         renderEvidence(evidenceList, allMatches);
         lastRenderedResult = { type: "fuzzy" };
@@ -1476,6 +1696,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         setDetectedSkills(skills);
         scoreElement.textContent = `${score}%`;
         summaryElement.textContent = result.fitSummary || `${getGrade(score)} based on AI-classified requirements and deterministic fit scoring.`;
+        renderMetrics(getAiMetrics(result, score));
 
         roleProfileElement.textContent = result.roleTitleGuess || result.roleCategory || "AI role read";
         roleProfileSummaryElement.textContent =
@@ -1501,7 +1722,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         renderList(
           gapList,
           gaps.map((item) => item.reason ? `${item.requirement}: ${item.reason}` : item.requirement),
-          "No clear gaps returned.",
+          "Nothing needs confirmation.",
         );
         renderAiEvidence(evidenceList, matches);
         lastRenderedResult = { type: "llm", result };
@@ -1549,6 +1770,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
             headers: { "content-type": "application/json" },
             body: JSON.stringify({
               jobText,
+              recruiterContext: getRecruiterContext(),
               manualSkills: detectedSkills.map((skill) => skill.label),
               portfolioIndex,
               normalizerTags,
@@ -1579,6 +1801,12 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
       aiButton.addEventListener("click", runAiMatch);
       extractButton.addEventListener("click", extractAndMatch);
+      matchToggleButton.addEventListener("click", () => {
+        const expanded = matchToggleButton.getAttribute("aria-expanded") === "true";
+        matchToggleButton.setAttribute("aria-expanded", String(!expanded));
+        matchToggleButton.textContent = expanded ? "Show" : "Hide";
+        matchDetailsElement.hidden = expanded;
+      });
       input.addEventListener("input", () => {
         updateCharacterLimit();
         saveSession();
@@ -1586,8 +1814,14 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           setStatus(getReadyStatus());
         }
       });
+      [recruiterNameInput, recruiterCompanyInput, recruiterRoleTargetInput].forEach((field) => {
+        field.addEventListener("input", saveSession);
+      });
       clearButton.addEventListener("click", () => {
         input.value = "";
+        recruiterNameInput.value = "";
+        recruiterCompanyInput.value = "";
+        recruiterRoleTargetInput.value = "";
         lastRenderedResult = null;
         setDetectedSkills([]);
         updateCharacterLimit();
@@ -1614,6 +1848,9 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       if (savedSession?.jobText || Array.isArray(savedSession?.detectedSkills)) {
         restoringSavedSession = true;
         input.value = String(savedSession.jobText || "").slice(0, maxJobTextCharacters);
+        recruiterNameInput.value = String(savedSession.recruiterContext?.name || "");
+        recruiterCompanyInput.value = String(savedSession.recruiterContext?.company || "");
+        recruiterRoleTargetInput.value = String(savedSession.recruiterContext?.hiringFor || "");
         setDetectedSkills(Array.isArray(savedSession.detectedSkills) ? savedSession.detectedSkills : []);
         restoringSavedSession = false;
 

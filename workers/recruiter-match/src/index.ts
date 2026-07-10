@@ -285,7 +285,7 @@ export default {
       return jsonResponse(request, env, { error: "Use POST with a jobText payload." }, 405);
     }
 
-    let body: { jobText?: unknown; manualSkills?: unknown; portfolioIndex?: unknown };
+    let body: { jobText?: unknown; recruiterContext?: unknown; manualSkills?: unknown; portfolioIndex?: unknown };
     try {
       body = await request.json();
     } catch {
@@ -293,6 +293,11 @@ export default {
     }
 
     const jobText = cleanText(body.jobText).slice(0, MAX_JOB_TEXT_LENGTH);
+    const recruiterContext = body.recruiterContext && typeof body.recruiterContext === "object"
+      ? {
+          hiringFor: cleanText((body.recruiterContext as { hiringFor?: unknown }).hiringFor).slice(0, 120),
+        }
+      : {};
     const manualSkills = Array.isArray(body.manualSkills)
       ? body.manualSkills.map((skill) => cleanText(skill)).filter(Boolean).slice(0, 24)
       : [];
@@ -314,6 +319,7 @@ export default {
             role: "user",
             content: JSON.stringify({
               jobText,
+              recruiterContext,
               manualSkills,
               portfolioIndex: portfolio,
             }),
