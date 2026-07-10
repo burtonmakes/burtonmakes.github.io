@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { capabilityTaxonomy } from "../../data/capability-map";
-import { projects, skillsDemonstrated, workHistory } from "../../data/site";
+import { recruiterRoleProfiles, recruiterSkillTags } from "../../data/recruiter-normalizer";
+import { projects, workHistory } from "../../data/site";
 import "../../styles/global.css";
 
 const slugify = (value: string) =>
@@ -50,8 +51,38 @@ const matcherData = capabilityTaxonomy.flatMap((group) =>
   }))
 );
 
-const suggestedSkills = [...skillsDemonstrated].slice(0, 12);
+const portfolioEvidence = new Map<string, {
+  id: string;
+  title: string;
+  kind: string;
+  href: string;
+  summary: string;
+  tags: string[];
+  highlights: readonly string[];
+  capabilities: string[];
+}>();
+
+matcherData.forEach((node) => {
+  node.evidence.forEach((item) => {
+    const current = portfolioEvidence.get(item.key);
+    portfolioEvidence.set(item.key, {
+      id: item.key,
+      title: item.title,
+      kind: item.kind,
+      href: item.href,
+      summary: item.summary,
+      tags: [...new Set([...(current?.tags ?? []), ...item.tags, ...node.skillTags, node.label, node.group])].slice(0, 18),
+      highlights: item.highlights,
+      capabilities: [...new Set([...(current?.capabilities ?? []), node.label])],
+    });
+  });
+});
+
 const matcherJson = JSON.stringify(matcherData);
+const portfolioJson = JSON.stringify([...portfolioEvidence.values()]);
+const normalizerJson = JSON.stringify(recruiterSkillTags);
+const roleProfilesJson = JSON.stringify(recruiterRoleProfiles);
+const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 ---
 
 <BaseLayout
@@ -63,52 +94,77 @@ const matcherJson = JSON.stringify(matcherData);
       <p class="eyebrow">Recruiter fast path</p>
       <h1>Paste the role keywords. See where the portfolio matches.</h1>
       <p class="hero-text">
-        This is a quick first-pass screen for comparing a job description, skill list, or role keywords
-        against the skills and labels already mapped through the portfolio.
+        Paste a job description or skill list. The tool pulls out likely role skills, normalizes the
+        wording into clean tags, then compares those tags against mapped portfolio evidence.
       </p>
     </div>
 
     <div class="recruiter-match-shell reveal" data-recruiter-matcher>
       <div class="match-input-panel">
         <label for="recruiter-keywords">
-          <span>Keywords or phrases</span>
+          <span>Job description, requirements, or keywords</span>
           <textarea
             id="recruiter-keywords"
             data-match-input
             rows="8"
-            placeholder="Example: wearable sensing, medical devices, validation, BLE, clinical workflow, Python"
+            placeholder="Paste a job description, responsibilities section, or comma-separated skills."
           ></textarea>
         </label>
 
         <div class="match-actions">
-          <button class="button button-primary" type="button" data-match-run>Match skills</button>
+          <button class="button button-primary" type="button" data-ai-run>Analyze with AI</button>
+          <button class="button button-secondary" type="button" data-extract-run>Local fallback</button>
           <button class="button button-tertiary" type="button" data-match-clear>Clear</button>
         </div>
+        <p class="match-status" data-match-status>
+          AI matching needs a Cloudflare Worker URL. Local fallback is available.
+        </p>
 
-        <div class="suggested-skill-row" aria-label="Suggested skills">
-          {suggestedSkills.map((skill) => (
-            <button type="button" data-suggested-skill={skill}>{skill}</button>
-          ))}
-        </div>
+        <section class="detected-skill-panel">
+          <div class="detected-skill-heading">
+            <span>Detected role skills</span>
+            <strong data-detected-count>0 tags</strong>
+          </div>
+          <label class="manual-skill-field" for="manual-skill">
+            <span>Add skill</span>
+            <div class="manual-skill-row">
+              <input id="manual-skill" data-manual-skill type="text" placeholder="board bring-up, FPC layout, NPI" />
+              <button class="button button-secondary" type="button" data-add-manual-skill>Add</button>
+            </div>
+          </label>
+
+          <div class="detected-skill-list" data-detected-skills>
+            <p>Paste role text and extract skills to review the normalized tags.</p>
+          </div>
+        </section>
       </div>
 
       <div class="match-results-panel" aria-live="polite">
-        <div class="match-score-card">
-          <span>Candidate match</span>
-          <strong data-match-score>0%</strong>
-          <p data-match-summary>Enter role keywords to compare them against mapped portfolio evidence.</p>
+        <div class="match-summary-grid">
+          <div class="match-score-card">
+            <span>Candidate match</span>
+            <strong data-match-score>0%</strong>
+            <p data-match-summary>Extract or enter role skills to compare them against mapped portfolio evidence.</p>
+          </div>
+
+          <div class="role-insight-card">
+            <span>Role read</span>
+            <strong data-role-profile>No role profile yet</strong>
+            <p data-role-profile-summary>Detected skill categories will appear after extraction.</p>
+            <div class="role-category-list" data-role-categories></div>
+          </div>
         </div>
 
         <div class="match-breakdown-grid">
           <section class="match-list-card">
-            <h2>Matched</h2>
+            <h2>Matched / partial</h2>
             <ul data-match-list>
               <li>Waiting for keywords.</li>
             </ul>
           </section>
 
           <section class="match-list-card">
-            <h2>Not found yet</h2>
+            <h2>Gaps</h2>
             <ul data-gap-list>
               <li>Nothing checked yet.</li>
             </ul>
@@ -136,7 +192,7 @@ const matcherJson = JSON.stringify(matcherData);
 <style>
   .recruiter-match-hero {
     display: grid;
-    gap: clamp(32px, 5vw, 56px);
+    gap: clamp(20px, 3vw, 34px);
     align-content: center;
   }
 
@@ -146,8 +202,8 @@ const matcherJson = JSON.stringify(matcherData);
 
   .recruiter-match-shell {
     display: grid;
-    grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1fr);
-    gap: 18px;
+    grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1fr);
+    gap: 14px;
   }
 
   .match-input-panel,
@@ -164,8 +220,8 @@ const matcherJson = JSON.stringify(matcherData);
 
   .match-input-panel {
     display: grid;
-    gap: 18px;
-    padding: clamp(20px, 2.4vw, 28px);
+    gap: 12px;
+    padding: clamp(16px, 1.8vw, 22px);
   }
 
   .match-input-panel label {
@@ -185,8 +241,8 @@ const matcherJson = JSON.stringify(matcherData);
 
   .match-input-panel textarea {
     width: 100%;
-    min-height: 210px;
-    padding: 16px;
+    min-height: 170px;
+    padding: 12px;
     border: 1px solid var(--line);
     border-radius: 9px;
     background: rgba(255, 255, 255, 0.018);
@@ -203,47 +259,237 @@ const matcherJson = JSON.stringify(matcherData);
   .match-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .match-actions .button {
-    border: 1px solid var(--line);
-    cursor: pointer;
-  }
-
-  .suggested-skill-row {
-    display: flex;
-    flex-wrap: wrap;
     gap: 8px;
   }
 
-  .suggested-skill-row button {
-    min-height: 34px;
-    padding: 0 11px;
-    border: 1px solid rgba(232, 111, 78, 0.32);
-    border-radius: 999px;
-    background: rgba(232, 111, 78, 0.06);
-    color: #f4ded8;
+  .match-actions .button {
+    min-height: 38px;
+    padding: 0 13px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 0.86rem;
+    cursor: pointer;
+  }
+
+  .match-status {
+    min-height: 1.2em;
+    margin: -2px 0 0;
+    color: var(--muted);
     font-size: 0.82rem;
-    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .match-status[data-state="error"] {
+    color: #ffc4b4;
+  }
+
+  .match-status[data-state="ready"] {
+    color: var(--accent-2);
+  }
+
+  .detected-skill-panel {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.014);
+  }
+
+  .detected-skill-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .detected-skill-heading span,
+  .manual-skill-field span {
+    color: var(--accent-2);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .detected-skill-heading strong {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .detected-skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 36px;
+    max-height: 118px;
+    overflow-y: auto;
+    padding-right: 3px;
+    scrollbar-color: var(--line-strong) transparent;
+    scrollbar-width: thin;
+  }
+
+  .detected-skill-list p {
+    width: 100%;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .detected-skill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 28px;
+    padding: 0 4px 0 9px;
+    border: 1px solid rgba(111, 211, 255, 0.26);
+    border-radius: 999px;
+    background: rgba(111, 211, 255, 0.06);
+    color: #e9f7ff;
+    font-size: 0.78rem;
+    font-weight: 760;
+  }
+
+  .detected-skill-chip[data-source="typed"] {
+    border-color: rgba(232, 111, 78, 0.38);
+    background: rgba(232, 111, 78, 0.08);
+    color: #fff0ea;
+  }
+
+  .detected-skill-chip button {
+    display: inline-grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: currentColor;
+    font-size: 0.7rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .manual-skill-field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .manual-skill-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .manual-skill-field input {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.018);
+    color: var(--text);
+    outline: none;
+  }
+
+  .manual-skill-field input:focus {
+    border-color: color-mix(in srgb, var(--accent-2), white 8%);
+    box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
+  }
+
+  .manual-skill-row .button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 0.84rem;
     cursor: pointer;
   }
 
   .match-results-panel {
     display: grid;
-    gap: 14px;
-    padding: clamp(18px, 2vw, 22px);
+    gap: 12px;
+    padding: clamp(14px, 1.6vw, 18px);
+  }
+
+  .match-summary-grid {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
+    gap: 10px;
   }
 
   .match-score-card {
-    padding: clamp(20px, 2.4vw, 30px);
+    padding: clamp(14px, 1.6vw, 18px);
+  }
+
+  .role-insight-card {
+    display: grid;
+    gap: 7px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.014);
+  }
+
+  .role-insight-card span {
+    color: var(--accent-2);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .role-insight-card strong {
+    color: var(--text);
+    font-size: clamp(1rem, 1.18vw, 1.2rem);
+    line-height: 1.16;
+  }
+
+  .role-insight-card p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.84rem;
+    line-height: 1.38;
+  }
+
+  .role-category-list {
+    display: grid;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .role-category-row {
+    display: grid;
+    grid-template-columns: minmax(96px, 0.42fr) minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .role-category-bar {
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .role-category-bar i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
   }
 
   .match-score-card strong {
     display: block;
-    margin: 12px 0 10px;
+    margin: 8px 0 8px;
     color: var(--text);
-    font-size: clamp(4rem, 9vw, 8rem);
+    font-size: clamp(3.2rem, 6.8vw, 5.8rem);
     line-height: 0.88;
     letter-spacing: 0;
   }
@@ -251,6 +497,8 @@ const matcherJson = JSON.stringify(matcherData);
   .match-score-card p {
     max-width: 58ch;
     margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.4;
   }
 
   .match-breakdown-grid {
@@ -344,6 +592,7 @@ const matcherJson = JSON.stringify(matcherData);
   }
 
   @media (max-width: 720px) {
+    .match-summary-grid,
     .match-breakdown-grid {
       grid-template-columns: 1fr;
     }
@@ -351,11 +600,19 @@ const matcherJson = JSON.stringify(matcherData);
     .match-actions {
       flex-direction: column;
     }
+
+    .manual-skill-row {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 
-<script define:vars={{ matcherJson }}>
+<script define:vars={{ matcherJson, portfolioJson, normalizerJson, roleProfilesJson, recruiterMatchApi }}>
   const matcherData = JSON.parse(matcherJson);
+  const portfolioIndex = JSON.parse(portfolioJson);
+  const normalizerTags = JSON.parse(normalizerJson);
+  const roleProfiles = JSON.parse(roleProfilesJson);
+  const aiMatchEndpoint = recruiterMatchApi;
 
   const normalize = (value) =>
     String(value)
@@ -367,7 +624,20 @@ const matcherJson = JSON.stringify(matcherData);
 
   const tokenize = (value) => normalize(value).split(" ").filter((token) => token.length > 1);
 
-  const parseKeywords = (value) => {
+  const titleCase = (value) =>
+    normalize(value)
+      .split(" ")
+      .map((part) => {
+        const upper = part.toUpperCase();
+        if (["ble", "nfc", "fpc", "pcb", "npi", "cm", "jdm", "dsp", "ml", "ai", "ecg", "hrv"].includes(part)) return upper;
+        return part.charAt(0).toUpperCase() + part.slice(1);
+      })
+      .join(" ")
+      .replace(/\bAnd\b/g, "and");
+
+  const escapeRegExp = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const parseExplicitKeywords = (value) => {
     const direct = String(value)
       .split(/[,;\n|]+/)
       .map((item) => item.trim())
@@ -376,6 +646,123 @@ const matcherJson = JSON.stringify(matcherData);
     if (direct.length > 1) return [...new Set(direct)];
 
     return [...new Set(String(value).split(/\s{2,}|[,;\n|]+/).map((item) => item.trim()).filter(Boolean))];
+  };
+
+  const parseManualSkills = (value) =>
+    [...new Set(String(value).split(/[,;\n|]+/).map((item) => item.trim()).filter(Boolean))];
+
+  const phrasePatterns = [
+    /\b(?:sensor|sensing|hardware|board|circuit|schematic|analog|embedded|mobile|factory|lab|reliability|quality|manufacturing|prototype|validation|verification|optoelectronics|optical|flexible|fpc|pcb|npi|consumer|medical|wearable|physiological)\s+[a-z0-9+#/.-]+(?:\s+[a-z0-9+#/.-]+){0,3}\b/g,
+    /\b[a-z0-9+#/.-]+\s+(?:integration|architecture|design|debugging|validation|verification|testing|layout|bring-up|bring up|readiness|manufacturing|electronics|sensing|sensors|systems|workflow|workflows)\b/g,
+  ];
+
+  const skipExtractedPhrase = (value) => {
+    const cleaned = normalize(value);
+    return [
+      "bachelor",
+      "degree",
+      "minimum qualifications",
+      "related field",
+      "work experience",
+      "physics",
+      "mathematics",
+      "equivalent experience",
+      "responsibilities",
+    ].some((skip) => cleaned.includes(skip));
+  };
+
+  const addDetectedSkill = (skills, label, source, score = 0.72, alias = "") => {
+    const normalized = normalize(label);
+    if (!normalized || normalized.length < 2) return;
+
+    const existing = skills.get(normalized);
+    if (!existing || score > existing.score) {
+      skills.set(normalized, {
+        label,
+        normalized,
+        source,
+        score,
+        alias,
+      });
+    }
+  };
+
+  const extractRoleSkills = (value) => {
+    const text = String(value);
+    const normalizedText = ` ${normalize(text)} `;
+    const skills = new Map();
+
+    normalizerTags.forEach((tag) => {
+      const aliases = [tag.label, ...tag.aliases];
+      let bestAlias = "";
+      let bestScore = 0;
+
+      aliases.forEach((alias) => {
+        const normalizedAlias = normalize(alias);
+        if (!normalizedAlias) return;
+        const pattern = new RegExp(`(^|\\\\s)${escapeRegExp(normalizedAlias)}(\\\\s|$)`);
+        if (pattern.test(normalizedText)) {
+          const aliasScore = Math.min(1, 0.72 + tag.priority / 400 + Math.min(0.08, normalizedAlias.length / 240));
+          if (aliasScore > bestScore) {
+            bestScore = aliasScore;
+            bestAlias = alias;
+          }
+        }
+      });
+
+      if (bestScore > 0) {
+        addDetectedSkill(skills, tag.label, "normalized", bestScore, bestAlias);
+      }
+    });
+
+    const explicitKeywords = parseExplicitKeywords(text);
+    const looksLikeSkillList = text.length < 520 || explicitKeywords.length <= 10;
+
+    explicitKeywords.forEach((keyword) => {
+      const cleaned = normalize(keyword);
+      if (skipExtractedPhrase(cleaned)) return;
+      if (cleaned.split(" ").length <= 6 && cleaned.length >= 3 && cleaned.length <= 64) {
+        const bestTag = normalizerTags
+          .map((tag) => ({
+            tag,
+            score: Math.max(scorePhrase(cleaned, tag.label), ...tag.aliases.map((alias) => scorePhrase(cleaned, alias))),
+          }))
+          .sort((a, b) => b.score - a.score)[0];
+
+        if (bestTag?.score >= 0.72) {
+          addDetectedSkill(skills, bestTag.tag.label, "normalized", bestTag.score, keyword);
+        } else if (looksLikeSkillList && (text.includes(",") || text.includes(";") || text.includes("|"))) {
+          addDetectedSkill(skills, titleCase(keyword), "typed", 0.58, keyword);
+        }
+      }
+    });
+
+    phrasePatterns.forEach((pattern) => {
+      const matches = normalizedText.match(pattern) ?? [];
+      matches.forEach((match) => {
+        const cleaned = normalize(match);
+        const tokens = cleaned.split(" ");
+        if (tokens.length < 2 || tokens.length > 5 || cleaned.length > 56) return;
+        if (skipExtractedPhrase(cleaned)) return;
+
+        const bestTag = normalizerTags
+          .map((tag) => ({
+            tag,
+            score: Math.max(scorePhrase(cleaned, tag.label), ...tag.aliases.map((alias) => scorePhrase(cleaned, alias))),
+          }))
+          .sort((a, b) => b.score - a.score)[0];
+
+        if (bestTag?.score >= 0.64) {
+          addDetectedSkill(skills, bestTag.tag.label, "normalized", bestTag.score, cleaned);
+        } else if (tokens.some((token) => ["sensor", "sensing", "hardware", "board", "circuit", "embedded", "validation", "manufacturing", "reliability", "factory", "fpc", "pcb", "npi"].includes(token))) {
+          addDetectedSkill(skills, titleCase(cleaned), "extracted", 0.52, cleaned);
+        }
+      });
+    });
+
+    return [...skills.values()]
+      .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
+      .slice(0, 24);
   };
 
   const diceCoefficient = (left, right) => {
@@ -414,7 +801,10 @@ const matcherJson = JSON.stringify(matcherData);
     const target = normalize(candidate);
     if (!key || !target) return 0;
     if (key === target) return 1;
-    if (target.includes(key) || key.includes(target)) return 0.9;
+    if (target.includes(key)) return 0.9;
+    if (key.includes(target)) {
+      return tokenize(target).length >= 2 ? 0.82 : 0;
+    }
 
     const keyTokens = tokenize(key);
     const targetTokens = new Set(tokenize(target));
@@ -426,6 +816,11 @@ const matcherJson = JSON.stringify(matcherData);
   };
 
   const bestNodeMatch = (keyword, node) => {
+    const matchedNormalizerTag = normalizerTags.find((tag) => normalize(tag.label) === normalize(keyword));
+    const keywordTerms = [
+      { term: keyword, mapped: false },
+      ...(matchedNormalizerTag?.portfolioTerms ?? []).map((term) => ({ term, mapped: true })),
+    ];
     const candidates = [
       node.label,
       node.group,
@@ -436,10 +831,15 @@ const matcherJson = JSON.stringify(matcherData);
 
     const best = candidates.reduce(
       (current, candidate) => {
-        const score = scorePhrase(keyword, candidate);
-        return score > current.score ? { score, label: candidate } : current;
+        const bestTerm = keywordTerms
+          .map((item) => ({
+            mapped: item.mapped,
+            score: scorePhrase(item.term, candidate) * (item.mapped ? 0.82 : 1),
+          }))
+          .sort((a, b) => b.score - a.score)[0];
+        return bestTerm.score > current.score ? { score: bestTerm.score, label: candidate, mapped: bestTerm.mapped } : current;
       },
-      { score: 0, label: "" },
+      { score: 0, label: "", mapped: false },
     );
 
     return best;
@@ -452,6 +852,12 @@ const matcherJson = JSON.stringify(matcherData);
     return "Limited mapped overlap";
   };
 
+  const formatMatchLabel = (label) => {
+    const value = String(label || "").trim();
+    if (value.length <= 54) return value;
+    return "portfolio evidence";
+  };
+
   const renderList = (element, items, emptyText) => {
     element.innerHTML = "";
     const content = items.length ? items : [emptyText];
@@ -459,6 +865,108 @@ const matcherJson = JSON.stringify(matcherData);
       const li = document.createElement("li");
       li.textContent = item;
       element.append(li);
+    });
+  };
+
+  const renderDetectedSkills = (element, countElement, skills, onRemove) => {
+    element.innerHTML = "";
+    countElement.textContent = `${skills.length} tag${skills.length === 1 ? "" : "s"}`;
+
+    if (skills.length === 0) {
+      const empty = document.createElement("p");
+      empty.textContent = "Paste role text and extract skills to review the normalized tags.";
+      element.append(empty);
+      return;
+    }
+
+    skills.forEach((skill) => {
+      const chip = document.createElement("span");
+      chip.className = "detected-skill-chip";
+      chip.dataset.source = skill.source;
+      chip.title = skill.alias ? `Detected from: ${skill.alias}` : skill.label;
+
+      const label = document.createElement("span");
+      label.textContent = skill.label;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("aria-label", `Remove ${skill.label}`);
+      button.textContent = "x";
+      button.addEventListener("click", () => onRemove(skill.normalized));
+
+      chip.append(label, button);
+      element.append(chip);
+    });
+  };
+
+  const getSkillMetadata = (label) => normalizerTags.find((tag) => normalize(tag.label) === normalize(label));
+
+  const getRoleProfile = (skills) => {
+    if (skills.length === 0) return null;
+    const skillLabels = skills.map((skill) => skill.label);
+    return roleProfiles
+      .map((profile) => {
+        const score = profile.terms.reduce((total, term) => {
+          const best = Math.max(...skillLabels.map((skill) => scorePhrase(term, skill)));
+          return total + (best >= 0.86 ? 1 : best >= 0.68 ? 0.55 : 0);
+        }, 0);
+        return {
+          ...profile,
+          score: score / Math.max(1, profile.terms.length),
+        };
+      })
+      .sort((a, b) => b.score - a.score)[0];
+  };
+
+  const getCategoryCoverage = (skills) => {
+    const labels = {
+      hardware: "Hardware",
+      sensors: "Sensors",
+      validation: "Validation",
+      manufacturing: "Manufacturing",
+      "software-data": "Software/data",
+      leadership: "Leadership",
+      domain: "Domain",
+    };
+    const counts = new Map();
+    skills.forEach((skill) => {
+      const category = getSkillMetadata(skill.label)?.category || "domain";
+      counts.set(category, (counts.get(category) || 0) + 1);
+    });
+
+    const max = Math.max(1, ...counts.values());
+    return [...counts.entries()]
+      .map(([category, count]) => ({
+        category,
+        label: labels[category] || titleCase(category),
+        count,
+        width: Math.max(18, Math.round((count / max) * 100)),
+      }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  };
+
+  const renderRoleInsights = (profileElement, summaryElement, categoriesElement, skills) => {
+    const profile = getRoleProfile(skills);
+    if (!profile || profile.score <= 0) {
+      profileElement.textContent = "No role profile yet";
+      summaryElement.textContent = "Detected skill categories will appear after extraction.";
+      categoriesElement.innerHTML = "";
+      return;
+    }
+
+    profileElement.textContent = profile.label;
+    summaryElement.textContent = profile.summary;
+    categoriesElement.innerHTML = "";
+
+    getCategoryCoverage(skills).slice(0, 5).forEach((item) => {
+      const row = document.createElement("div");
+      row.className = "role-category-row";
+      row.innerHTML = `
+        <span>${item.label}</span>
+        <div class="role-category-bar" aria-hidden="true"><i style="width:${item.width}%"></i></div>
+        <strong>${item.count}</strong>
+      `;
+      categoriesElement.append(row);
     });
   };
 
@@ -514,25 +1022,169 @@ const matcherJson = JSON.stringify(matcherData);
     });
   };
 
+  const portfolioById = new Map(portfolioIndex.map((item) => [item.id, item]));
+
+  const renderAiEvidence = (element, matches) => {
+    element.innerHTML = "";
+
+    const evidenceMap = new Map();
+    matches.forEach((match) => {
+      const evidenceIds = Array.isArray(match.evidenceIds) ? match.evidenceIds : [];
+      evidenceIds.forEach((id) => {
+        const item = portfolioById.get(id);
+        if (!item) return;
+        const current = evidenceMap.get(id);
+        const score = Math.max(current?.score || 0, Number(match.confidence) || 0);
+        evidenceMap.set(id, {
+          ...item,
+          score,
+          requirements: [...new Set([...(current?.requirements || []), match.requirement].filter(Boolean))],
+        });
+      });
+    });
+
+    const evidence = [...evidenceMap.values()].sort((a, b) => b.score - a.score).slice(0, 6);
+
+    if (evidence.length === 0) {
+      const empty = document.createElement("article");
+      empty.className = "evidence-empty";
+      empty.innerHTML = "<strong>No evidence selected yet.</strong><p>The AI response did not return portfolio evidence IDs for the matched requirements.</p>";
+      element.append(empty);
+      return;
+    }
+
+    evidence.forEach((item) => {
+      const card = document.createElement("article");
+      card.className = "match-evidence-card";
+
+      const heading = document.createElement("span");
+      heading.textContent = `${item.kind} · ${Math.round(item.score * 100)}% evidence confidence`;
+
+      const title = document.createElement("strong");
+      title.textContent = item.title;
+
+      const summary = document.createElement("p");
+      summary.textContent = item.summary;
+
+      const highlights = document.createElement("ul");
+      (item.highlights || []).slice(0, 2).forEach((highlight) => {
+        const li = document.createElement("li");
+        li.textContent = highlight;
+        highlights.append(li);
+      });
+
+      const tags = document.createElement("div");
+      tags.className = "tag-row";
+      [...new Set([...(item.capabilities || []), ...(item.tags || []), ...(item.requirements || [])])]
+        .slice(0, 4)
+        .forEach((tag) => {
+          const chip = document.createElement("span");
+          chip.className = "tag";
+          chip.textContent = tag;
+          tags.append(chip);
+        });
+
+      const link = document.createElement("a");
+      link.className = "text-link";
+      link.href = item.href;
+      link.textContent = "View evidence";
+
+      card.append(heading, title, summary, highlights, tags, link);
+      element.append(card);
+    });
+  };
+
+  const classificationLabel = (value) => {
+    const normalized = normalize(value);
+    if (normalized === "direct") return "direct";
+    if (normalized === "partial") return "partial";
+    if (normalized === "adjacent") return "adjacent";
+    return "gap";
+  };
+
+  const normalizeAiSkill = (item) => {
+    const label = item?.label || item?.requirement || item?.skill || "";
+    return {
+      label: titleCase(label),
+      normalized: normalize(label),
+      source: "ai",
+      score: item?.importance === "high" ? 0.9 : item?.importance === "low" ? 0.64 : 0.76,
+      alias: item?.sourceText || item?.reason || "",
+    };
+  };
+
   const setupRecruiterMatcher = () => {
     document.querySelectorAll("[data-recruiter-matcher]").forEach((matcher) => {
       if (matcher.dataset.ready === "true") return;
       matcher.dataset.ready = "true";
 
       const input = matcher.querySelector("[data-match-input]");
-      const runButton = matcher.querySelector("[data-match-run]");
+      const aiButton = matcher.querySelector("[data-ai-run]");
+      const extractButton = matcher.querySelector("[data-extract-run]");
       const clearButton = matcher.querySelector("[data-match-clear]");
+      const statusElement = matcher.querySelector("[data-match-status]");
+      const manualSkillInput = matcher.querySelector("[data-manual-skill]");
+      const addManualSkillButton = matcher.querySelector("[data-add-manual-skill]");
+      const detectedSkillsElement = matcher.querySelector("[data-detected-skills]");
+      const detectedCountElement = matcher.querySelector("[data-detected-count]");
       const scoreElement = matcher.querySelector("[data-match-score]");
       const summaryElement = matcher.querySelector("[data-match-summary]");
+      const roleProfileElement = matcher.querySelector("[data-role-profile]");
+      const roleProfileSummaryElement = matcher.querySelector("[data-role-profile-summary]");
+      const roleCategoriesElement = matcher.querySelector("[data-role-categories]");
       const matchList = matcher.querySelector("[data-match-list]");
       const gapList = matcher.querySelector("[data-gap-list]");
       const evidenceList = document.querySelector("[data-evidence-list]");
+      let detectedSkills = [];
+
+      const setStatus = (message, state = "") => {
+        statusElement.textContent = message;
+        if (state) {
+          statusElement.dataset.state = state;
+        } else {
+          delete statusElement.dataset.state;
+        }
+      };
+
+      const setDetectedSkills = (skills) => {
+        const unique = new Map();
+        skills.forEach((skill) => {
+          const key = skill.normalized || normalize(skill.label);
+          if (!key) return;
+          const existing = unique.get(key);
+          if (!existing || skill.score > existing.score) unique.set(key, { ...skill, normalized: key });
+        });
+        detectedSkills = [...unique.values()].sort((a, b) => b.score - a.score || a.label.localeCompare(b.label));
+        renderDetectedSkills(detectedSkillsElement, detectedCountElement, detectedSkills, (normalized) => {
+          setDetectedSkills(detectedSkills.filter((skill) => skill.normalized !== normalized));
+          runMatch();
+        });
+        renderRoleInsights(roleProfileElement, roleProfileSummaryElement, roleCategoriesElement, detectedSkills);
+      };
+
+      const addManualSkills = (value) => {
+        const skills = parseManualSkills(value).map((item) => {
+          const label = titleCase(item);
+          return {
+            label,
+            normalized: normalize(label),
+            source: "typed",
+            score: 0.66,
+            alias: item,
+          };
+        }).filter((skill) => skill.label);
+
+        if (skills.length === 0) return;
+        setDetectedSkills([...detectedSkills, ...skills]);
+        manualSkillInput.value = "";
+        runMatch();
+      };
 
       const runMatch = () => {
-        const keywords = parseKeywords(input.value);
+        const keywords = detectedSkills.length > 0 ? detectedSkills.map((skill) => skill.label) : extractRoleSkills(input.value).map((skill) => skill.label);
         if (keywords.length === 0) {
           scoreElement.textContent = "0%";
-          summaryElement.textContent = "Enter role keywords to compare them against mapped portfolio evidence.";
+          summaryElement.textContent = "Extract or enter role skills to compare them against mapped portfolio evidence.";
           renderList(matchList, [], "Waiting for keywords.");
           renderList(gapList, [], "Nothing checked yet.");
           renderEvidence(evidenceList, []);
@@ -542,7 +1194,7 @@ const matcherJson = JSON.stringify(matcherData);
         const keywordResults = keywords.map((keyword) => {
           const matches = matcherData
             .map((node) => ({ keyword, node, ...bestNodeMatch(keyword, node) }))
-            .filter((match) => match.score >= 0.46)
+            .filter((match) => match.score >= 0.68)
             .sort((a, b) => b.score - a.score);
 
           return {
@@ -565,7 +1217,7 @@ const matcherJson = JSON.stringify(matcherData);
 
         renderList(
           matchList,
-          matched.map((item) => `${item.keyword} -> ${item.best.node.label} (${Math.round(item.best.score * 100)}%)`),
+          matched.map((item) => `${item.keyword} -> ${formatMatchLabel(item.best.label)} (${item.best.mapped ? "related evidence" : "direct match"}, ${Math.round(item.best.score * 100)}%)`),
           "No mapped matches.",
         );
         renderList(
@@ -576,23 +1228,124 @@ const matcherJson = JSON.stringify(matcherData);
         renderEvidence(evidenceList, allMatches);
       };
 
-      runButton.addEventListener("click", runMatch);
+      const renderAiMatch = (result) => {
+        const extracted = Array.isArray(result.extractedRequirements) ? result.extractedRequirements : [];
+        const matches = Array.isArray(result.matches) ? result.matches : [];
+        const gaps = Array.isArray(result.gaps) ? result.gaps : [];
+        const skills = extracted.map(normalizeAiSkill).filter((skill) => skill.normalized);
+        const score = Math.max(0, Math.min(100, Math.round(Number(result.fitScore) || 0)));
+
+        setDetectedSkills(skills);
+        scoreElement.textContent = `${score}%`;
+        summaryElement.textContent = result.fitSummary || `${getGrade(score)} based on AI-classified requirements and deterministic fit scoring.`;
+
+        roleProfileElement.textContent = result.roleTitleGuess || result.roleCategory || "AI role read";
+        roleProfileSummaryElement.textContent =
+          result.roleCategory
+            ? `Classified role family: ${result.roleCategory}.`
+            : "The AI extracted role requirements and matched them against mapped portfolio evidence.";
+        renderRoleInsights(roleProfileElement, roleProfileSummaryElement, roleCategoriesElement, detectedSkills);
+        roleProfileElement.textContent = result.roleTitleGuess || result.roleCategory || roleProfileElement.textContent;
+        if (result.roleCategory) {
+          roleProfileSummaryElement.textContent = `Classified role family: ${result.roleCategory}.`;
+        }
+
+        renderList(
+          matchList,
+          matches.map((item) => {
+            const classification = classificationLabel(item.classification);
+            const confidence = Math.round(Math.max(0, Math.min(1, Number(item.confidence) || 0)) * 100);
+            const portfolioSkill = item.matchedPortfolioSkill || item.matchedCapability || "portfolio evidence";
+            return `${item.requirement} -> ${portfolioSkill} (${classification}, ${confidence}%)`;
+          }),
+          "No direct, partial, or adjacent matches returned.",
+        );
+        renderList(
+          gapList,
+          gaps.map((item) => item.reason ? `${item.requirement}: ${item.reason}` : item.requirement),
+          "No clear gaps returned.",
+        );
+        renderAiEvidence(evidenceList, matches);
+      };
+
+      const runAiMatch = async () => {
+        const jobText = input.value.trim();
+        if (jobText.length < 20 && detectedSkills.length === 0) {
+          setStatus("Paste a role description or add skills before running AI matching.", "error");
+          input.focus();
+          return;
+        }
+
+        if (!aiMatchEndpoint) {
+          setStatus("No Cloudflare Worker URL is configured yet. Running the local fallback instead.", "error");
+          extractAndMatch();
+          return;
+        }
+
+        aiButton.disabled = true;
+        extractButton.disabled = true;
+        setStatus("Analyzing requirements with Cloudflare Workers AI...", "ready");
+
+        try {
+          const response = await fetch(aiMatchEndpoint, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              jobText,
+              manualSkills: detectedSkills.map((skill) => skill.label),
+              portfolioIndex,
+              normalizerTags,
+              roleProfiles,
+            }),
+          });
+
+          const result = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(result?.error || `Matcher request failed with ${response.status}`);
+          }
+
+          renderAiMatch(result);
+          setStatus(`AI match complete. Score is calculated locally in the Worker, not guessed by the model.`, "ready");
+        } catch (error) {
+          setStatus(`${error.message || "AI matching failed"}. Local fallback is still available.`, "error");
+        } finally {
+          aiButton.disabled = false;
+          extractButton.disabled = false;
+        }
+      };
+
+      const extractAndMatch = () => {
+        setStatus("Running local fallback matcher. AI matching will be more conservative once the Worker URL is configured.");
+        setDetectedSkills(extractRoleSkills(input.value));
+        runMatch();
+      };
+
+      aiButton.addEventListener("click", runAiMatch);
+      extractButton.addEventListener("click", extractAndMatch);
       input.addEventListener("input", () => {
-        if (input.value.trim().length > 2) runMatch();
+        if (input.value.trim().length > 0) {
+          setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
+        }
       });
       clearButton.addEventListener("click", () => {
         input.value = "";
+        setDetectedSkills([]);
+        setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
         runMatch();
         input.focus();
       });
 
-      matcher.querySelectorAll("[data-suggested-skill]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const current = input.value.trim();
-          input.value = current ? `${current}, ${button.dataset.suggestedSkill}` : button.dataset.suggestedSkill;
-          runMatch();
-        });
+      manualSkillInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addManualSkills(manualSkillInput.value);
+        }
       });
+
+      addManualSkillButton.addEventListener("click", () => addManualSkills(manualSkillInput.value));
+
+      setDetectedSkills([]);
+      setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
     });
   };
 

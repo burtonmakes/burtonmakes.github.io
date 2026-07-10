@@ -38,6 +38,7 @@ jobs:
           PUBLIC_ANALYTICS_ENABLED: ${{ vars.PUBLIC_ANALYTICS_ENABLED }}
           PUBLIC_ANALYTICS_PROVIDER: ${{ vars.PUBLIC_ANALYTICS_PROVIDER }}
           PUBLIC_PLAUSIBLE_SCRIPT_URL: ${{ vars.PUBLIC_PLAUSIBLE_SCRIPT_URL }}
+          PUBLIC_RECRUITER_MATCH_API: ${{ vars.PUBLIC_RECRUITER_MATCH_API }}
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
