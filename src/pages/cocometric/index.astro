@@ -1,60 +1,167 @@
 ---
 import "../../styles/global.css";
+import "../../styles/cocometric.css";
+
+const stages = [
+  ["01", "Complete system", "Show the complete Cocometric system"],
+  ["02", "Rack + chassis", "Show the rack and serviceable chassis"],
+  ["03", "Storage", "Show the removable storage drives"],
+  ["04", "Compute", "Show the motherboard, processors, and memory"],
+  ["05", "AI accelerators", "Show the GPU accelerator assemblies"],
+  ["06", "Cooling", "Show the fan wall and cooling assemblies"],
+  ["07", "Power + network", "Show redundant power and networking"],
+];
 ---
 
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="theme-color" content="#01050a" />
-<meta name="description" content="Cocometric designs and builds private local infrastructure for AI, storage, video, networking, and internal team tools." />
-<title>Cocometric — Private AI infrastructure</title>
-<style>
-:root{--bg:#01050a;--panel:#07101a;--text:#eef3f7;--muted:#93a3b2;--line:#1b2a36;--coral:#e86f4e;--amber:#e8b34e;--cyan:#6fd3ff}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
-a{color:inherit}.header{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:22px clamp(20px,4vw,60px);background:linear-gradient(180deg,rgba(1,5,10,.9),transparent)}
-.brand{display:flex;gap:12px;align-items:center;text-decoration:none;font-weight:800;letter-spacing:.01em}.mark{width:31px;height:31px;border:1px solid rgba(111,211,255,.35);border-radius:8px;display:grid;place-items:center;background:rgba(111,211,255,.06)}.mark:before,.mark:after,.mark i{content:"";width:16px;height:2px;background:linear-gradient(90deg,var(--amber),var(--coral));border-radius:2px;display:block}.mark{gap:3px}.cta{padding:10px 17px;border:1px solid var(--line);border-radius:999px;text-decoration:none;background:rgba(255,255,255,.035);font-weight:700;font-size:.9rem}
-.stage{position:fixed;inset:0;z-index:0}.stage canvas{width:100%;height:100%;display:block}.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 56% 42%,transparent 0 35%,rgba(1,5,10,.18) 62%,rgba(1,5,10,.68) 100%)}
-.copy{position:fixed;z-index:5;left:clamp(22px,7vw,105px);top:50%;transform:translateY(-50%);max-width:510px;pointer-events:none}.eyebrow{color:var(--coral);font-size:.78rem;font-weight:850;letter-spacing:.16em;text-transform:uppercase;margin:0 0 13px}.copy h1{font-size:clamp(2.5rem,6.2vw,5.7rem);line-height:.94;letter-spacing:-.055em;margin:0;max-width:9ch}.copy p{max-width:43ch;margin:20px 0 0;color:var(--muted);font-size:clamp(.98rem,1.3vw,1.14rem);line-height:1.55}.copy .metric{display:inline-flex;margin-top:25px;padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:rgba(7,16,26,.62);font:700 .78rem ui-monospace,SFMono-Regular,Menlo,monospace;color:#c6d2dc}
-.scrollcue{position:fixed;z-index:5;left:50%;bottom:23px;transform:translateX(-50%);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}.scrollcue:before{content:"";width:38px;height:1px;background:linear-gradient(90deg,transparent,var(--coral))}
-.track{position:relative;z-index:1}.beat{height:100vh}.final{min-height:100vh;display:grid;place-items:center;padding:90px 24px;position:relative;background:linear-gradient(180deg,transparent 0,rgba(1,5,10,.92) 24%,var(--bg) 54%)}.card{max-width:720px;text-align:center;padding:clamp(30px,6vw,60px);border:1px solid var(--line);border-radius:20px;background:rgba(7,16,26,.82);backdrop-filter:blur(14px)}.card h2{font-size:clamp(2rem,5vw,4rem);letter-spacing:-.045em;line-height:1;margin:10px 0 18px}.card p{color:var(--muted);line-height:1.6}.contact-details{margin-top:22px;color:#cbd6df;line-height:1.55}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:28px}.button{padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:800}.primary{background:linear-gradient(90deg,var(--coral),var(--amber));color:#190d07}.secondary{border:1px solid var(--line)}
-.loading{position:fixed;z-index:30;inset:0;display:grid;place-items:center;background:var(--bg);transition:opacity .5s}.loading.hide{opacity:0;pointer-events:none}.loading span{font:700 .8rem ui-monospace,monospace;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
-@media(max-width:760px){.copy{left:22px;right:22px;top:auto;bottom:85px;transform:none}.copy h1{max-width:11ch}.copy p{max-width:31ch}.header{padding:18px 20px}.stage{opacity:.82}.cta{padding:8px 13px}.scrollcue{display:none}}
-</style>
-</head>
-<body>
-<div class="loading" id="loading"><span>Loading Cocometric hardware</span></div>
-<header class="header"><a class="brand" href="/cocometric/"><span class="mark"><i></i></span><span>Cocometric</span></a><a class="cta" href="#contact">Contact for services</a></header>
-<div class="stage"><canvas id="canvas"></canvas><div class="vignette"></div></div>
-<section class="copy" id="copy"><p class="eyebrow" id="eyebrow">Private infrastructure</p><h1 id="title">One server. Your entire stack.</h1><p id="note">Storage, local AI, security, and team tools running on hardware you control.</p><span class="metric" id="metric">Scroll to inspect the system</span></section>
-<div class="scrollcue" id="scrollcue">Scroll</div>
-<main class="track" id="track"><div id="capabilities" aria-hidden="true"></div>
-<section class="beat"></section><section class="beat"></section><section class="beat"></section><section class="beat"></section><section class="beat"></section><section class="beat"></section>
-<section class="final" id="contact"><div class="card"><p class="eyebrow">Cocometric systems</p><h2>Own the hardware. Keep control of the data.</h2><p>Purpose-built local infrastructure for private AI, storage, video, networking, and internal tools. Delivered configured, documented, and ready to run. Contact Cocometric to scope a build, deployment, upgrade, or ongoing support.</p><div class="contact-details"><strong>Services include:</strong> system design, hardware builds, deployment, migrations, documentation, and support.</div><div class="actions"><a class="button primary" href="/contact/?topic=cocometric-services">Contact for services</a><a class="button secondary" href="#capabilities">View capabilities</a></div></div></section>
-</main>
-<script type="module">
-import * as THREE from 'three';
-const beats=[
-['Private infrastructure','One server. Your entire stack.','Storage, local AI, security, and team tools running on hardware you control.','Scroll to inspect the system'],
-['Storage + backup','Your data stays yours.','Redundant storage, snapshots, retention policies, and tested recovery workflows.','NAS · snapshots · restore tests'],
-['Local AI','Inference without the cloud.','Run retrieval, document processing, and private model workloads on your own network.','Local models · private RAG'],
-['Video + security','Footage under your control.','Centralized camera storage and alerting without a permanent cloud subscription.','NVR · retention · alerts'],
-['Network + access','Remote access without exposure.','Segmented services, secure tunnels, internal DNS, and HTTPS routing.','VLANs · VPN · internal DNS'],
-['Built for your workflow','One system, configured properly.','A clean, maintainable stack designed around how your team actually works.','Documented · monitored · maintainable']
-];
-const canvas=document.querySelector('#canvas'),loading=document.querySelector('#loading');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x01050a,.038);const camera=new THREE.PerspectiveCamera(34,innerWidth/innerHeight,.1,100);camera.position.set(10,5.2,11);
-scene.add(new THREE.HemisphereLight(0xc8dbeb,0x071018,1.25));const key=new THREE.DirectionalLight(0xffffff,5);key.position.set(5,9,8);key.castShadow=true;scene.add(key);const fill=new THREE.DirectionalLight(0x6fd3ff,2.2);fill.position.set(-6,2,5);scene.add(fill);const rim=new THREE.PointLight(0xe86f4e,34,18,2);rim.position.set(-3,3,-5);scene.add(rim);
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.MeshStandardMaterial({color:0x03080d,metalness:.12,roughness:.82}));floor.rotation.x=-Math.PI/2;floor.position.y=-2.28;floor.receiveShadow=true;scene.add(floor);
-const root=new THREE.Group();scene.add(root);const mat=(color,metalness=.55,roughness=.42)=>new THREE.MeshStandardMaterial({color,metalness,roughness});const steel=mat(0x515b65,.78,.3),dark=mat(0x111820,.62,.35),black=mat(0x070b10,.35,.55),pcb=mat(0x183d2b,.2,.6),copper=mat(0xb46b3c,.8,.28),silver=mat(0x9aa6af,.9,.22),accent=mat(0xe86f4e,.55,.28);
-function box(name,w,h,d,x,y,z,m=steel){const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d,2,2,2),m);mesh.name=name;mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);return mesh}function cyl(name,r,h,x,y,z,m=silver,rotX=Math.PI/2){const mesh=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,24),m);mesh.name=name;mesh.position.set(x,y,z);mesh.rotation.x=rotX;mesh.castShadow=true;root.add(mesh);return mesh}
-box('chassis',5.6,.42,3.4,0,-1.38,0,dark);box('rear-panel',5.4,2.15,.18,0,-.18,-1.62,black);box('top-cover',5.7,.16,3.5,0,2.2,0,steel);
-for(let i=0;i<8;i++){box('drive-'+i,.58,.72,.98,-2.18+(i%4)*.72,-.88+Math.floor(i/4)*.83,1.72,black);box('drive-trim-'+i,.5,.08,.05,-2.18+(i%4)*.72,-.65+Math.floor(i/4)*.83,2.23,accent);box('drive-handle-'+i,.36,.06,.08,-2.18+(i%4)*.72,-1.12+Math.floor(i/4)*.83,2.26,silver)}
-box('motherboard',3.65,.12,2.35,.65,-.72,-.05,pcb);for(let i=0;i<2;i++){box('cpu-'+i,.72,.14,.72,-.25+i*1.15,-.55,-.15,silver);for(let j=0;j<8;j++)box('heatsink-fin-'+i+'-'+j,.72,.09,.035,-.25+i*1.15,-.32,-.47+j*.09,dark)}for(let i=0;i<8;i++)box('ram-'+i,.09,.62,.92,-1.25+i*.31,-.2,.7,pcb);
-for(let i=0;i<3;i++){box('gpu-'+i,2.45,.34,.72,.55,.3+i*.46,-.35,black);cyl('gpu-fan-'+i,.23,.08,-.2+i*.62,.3,-.75,silver);box('gpu-edge-'+i,2.2,.06,.08,.55,.46+i*.46,.02,accent)}
-for(let i=0;i<5;i++){box('fan-frame-'+i,.62,.62,.28,-1.45+i*.72,1.02,.9,black);cyl('fan-'+i,.23,.12,-1.45+i*.72,1.02,1.06,dark)}box('psu-a',1.18,.82,1.15,2.02,-.78,1.18,dark);box('psu-b',1.18,.82,1.15,2.02,.17,1.18,dark);for(let i=0;i<2;i++)cyl('psu-fan-'+i,.28,.08,2.02,-.78+i*.95,1.78,black);box('network-card',1.5,.14,.9,1.75,1.26,-.45,pcb);for(let i=0;i<4;i++)box('port-'+i,.22,.22,.1,1.28+i*.31,1.38,.03,copper);for(let i=0;i<2;i++)box('rail-'+i,.16,.16,4,-2.95+i*5.9,-.9,0,silver);root.rotation.y=-.58;loading.classList.add('hide');
-function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();const eye=document.querySelector('#eyebrow'),title=document.querySelector('#title'),note=document.querySelector('#note'),metric=document.querySelector('#metric'),copy=document.querySelector('#copy'),cue=document.querySelector('#scrollcue');let current=-1;const clamp=v=>Math.max(0,Math.min(1,v));function animate(t){requestAnimationFrame(animate);const max=document.querySelector('#track').offsetHeight-innerHeight;const p=clamp(scrollY/Math.max(1,max));const f=p*(beats.length-1);const i=Math.min(beats.length-1,Math.round(f));if(i!==current){current=i;[eye.textContent,title.textContent,note.textContent,metric.textContent]=beats[i]}const finalFade=clamp((p-.82)/.08);copy.style.opacity=1-finalFade;cue.style.opacity=p<.06?1:0;root.rotation.y=-.58+f*.17+Math.sin(t*.00018)*.04;root.position.y=-.1+Math.sin(t*.0007)*.025;camera.position.x=10-f*.38;camera.position.y=5.2+f*.16;camera.position.z=11+f*.42;camera.lookAt(.2,.05,0);renderer.render(scene,camera)}requestAnimationFrame(animate);
-</script>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#01050a" />
+    <meta
+      name="description"
+      content="Cocometric designs, builds, deploys, and supports private local infrastructure for storage, AI, networking, video, and internal tools."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Cocometric — Private local infrastructure" />
+    <meta
+      property="og:description"
+      content="Purpose-built local infrastructure for storage, private AI, networking, video, and internal tools."
+    />
+    <meta property="og:url" content="https://cocometric.com/cocometric/" />
+    <link rel="canonical" href="https://cocometric.com/cocometric/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>Cocometric — Private local infrastructure</title>
+  </head>
+
+  <body class="cocometric-page" data-model-status="loading">
+    <a class="skip-link" href="#contact">Skip to services and contact</a>
+
+    <div class="loading" id="loading" role="status" aria-live="polite">
+      <div class="loading-inner">
+        <p class="loading-copy" id="loading-copy">Loading Cocometric hardware</p>
+        <div
+          class="loading-track"
+          id="loading-track"
+          role="progressbar"
+          aria-label="Loading 3D server model"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="8"
+        >
+          <div class="loading-bar" id="loading-bar" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <header class="header">
+      <a class="brand" href="/cocometric/" aria-label="Cocometric home">
+        <span class="mark" aria-hidden="true"><i></i></span>
+        <span>Cocometric</span>
+      </a>
+      <a class="header-cta" href="#contact">Contact for services</a>
+    </header>
+
+    <div class="scene" id="scene" aria-hidden="true">
+      <canvas id="server-canvas"></canvas>
+      <div class="vignette"></div>
+    </div>
+
+    <section class="copy" id="copy" aria-labelledby="stage-title">
+      <p class="step" id="stage-step">Cocometric system · 01</p>
+      <h1 id="stage-title">One system. Every layer visible.</h1>
+      <p class="copy-note" id="stage-note">
+        Scroll through the supplied server model to inspect the rack, storage, compute, accelerators,
+        cooling, power, and network hardware.
+      </p>
+      <div class="component-tags" id="stage-tags" aria-hidden="true">
+        <span>Rack</span><span>Storage</span><span>Compute</span><span>GPU</span>
+      </div>
+    </section>
+
+    <nav class="stage-nav" aria-label="Inspect server components">
+      {stages.map(([number, label, ariaLabel], index) => (
+        <button
+          type="button"
+          class={index === 0 ? "is-active" : undefined}
+          data-stage-button={index}
+          aria-label={ariaLabel}
+          aria-current={index === 0 ? "step" : undefined}
+          title={label}
+        >
+          {number}
+        </button>
+      ))}
+    </nav>
+
+    <div class="scroll-cue" id="scroll-cue" aria-hidden="true">Scroll to inspect</div>
+
+    <main class="track" id="track">
+      <section class="beat" data-stage="0">
+        <div class="sr-only"><h2>Complete Cocometric system</h2><p>Full exploded view of the supplied three-dimensional server model.</p></div>
+      </section>
+      <section class="beat" data-stage="1">
+        <div class="sr-only"><h2>Rack and chassis</h2><p>Serviceable rack enclosure, rails, chassis, and installed server bays.</p></div>
+      </section>
+      <section class="beat" data-stage="2">
+        <div class="sr-only"><h2>Storage</h2><p>Six removable drives for primary data, snapshots, retention, and backup tiers.</p></div>
+      </section>
+      <section class="beat" data-stage="3">
+        <div class="sr-only"><h2>Compute</h2><p>Motherboard, dual processors, heat sinks, input and output, and twelve memory modules.</p></div>
+      </section>
+      <section class="beat" data-stage="4">
+        <div class="sr-only"><h2>AI accelerators</h2><p>Two GPU assemblies for local model inference, retrieval, OCR, and image processing.</p></div>
+      </section>
+      <section class="beat" data-stage="5">
+        <div class="sr-only"><h2>Cooling</h2><p>Six fan assemblies and a dedicated fan wall for controlled airflow.</p></div>
+      </section>
+      <section class="beat" data-stage="6">
+        <div class="sr-only"><h2>Power and network</h2><p>Two power supplies and a dedicated multi-port network interface.</p></div>
+      </section>
+
+      <section class="final" id="contact" aria-labelledby="contact-title">
+        <div class="final-card">
+          <p class="step">Cocometric services</p>
+          <h2 id="contact-title">Own the hardware, or run it as a managed system.</h2>
+          <p>
+            Purpose-built local infrastructure for private AI, storage, video, networking, and internal
+            tools. Each system is configured, documented, tested, and delivered with a clear support path.
+          </p>
+
+          <div class="service-options">
+            <article class="service-option">
+              <strong>Build and own it</strong>
+              <span>System design, hardware selection, assembly, deployment, migration, documentation, and handoff.</span>
+            </article>
+            <article class="service-option">
+              <strong>Managed operation</strong>
+              <span>Monitoring, upgrades, backups, recovery testing, maintenance, and ongoing support.</span>
+            </article>
+          </div>
+
+          <div class="actions">
+            <a class="button button-primary" href="/contact/?topic=cocometric-services">Scope a system</a>
+            <a class="button button-secondary" href="#track">Inspect it again</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <noscript>
+      <section class="noscript-card">
+        <h2>Private local infrastructure</h2>
+        <p>The interactive server model requires JavaScript. Service details and contact options remain available below.</p>
+        <a href="#contact">View services</a>
+      </section>
+    </noscript>
+
+    <script src="../../scripts/cocometric-viewer.js"></script>
+  </body>
+</html>

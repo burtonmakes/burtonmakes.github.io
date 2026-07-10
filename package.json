@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "validate:cocometric": "node scripts/validate-cocometric-model.mjs",
+    "build": "npm run validate:cocometric && astro build",
     "preview": "astro preview",
     "worker:dev": "npx wrangler dev --config workers/recruiter-match/wrangler.toml",
     "worker:deploy": "npx wrangler deploy --config workers/recruiter-match/wrangler.toml"
