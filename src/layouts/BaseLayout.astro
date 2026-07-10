@@ -2,7 +2,6 @@
 import BackgroundEffects from "../components/BackgroundEffects.jsx";
 import GlobalEffects from "../components/GlobalEffects.jsx";
 import RecruiterGateway from "../components/RecruiterGateway.astro";
-import RecruiterMatcherEnhancements from "../components/RecruiterMatcherEnhancements.astro";
 import { navigation, siteMeta } from "../data/site";
 import { ClientRouter } from "astro:transitions";
 
@@ -92,7 +91,6 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
       )}
 
       {showRecruiterGateway && <RecruiterGateway />}
-      {showRecruiterGateway && <RecruiterMatcherEnhancements />}
       <slot />
     </main>
 
