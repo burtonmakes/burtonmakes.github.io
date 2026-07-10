@@ -1,0 +1,507 @@
+---
+import BackgroundEffects from "../../components/BackgroundEffects.jsx";
+import GlobalEffects from "../../components/GlobalEffects.jsx";
+import "../../styles/global.css";
+
+const services = [
+  {
+    label: "Local AI servers",
+    body: "On-prem or home-lab AI boxes, model serving, inference routing, storage planning, GPU/CPU tradeoffs, and private workflow design.",
+  },
+  {
+    label: "Data storage",
+    body: "NAS planning, backup strategy, media/data organization, encrypted remote access, retention, restore testing, and sane documentation.",
+  },
+  {
+    label: "AI integration",
+    body: "Practical AI workflows for documents, internal tools, automations, model APIs, retrieval, agents, and human review loops.",
+  },
+  {
+    label: "Websites and tools",
+    body: "Focused websites, dashboards, intake forms, portals, and operational tools that connect to the infrastructure behind them.",
+  },
+  {
+    label: "Networking",
+    body: "VLAN-aware home/small-office networks, remote access, DNS, tunnels, firewall rules, service routing, and troubleshooting.",
+  },
+  {
+    label: "Automation",
+    body: "Scheduled jobs, file movement, alerting, backups, data cleanup, reporting, and glue code that keeps systems useful.",
+  },
+];
+
+const process = [
+  ["01", "Scope", "Map goals, users, data sensitivity, budget, current hardware, and what has to keep working."],
+  ["02", "Design", "Pick an architecture with clear tradeoffs: cloud vs local, storage tiers, access, backups, and failure modes."],
+  ["03", "Build", "Configure services, connect tools, document decisions, and leave the system understandable."],
+  ["04", "Handoff", "Test recovery, explain operations, and define what to monitor or improve next."],
+];
+
+const outcomes = [
+  "Private local AI workflow for documents or engineering notes",
+  "Reliable home or small-office storage with backup/restore plan",
+  "Internal tool or website connected to your real workflow",
+  "Remote access without punching reckless holes in the network",
+  "Clean handoff docs so the system is maintainable",
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Cocometric builds local AI servers, data storage, AI integrations, networking infrastructure, automation, and focused websites for individuals and small teams."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>Cocometric | Local AI, Data, and Infrastructure</title>
+  </head>
+  <body class="cocometric-page">
+    <BackgroundEffects client:load />
+    <div class="site-backdrop" aria-hidden="true"></div>
+    <GlobalEffects client:load />
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="coco-header">
+      <a class="coco-brand" href="/cocometric/" aria-label="Cocometric home">
+        <span class="coco-mark" aria-hidden="true">
+          <i></i>
+          <i></i>
+          <i></i>
+        </span>
+        <span>Cocometric</span>
+      </a>
+      <nav aria-label="Cocometric navigation">
+        <a href="#services">Services</a>
+        <a href="#process">Process</a>
+        <a href="#contact">Start</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="coco-hero">
+        <div class="coco-hero-copy reveal">
+          <p class="eyebrow">Contract infrastructure studio</p>
+          <h1>Cocometric builds local AI, storage, and network systems that people can actually use.</h1>
+          <p>
+            Practical help for local AI servers, data storage, AI integrations, websites, automations,
+            and the networking infrastructure around them.
+          </p>
+          <div class="coco-actions">
+            <a class="button button-primary" href="/contact/">Talk through a build</a>
+            <a class="button button-secondary" href="#services">See services</a>
+          </div>
+        </div>
+
+        <div class="topology-visual reveal" aria-label="Example infrastructure topology">
+          <div class="topology-node node-source">Inputs</div>
+          <div class="topology-node node-ai">Local AI</div>
+          <div class="topology-node node-store">Storage</div>
+          <div class="topology-node node-web">Web tools</div>
+          <div class="topology-node node-access">Remote access</div>
+          <div class="topology-line line-a"></div>
+          <div class="topology-line line-b"></div>
+          <div class="topology-line line-c"></div>
+          <div class="topology-line line-d"></div>
+        </div>
+      </section>
+
+      <section class="coco-section" id="services">
+        <div class="coco-section-heading reveal">
+          <p class="eyebrow">Services</p>
+          <h2>For people who need the infrastructure to work, not just exist.</h2>
+        </div>
+
+        <div class="service-grid">
+          {services.map((service) => (
+            <article class="service-card reveal">
+              <h3>{service.label}</h3>
+              <p>{service.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="coco-band">
+        <div class="coco-band-copy reveal">
+          <p class="eyebrow">Good fit</p>
+          <h2>Small systems with real constraints.</h2>
+          <p>
+            Cocometric is for individuals, labs, creators, founders, and small teams that need
+            a practical system: local where privacy matters, cloud where it makes sense, and documented
+            enough that it does not become a mystery box.
+          </p>
+        </div>
+        <ul class="outcome-list reveal">
+          {outcomes.map((outcome) => <li>{outcome}</li>)}
+        </ul>
+      </section>
+
+      <section class="coco-section" id="process">
+        <div class="coco-section-heading reveal">
+          <p class="eyebrow">Process</p>
+          <h2>Scoped like engineering work, not vague consulting.</h2>
+        </div>
+
+        <div class="process-grid">
+          {process.map(([number, title, body]) => (
+            <article class="process-step reveal">
+              <span>{number}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="coco-contact" id="contact">
+        <div class="reveal">
+          <p class="eyebrow">Start a build</p>
+          <h2>Bring the problem, current setup, and what needs to be true when it is done.</h2>
+          <p>
+            Useful first messages include: what you want to build, what hardware or services you already have,
+            what data is sensitive, who needs access, and what budget or timeline is real.
+          </p>
+          <a class="button button-primary" href="/contact/">Contact Cocometric</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .cocometric-page {
+    min-height: 100vh;
+  }
+
+  .coco-header {
+    position: sticky;
+    top: 16px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(1440px, calc(100% - 32px));
+    margin: 16px auto 0;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(1, 5, 10, 0.96);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .coco-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text);
+    font-size: 1.06rem;
+    font-weight: 850;
+  }
+
+  .coco-mark {
+    position: relative;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid rgba(111, 211, 255, 0.34);
+    border-radius: 8px;
+    background: rgba(111, 211, 255, 0.06);
+  }
+
+  .coco-mark i {
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
+  }
+
+  .coco-mark i:nth-child(1) {
+    transform: translateY(-7px);
+  }
+
+  .coco-mark i:nth-child(3) {
+    transform: translateY(7px);
+  }
+
+  .coco-header nav {
+    display: flex;
+    gap: clamp(16px, 2.2vw, 34px);
+    color: var(--muted);
+    font-size: 0.94rem;
+    font-weight: 800;
+  }
+
+  .coco-header nav a:hover {
+    color: var(--text);
+  }
+
+  .coco-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.75fr);
+    gap: clamp(28px, 5vw, 84px);
+    align-items: center;
+    width: min(1440px, calc(100% - 32px));
+    min-height: calc(100vh - 92px);
+    margin: 0 auto;
+    padding: clamp(70px, 9vh, 120px) 0 clamp(40px, 6vh, 84px);
+  }
+
+  .coco-hero h1 {
+    max-width: 15ch;
+    margin-bottom: 22px;
+    font-size: clamp(3rem, 6vw, 6.4rem);
+    line-height: 0.98;
+  }
+
+  .coco-hero p:not(.eyebrow) {
+    max-width: 66ch;
+    color: var(--muted-2);
+    font-size: clamp(1rem, 1.35vw, 1.28rem);
+    line-height: 1.46;
+  }
+
+  .coco-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .topology-visual {
+    position: relative;
+    min-height: 560px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 22% 20%, rgba(111, 211, 255, 0.14), transparent 24%),
+      radial-gradient(circle at 80% 68%, rgba(232, 111, 78, 0.12), transparent 28%),
+      rgba(1, 5, 10, 0.78);
+  }
+
+  .topology-node {
+    position: absolute;
+    display: grid;
+    min-width: 132px;
+    min-height: 72px;
+    place-items: center;
+    border: 1px solid rgba(111, 211, 255, 0.28);
+    border-radius: 8px;
+    background: rgba(6, 16, 28, 0.96);
+    color: var(--text);
+    font-size: 0.86rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .node-source { left: 8%; top: 12%; }
+  .node-ai { left: 52%; top: 18%; }
+  .node-store { left: 18%; top: 48%; }
+  .node-web { right: 8%; bottom: 22%; }
+  .node-access { left: 10%; bottom: 12%; }
+
+  .topology-line {
+    position: absolute;
+    height: 2px;
+    transform-origin: left center;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(111, 211, 255, 0.72), rgba(232, 111, 78, 0.72));
+  }
+
+  .line-a { left: 28%; top: 23%; width: 28%; transform: rotate(6deg); }
+  .line-b { left: 31%; top: 55%; width: 36%; transform: rotate(-24deg); }
+  .line-c { left: 31%; bottom: 26%; width: 50%; transform: rotate(-11deg); }
+  .line-d { left: 35%; top: 60%; width: 46%; transform: rotate(21deg); }
+
+  .coco-section,
+  .coco-band,
+  .coco-contact {
+    width: min(1440px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: clamp(56px, 8vh, 96px) 0;
+  }
+
+  .coco-section-heading,
+  .coco-band-copy {
+    max-width: 900px;
+    margin-bottom: clamp(22px, 3vw, 38px);
+  }
+
+  .coco-section-heading h2,
+  .coco-band h2,
+  .coco-contact h2 {
+    max-width: 16ch;
+    font-size: clamp(2.1rem, 4.2vw, 4.6rem);
+    line-height: 1;
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .service-card,
+  .process-step,
+  .outcome-list,
+  .coco-contact > div {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(1, 5, 10, 0.9);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .service-card {
+    min-height: 230px;
+    padding: clamp(22px, 2vw, 30px);
+  }
+
+  .service-card h3,
+  .process-step h3 {
+    margin-bottom: 14px;
+    font-size: clamp(1.18rem, 1.5vw, 1.48rem);
+  }
+
+  .service-card p,
+  .process-step p,
+  .coco-band p,
+  .coco-contact p {
+    color: var(--muted-2);
+    font-size: 0.98rem;
+    line-height: 1.48;
+  }
+
+  .coco-band {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(320px, 0.6fr);
+    gap: clamp(24px, 5vw, 76px);
+    align-items: start;
+  }
+
+  .outcome-list {
+    margin: 0;
+    padding: clamp(22px, 2vw, 30px);
+    list-style: none;
+  }
+
+  .outcome-list li {
+    display: flex;
+    gap: 10px;
+    color: var(--muted-2);
+    font-size: 0.98rem;
+    line-height: 1.38;
+  }
+
+  .outcome-list li::before {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    margin-top: 0.55em;
+    border-radius: 999px;
+    background: var(--cta-2);
+    content: "";
+  }
+
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .process-step {
+    padding: clamp(20px, 1.8vw, 28px);
+  }
+
+  .process-step > span {
+    display: block;
+    margin-bottom: 42px;
+    color: var(--accent-2);
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+  }
+
+  .coco-contact {
+    padding-bottom: clamp(70px, 10vh, 120px);
+  }
+
+  .coco-contact > div {
+    padding: clamp(28px, 4vw, 56px);
+  }
+
+  .coco-contact p {
+    max-width: 72ch;
+    margin: 18px 0 28px;
+  }
+
+  @media (max-width: 1100px) {
+    .coco-hero,
+    .coco-band {
+      grid-template-columns: 1fr;
+    }
+
+    .topology-visual {
+      min-height: 420px;
+    }
+
+    .service-grid,
+    .process-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 720px) {
+    .coco-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 14px;
+      top: 8px;
+    }
+
+    .coco-header nav {
+      width: 100%;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+
+    .coco-hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      padding-top: 58px;
+    }
+
+    .coco-hero h1 {
+      max-width: none;
+      font-size: clamp(2.6rem, 14vw, 4.2rem);
+    }
+
+    .topology-visual {
+      min-height: 360px;
+    }
+
+    .topology-node {
+      min-width: 112px;
+      min-height: 58px;
+      font-size: 0.72rem;
+    }
+
+    .service-grid,
+    .process-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .process-step > span {
+      margin-bottom: 26px;
+    }
+  }
+</style>
