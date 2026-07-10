@@ -17,6 +17,7 @@ const defaultPlausibleScriptUrl = "https://plausible.io/js/pa-gczhG5VDj-KpJH97Uf
 const plausibleScriptUrl = import.meta.env.PUBLIC_PLAUSIBLE_SCRIPT_URL || defaultPlausibleScriptUrl;
 const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
 const showRecruiterGateway = /^\/recruiter\/?$/.test(Astro.url.pathname);
+const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
 ---
 
 <!doctype html>
@@ -248,6 +249,68 @@ const showRecruiterGateway = /^\/recruiter\/?$/.test(Astro.url.pathname);
         background: transparent !important;
         box-shadow: none !important;
       }
+
+      .recruiter-onepage .context-panel {
+        display: none !important;
+      }
+
+      .recruiter-onepage .recruiter-workspace {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      .recruiter-onepage .matcher-heading > span {
+        display: none !important;
+      }
     </style>
+
+    {showRecruiterGateway && (
+      <script define:vars={{ recruiterBuildId }}>
+        const recruiterSubmissionKey = "burton-recruiter-match-submissions-v1";
+        const recruiterBuildKey = "burton-recruiter-match-build-v1";
+
+        const simplifyManualReview = () => {
+          const list = document.querySelector("[data-gap-list]");
+          if (!list) return;
+
+          list.querySelectorAll("li").forEach((item) => {
+            const text = item.textContent?.replace(/\s+/g, " ").trim() || "";
+            const reviewMatch = text.match(/^Review\s+([^:]+):/i);
+
+            if (reviewMatch) {
+              item.textContent = `Manual review needed: ${reviewMatch[1].trim()}.`;
+              return;
+            }
+
+            if (/^No evidence\b/i.test(text)) {
+              const topic = text
+                .replace(/^No evidence\s+(?:of|for|that)\s*/i, "")
+                .replace(/[.!]+$/, "")
+                .trim();
+              item.textContent = topic
+                ? `Manual review needed: ${topic}.`
+                : "Manual review needed for this topic.";
+            }
+          });
+        };
+
+        const setupRecruiterDeploymentState = () => {
+          try {
+            if (window.localStorage.getItem(recruiterBuildKey) !== recruiterBuildId) {
+              window.localStorage.removeItem(recruiterSubmissionKey);
+              window.localStorage.setItem(recruiterBuildKey, recruiterBuildId);
+            }
+          } catch {
+            // Browser storage is optional.
+          }
+
+          simplifyManualReview();
+          const observer = new MutationObserver(simplifyManualReview);
+          observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+        };
+
+        document.addEventListener("astro:page-load", setupRecruiterDeploymentState);
+        setupRecruiterDeploymentState();
+      </script>
+    )}
   </body>
 </html>
