@@ -767,6 +767,9 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   const roleProfiles = JSON.parse(roleProfilesJson);
   const aiMatchEndpoint = recruiterMatchApi;
   const maxJobTextCharacters = 20000;
+  const maxLlmSubmissions = 10;
+  const sessionStorageKey = "burton-recruiter-match-session-v1";
+  const submissionStorageKey = "burton-recruiter-match-submissions-v1";
 
   const normalize = (value) =>
     String(value)
@@ -1281,6 +1284,47 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       const gapList = matcher.querySelector("[data-gap-list]");
       const evidenceList = document.querySelector("[data-evidence-list]");
       let detectedSkills = [];
+      let lastRenderedResult = null;
+      let restoringSavedSession = false;
+
+      const readJson = (key, fallback) => {
+        try {
+          const value = window.localStorage.getItem(key);
+          return value ? JSON.parse(value) : fallback;
+        } catch {
+          return fallback;
+        }
+      };
+
+      const writeJson = (key, value) => {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(value));
+        } catch {
+          // Ignore storage failures so private browsing modes still run the matcher.
+        }
+      };
+
+      const getSubmissionCount = () => {
+        const value = Number(window.localStorage.getItem(submissionStorageKey));
+        return Number.isFinite(value) ? Math.max(0, value) : 0;
+      };
+
+      const setSubmissionCount = (value) => {
+        try {
+          window.localStorage.setItem(submissionStorageKey, String(Math.max(0, value)));
+        } catch {
+          // Ignore storage failures; the Worker is still protected by Cloudflare-side limits.
+        }
+      };
+
+      const saveSession = () => {
+        if (restoringSavedSession) return;
+        writeJson(sessionStorageKey, {
+          jobText: input.value,
+          detectedSkills,
+          lastRenderedResult,
+        });
+      };
 
       const setStatus = (message, state = "") => {
         statusElement.textContent = message;
@@ -1289,6 +1333,24 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
         } else {
           delete statusElement.dataset.state;
         }
+      };
+
+      const getRemainingSubmissions = () => Math.max(0, maxLlmSubmissions - getSubmissionCount());
+
+      const updateSubmissionState = () => {
+        const remaining = getRemainingSubmissions();
+        aiButton.disabled = remaining <= 0;
+        aiButton.title = remaining > 0
+          ? `${remaining} LLM submission${remaining === 1 ? "" : "s"} left in this browser.`
+          : "LLM submission limit reached in this browser.";
+        return remaining;
+      };
+
+      const getReadyStatus = () => {
+        const remaining = updateSubmissionState();
+        if (!aiMatchEndpoint) return "AI matching needs a Cloudflare Worker URL. Fuzzy keyword scan is available.";
+        if (remaining <= 0) return "LLM submission limit reached for this browser. Fuzzy keyword scan is still available.";
+        return `Ready for LLM analysis. ${remaining} of ${maxLlmSubmissions} submissions left in this browser.`;
       };
 
       const updateCharacterLimit = () => {
@@ -1305,11 +1367,13 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       };
 
       const resetResults = () => {
+        lastRenderedResult = null;
         scoreElement.textContent = "0%";
         summaryElement.textContent = "Extract or enter role skills to compare them against mapped portfolio evidence.";
         renderList(matchList, [], "Waiting for keywords.");
         renderList(gapList, [], "Nothing checked yet.");
         renderEvidence(evidenceList, []);
+        saveSession();
       };
 
       const setDetectedSkills = (skills) => {
@@ -1331,6 +1395,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           }
         });
         renderRoleInsights(roleProfileElement, roleProfileSummaryElement, roleCategoriesElement, detectedSkills);
+        saveSession();
       };
 
       const addManualSkills = (value) => {
@@ -1397,6 +1462,8 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           "No obvious gaps from the entered list.",
         );
         renderEvidence(evidenceList, allMatches);
+        lastRenderedResult = { type: "fuzzy" };
+        saveSession();
       };
 
       const renderAiMatch = (result) => {
@@ -1437,6 +1504,8 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           "No clear gaps returned.",
         );
         renderAiEvidence(evidenceList, matches);
+        lastRenderedResult = { type: "llm", result };
+        saveSession();
       };
 
       const runAiMatch = async () => {
@@ -1460,9 +1529,19 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           return;
         }
 
+        const remaining = updateSubmissionState();
+        if (remaining <= 0) {
+          setStatus("LLM submission limit reached for this browser. Use Fuzzy keyword scan or clear this browser's site data.", "error");
+          return;
+        }
+
+        const nextSubmissionCount = getSubmissionCount() + 1;
+        setSubmissionCount(nextSubmissionCount);
+        updateSubmissionState();
+
         aiButton.disabled = true;
         extractButton.disabled = true;
-        setStatus("Analyzing requirements with Cloudflare Workers AI...", "ready");
+        setStatus(`Analyzing requirements with Cloudflare Workers AI... ${Math.max(0, maxLlmSubmissions - nextSubmissionCount)} submissions left after this.`, "ready");
 
         try {
           const response = await fetch(aiMatchEndpoint, {
@@ -1483,11 +1562,11 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           }
 
           renderAiMatch(result);
-          setStatus(`AI match complete. Score is calculated locally in the Worker, not guessed by the model.`, "ready");
+          setStatus(`LLM analysis complete. Score is calculated in the Worker, not guessed by the model. ${getRemainingSubmissions()} submissions left.`, "ready");
         } catch (error) {
           setStatus(`${error.message || "AI matching failed"}. Local fallback is still available.`, "error");
         } finally {
-          aiButton.disabled = false;
+          updateSubmissionState();
           extractButton.disabled = false;
         }
       };
@@ -1502,15 +1581,24 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       extractButton.addEventListener("click", extractAndMatch);
       input.addEventListener("input", () => {
         updateCharacterLimit();
+        saveSession();
         if (input.value.trim().length > 0) {
-          setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
+          setStatus(getReadyStatus());
         }
       });
       clearButton.addEventListener("click", () => {
+        input.value = "";
+        lastRenderedResult = null;
         setDetectedSkills([]);
         updateCharacterLimit();
-        setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
+        try {
+          window.localStorage.removeItem(sessionStorageKey);
+        } catch {
+          // Ignore storage failures.
+        }
+        setStatus(getReadyStatus());
         resetResults();
+        input.focus();
       });
 
       manualSkillInput.addEventListener("keydown", (event) => {
@@ -1522,9 +1610,30 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
       addManualSkillButton.addEventListener("click", () => addManualSkills(manualSkillInput.value));
 
-      setDetectedSkills([]);
+      const savedSession = readJson(sessionStorageKey, null);
+      if (savedSession?.jobText || Array.isArray(savedSession?.detectedSkills)) {
+        restoringSavedSession = true;
+        input.value = String(savedSession.jobText || "").slice(0, maxJobTextCharacters);
+        setDetectedSkills(Array.isArray(savedSession.detectedSkills) ? savedSession.detectedSkills : []);
+        restoringSavedSession = false;
+
+        if (savedSession.lastRenderedResult?.type === "llm" && savedSession.lastRenderedResult.result) {
+          renderAiMatch(savedSession.lastRenderedResult.result);
+          setStatus(`Restored saved LLM analysis. ${getRemainingSubmissions()} submissions left in this browser.`, "ready");
+        } else if (savedSession.lastRenderedResult?.type === "fuzzy") {
+          runMatch();
+          setStatus("Restored saved fuzzy keyword scan.");
+        } else {
+          resetResults();
+          setStatus(getReadyStatus());
+        }
+      } else {
+        setDetectedSkills([]);
+        resetResults();
+        setStatus(getReadyStatus());
+      }
       updateCharacterLimit();
-      setStatus(aiMatchEndpoint ? "Ready to analyze with Cloudflare Workers AI." : "AI matching needs a Cloudflare Worker URL. Local fallback is available.");
+      updateSubmissionState();
     });
   };
 
