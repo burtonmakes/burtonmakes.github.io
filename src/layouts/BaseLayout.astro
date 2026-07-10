@@ -250,16 +250,39 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
         box-shadow: none !important;
       }
 
-      .recruiter-onepage .context-panel {
+      .recruiter-onepage .context-panel,
+      .recruiter-onepage .match-flow-card {
         display: none !important;
       }
 
+      .recruiter-onepage .recruiter-hero-grid,
       .recruiter-onepage .recruiter-workspace {
         grid-template-columns: minmax(0, 1fr) !important;
       }
 
       .recruiter-onepage .matcher-heading > span {
         display: none !important;
+      }
+
+      .recruiter-onepage .role-text-field textarea {
+        font-family: Geist, Inter, "Avenir Next", "Segoe UI", system-ui, sans-serif !important;
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+        line-height: 1.5 !important;
+        letter-spacing: 0 !important;
+        text-transform: none !important;
+      }
+
+      .recruiter-onepage .clear-tags-button {
+        min-height: 28px;
+        padding: 0 10px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: transparent;
+        color: var(--muted-2);
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
       }
     </style>
 
@@ -293,6 +316,41 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
           });
         };
 
+        const setupRecruiterControls = () => {
+          const page = document.querySelector("[data-recruiter-onepage]");
+          if (!page || page.dataset.cleanControls === "true") return;
+          page.dataset.cleanControls = "true";
+
+          const input = page.querySelector("[data-match-input]");
+          const characterLimit = page.querySelector("[data-character-limit]");
+          const clearAllButton = page.querySelector("[data-clear]");
+          const detectedHeading = page.querySelector(".detected-heading");
+          const detectedSkills = page.querySelector("[data-detected-skills]");
+
+          if (input && characterLimit) {
+            input.maxLength = 10000;
+            const updateLimit = () => {
+              characterLimit.textContent = `${input.value.length.toLocaleString()} / 10,000 CHARACTERS`;
+            };
+            input.addEventListener("input", updateLimit);
+            updateLimit();
+          }
+
+          if (clearAllButton) clearAllButton.textContent = "Clear all";
+
+          if (detectedHeading && detectedSkills && !detectedHeading.querySelector("[data-clear-tags]")) {
+            const clearTagsButton = document.createElement("button");
+            clearTagsButton.type = "button";
+            clearTagsButton.className = "clear-tags-button";
+            clearTagsButton.dataset.clearTags = "true";
+            clearTagsButton.textContent = "Clear all tags";
+            clearTagsButton.addEventListener("click", () => {
+              [...detectedSkills.querySelectorAll(".skill-chip button")].forEach((button) => button.click());
+            });
+            detectedHeading.append(clearTagsButton);
+          }
+        };
+
         const setupRecruiterDeploymentState = () => {
           try {
             if (window.localStorage.getItem(recruiterBuildKey) !== recruiterBuildId) {
@@ -304,7 +362,11 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
           }
 
           simplifyManualReview();
-          const observer = new MutationObserver(simplifyManualReview);
+          setupRecruiterControls();
+          const observer = new MutationObserver(() => {
+            simplifyManualReview();
+            setupRecruiterControls();
+          });
           observer.observe(document.body, { childList: true, subtree: true, characterData: true });
         };
 
