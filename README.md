@@ -162,3 +162,36 @@ How it works:
 - the site still works normally if Plausible is not configured
 
 You do not need Plausible to run or deploy the site. The repo includes `.env.example` with the non-secret settings needed to enable it if you want analytics on your own deployment.
+
+## Recruiter AI matcher
+
+This site includes an optional Cloudflare Worker for the recruiter matching page at `/recruiter/`.
+
+How it works:
+
+- the static site stays hosted normally through GitHub Pages
+- the recruiter page sends pasted role text to a Cloudflare Worker only when someone clicks `Analyze with AI`
+- the Worker uses Cloudflare Workers AI model `@cf/qwen/qwen3-30b-a3b-fp8` to extract role requirements and classify portfolio evidence
+- the final fit percentage is calculated with a fixed math formula in the Worker, not guessed by the model
+- the recruiter page falls back to a local keyword matcher if no Worker URL is configured
+
+Wrangler was added only as an `npx` command in `package.json` scripts. It is not required for normal site builds.
+
+Worker commands:
+
+```bash
+npm run worker:dev
+npm run worker:deploy
+```
+
+The Worker source lives in:
+
+- `workers/recruiter-match/`
+
+After deploying the Worker with Wrangler, set this GitHub Actions repository variable so the static site knows where to send recruiter match requests:
+
+```text
+PUBLIC_RECRUITER_MATCH_API=https://burton-recruiter-match.burtonmakes.workers.dev/match
+```
+
+You do not need the Worker to run the portfolio locally or deploy the static site. Without `PUBLIC_RECRUITER_MATCH_API`, the recruiter page shows the local fallback state.
