@@ -40,9 +40,10 @@ const originStory = [
         data workflows, and ML/AI-enabled tools.
       </p>
 
-      <div class="hero-actions">
-        <a class="button button-primary" href="/projects/">Projects</a>
-        <a class="button button-tertiary" href="/work/">Work history</a>
+      <div class="hero-actions audience-actions" aria-label="Choose a path through the site">
+        <a class="button button-primary audience-recruiter" href="/recruiter/">Recruiter</a>
+        <a class="button button-secondary audience-engineer" href="/projects/">Curious engineer</a>
+        <a class="button button-tertiary audience-friend" href="/hobbies/">Get to know me</a>
       </div>
     </div>
   </section>
@@ -111,6 +112,34 @@ const originStory = [
 
   :global(.studio-hero .hero-copy) {
     max-width: 980px;
+  }
+
+  :global(.audience-actions) {
+    align-items: center;
+  }
+
+  :global(.audience-actions .button) {
+    min-width: min(100%, 188px);
+  }
+
+  :global(.audience-recruiter) {
+    border-color: color-mix(in srgb, var(--cta-2), white 12%);
+    background: linear-gradient(135deg, var(--cta-1), var(--cta-2));
+    box-shadow: 0 18px 48px rgba(232, 111, 78, 0.24);
+  }
+
+  :global(.audience-engineer) {
+    border-color: color-mix(in srgb, var(--cta-2), transparent 22%);
+    background:
+      linear-gradient(135deg, rgba(226, 184, 105, 0.08), rgba(232, 111, 78, 0.05)),
+      rgba(255, 255, 255, 0.018);
+    color: #fff4ee;
+  }
+
+  :global(.audience-friend) {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.018);
+    color: #c6d3e4;
   }
 
   :global(main > .origin-section) {
