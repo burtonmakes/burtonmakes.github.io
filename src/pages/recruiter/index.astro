@@ -5,59 +5,103 @@ import "../../styles/global.css";
 
 <BaseLayout
   title="Recruiter Context"
-  description="Optional recruiter context before using Alex Burton's candidate matching tool."
+  description="Recruiter fast path for comparing a target role against Alex Burton's portfolio evidence."
 >
   <section class="section recruiter-gateway">
     <div class="gateway-card reveal">
-      <p class="eyebrow">Recruiter fast path</p>
-      <h1>Optional context improves candidate matching.</h1>
-      <p class="gateway-copy">
-        Add your name, company, and the role you are looking to fill so the matcher can compare the
-        job text with better context. You can skip this step, but the analysis may be less accurate.
-      </p>
-      <div class="gateway-visual" aria-hidden="true">
-        <div class="gateway-node">
-          <span>Recruiter</span>
-          <small>role needs</small>
+      <div class="gateway-layout">
+        <div class="gateway-copy-block">
+          <p class="eyebrow">Recruiter fast path</p>
+          <h1>Compare your role with Alex’s evidence.</h1>
+          <p class="gateway-copy">
+            Add the recruiter, company, and target role so the matcher can compare your hiring context
+            against Alex Burton’s mapped portfolio evidence. More role context improves the accuracy of the
+            match score and the evidence pulled forward on the next step.
+          </p>
         </div>
-        <div class="gateway-match">
-          <span>Common match</span>
-          <i></i>
-          <small>role needs + portfolio evidence</small>
-        </div>
-        <div class="gateway-node">
-          <span>Alex Burton</span>
-          <small>project evidence</small>
+
+        <div class="gateway-visual" aria-label="Recruiter role context is compared with Alex Burton's portfolio evidence to find common matches.">
+          <div class="gateway-node gateway-node-recruiter">
+            <span>Recruiter</span>
+            <small>company + target role</small>
+          </div>
+          <div class="gateway-match">
+            <span>Common match</span>
+            <strong>role needs ↔ evidence</strong>
+            <i></i>
+            <small>the metric shown next</small>
+          </div>
+          <div class="gateway-node gateway-node-candidate">
+            <span>Alex Burton</span>
+            <small>projects + work history</small>
+          </div>
         </div>
       </div>
 
       <form class="gateway-form" data-recruiter-gateway>
         <label for="gateway-name">
           <span>Your name</span>
-          <input id="gateway-name" data-gateway-name type="text" autocomplete="name" placeholder="Optional" />
+          <input id="gateway-name" data-gateway-name type="text" autocomplete="name" placeholder="Jordan Lee" required />
         </label>
 
         <label for="gateway-company">
           <span>Company</span>
-          <input id="gateway-company" data-gateway-company type="text" autocomplete="organization" placeholder="Optional" />
+          <input id="gateway-company" data-gateway-company type="text" autocomplete="organization" placeholder="Company or team" required />
         </label>
 
         <label for="gateway-role">
-          <span>Role you are filling</span>
-          <input id="gateway-role" data-gateway-role type="text" placeholder="Sensor hardware engineer" />
+          <span>Role being filled</span>
+          <input id="gateway-role" data-gateway-role type="text" placeholder="Senior sensor hardware engineer" required />
         </label>
 
+        <div class="gateway-accuracy-card">
+          <strong>Why this context matters</strong>
+          <p>
+            The next step compares the role requirements with Alex’s portfolio and returns a common-match score,
+            matched evidence, and items to review manually. Role title and company context help the matcher weight
+            skills more accurately instead of treating every pasted keyword the same.
+          </p>
+        </div>
+
+        <div class="gateway-data-card">
+          <strong>Data path</strong>
+          <ul>
+            <li>Recruiter context is stored in this browser so the next page can use it.</li>
+            <li>AI Compare sends the pasted role text, recruiter context, and Alex’s public portfolio index to a Cloudflare Worker.</li>
+            <li>The Worker uses Cloudflare Workers AI with <code>@cf/qwen/qwen3-30b-a3b-fp8</code>, a Qwen3 text-generation model.</li>
+            <li>Cloudflare states Workers AI customer content is not used to train AI models or improve Cloudflare or third-party services without explicit consent.</li>
+          </ul>
+          <div class="gateway-data-links">
+            <a href="https://developers.cloudflare.com/workers-ai/models/qwen3-30b-a3b-fp8/" target="_blank" rel="noreferrer">Model details</a>
+            <a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/" target="_blank" rel="noreferrer">Workers AI data usage</a>
+          </div>
+        </div>
+
         <p class="gateway-note">
-          Context is saved in your browser for this visit. Pasted role text is used only to compare the role
-          against Alex's portfolio. Treat the match score as a quick screening aid, not a final hiring decision.
+          Fuzzy Compare can run without the AI model. AI Compare is a screening aid only and should not be treated as a final hiring decision.
         </p>
 
         <div class="gateway-actions">
-          <button class="button button-primary" type="submit">Continue to matcher</button>
+          <button class="button button-primary" type="submit">Continue with context</button>
           <button class="button button-secondary" type="button" data-gateway-skip>Skip context</button>
         </div>
       </form>
     </div>
+
+    <dialog class="gateway-skip-dialog" data-skip-dialog aria-labelledby="skip-dialog-title">
+      <form method="dialog" class="gateway-skip-modal">
+        <span class="gateway-warning-icon" aria-hidden="true">!</span>
+        <h2 id="skip-dialog-title">Skip recruiter context?</h2>
+        <p>
+          You can continue, but the comparison will be less accurate without the recruiter name, company, and role being filled.
+          That context helps the next step understand what kind of candidate match the recruiter is trying to evaluate.
+        </p>
+        <div class="gateway-dialog-actions">
+          <button class="button button-secondary" value="cancel" type="submit">Go back</button>
+          <button class="button button-primary" value="skip" type="submit" data-confirm-skip>Continue with lower accuracy</button>
+        </div>
+      </form>
+    </dialog>
   </section>
 </BaseLayout>
 
@@ -71,86 +115,100 @@ import "../../styles/global.css";
   }
 
   .gateway-card {
-    width: min(860px, 100%);
+    width: min(1040px, 100%);
     padding: clamp(20px, 3vw, 34px);
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 12px;
     background: rgba(1, 5, 10, 0.98);
     box-shadow: var(--shadow-soft);
   }
 
+  .gateway-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(340px, 1fr);
+    gap: clamp(18px, 3vw, 30px);
+    align-items: center;
+  }
+
   .gateway-card h1 {
-    max-width: 15ch;
+    max-width: 14ch;
     margin-bottom: 12px;
-    font-size: clamp(2rem, 3.8vw, 3.55rem);
-    line-height: 1;
+    font-size: clamp(2.15rem, 4vw, 4.15rem);
+    line-height: 0.98;
   }
 
   .gateway-copy {
-    max-width: 68ch;
+    max-width: 62ch;
     margin-bottom: 0;
     color: var(--muted-2);
-    font-size: 0.92rem;
-    line-height: 1.4;
+    font-size: 0.95rem;
+    line-height: 1.48;
   }
 
   .gateway-visual {
     display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(210px, 1fr) minmax(0, 0.8fr);
+    grid-template-columns: minmax(0, 0.82fr) minmax(210px, 1fr) minmax(0, 0.82fr);
     align-items: stretch;
     gap: 10px;
-    margin: 16px 0 18px;
   }
 
   .gateway-node,
   .gateway-match {
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.018);
   }
 
   .gateway-node {
     display: grid;
-    min-height: 72px;
+    min-height: 116px;
     place-items: center;
-    padding: 12px;
+    padding: 14px;
     text-align: center;
   }
 
   .gateway-node span {
     color: var(--text);
-    font-weight: 850;
+    font-size: 1.05rem;
+    font-weight: 900;
   }
 
   .gateway-node small,
   .gateway-match small {
     color: var(--muted);
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
   .gateway-match {
     display: grid;
-    min-height: 82px;
+    min-height: 126px;
     align-content: center;
-    gap: 7px;
-    padding: 12px;
+    gap: 8px;
+    padding: 14px;
     text-align: center;
+    background: linear-gradient(180deg, rgba(111, 211, 255, 0.06), rgba(255, 255, 255, 0.014));
   }
 
   .gateway-match span {
     color: var(--accent-2);
-    font-size: 0.76rem;
-    font-weight: 900;
-    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    font-weight: 950;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+
+  .gateway-match strong {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.2;
   }
 
   .gateway-match i {
     display: block;
-    height: 6px;
+    height: 7px;
     border-radius: 999px;
     background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
   }
@@ -159,6 +217,7 @@ import "../../styles/global.css";
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
+    margin-top: clamp(18px, 3vw, 28px);
   }
 
   .gateway-form label {
@@ -175,7 +234,7 @@ import "../../styles/global.css";
   }
 
   .gateway-form input {
-    min-height: 42px;
+    min-height: 44px;
     width: 100%;
     padding: 0 12px;
     border: 1px solid var(--line);
@@ -190,9 +249,65 @@ import "../../styles/global.css";
     box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
   }
 
+  .gateway-accuracy-card,
+  .gateway-data-card {
+    grid-column: 1 / -1;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.014);
+  }
+
+  .gateway-accuracy-card strong,
+  .gateway-data-card strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  .gateway-accuracy-card p,
+  .gateway-data-card p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.82rem;
+    line-height: 1.42;
+  }
+
+  .gateway-data-card ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted-2);
+    font-size: 0.8rem;
+    line-height: 1.42;
+  }
+
+  .gateway-data-card code {
+    color: var(--text);
+    font-size: 0.78rem;
+  }
+
+  .gateway-data-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .gateway-data-links a {
+    color: var(--accent-2);
+    font-size: 0.76rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
   .gateway-note {
     grid-column: 1 / -1;
-    margin: 4px 0 0;
+    margin: 2px 0 0;
     color: var(--muted);
     font-size: 0.76rem;
     line-height: 1.36;
@@ -203,7 +318,7 @@ import "../../styles/global.css";
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
   .gateway-actions .button {
@@ -211,25 +326,85 @@ import "../../styles/global.css";
     border-radius: 8px;
   }
 
-  @media (max-width: 720px) {
+  .gateway-skip-dialog {
+    width: min(460px, calc(100% - 32px));
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(1, 5, 10, 0.98);
+    color: var(--text);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .gateway-skip-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(3px);
+  }
+
+  .gateway-skip-modal {
+    display: grid;
+    gap: 12px;
+    padding: 22px;
+  }
+
+  .gateway-warning-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(232, 111, 78, 0.42);
+    border-radius: 999px;
+    color: #ffb39f;
+    font-weight: 950;
+  }
+
+  .gateway-skip-modal h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.08;
+  }
+
+  .gateway-skip-modal p {
+    margin: 0;
+    color: var(--muted-2);
+    font-size: 0.9rem;
+    line-height: 1.44;
+  }
+
+  .gateway-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .gateway-dialog-actions .button {
+    min-height: 40px;
+    border-radius: 8px;
+  }
+
+  @media (max-width: 860px) {
     .recruiter-gateway {
       place-items: start center;
+    }
+
+    .gateway-layout,
+    .gateway-visual,
+    .gateway-form {
+      grid-template-columns: 1fr;
     }
 
     .gateway-card h1 {
       max-width: none;
     }
 
-    .gateway-visual,
-    .gateway-form {
-      grid-template-columns: 1fr;
+    .gateway-node,
+    .gateway-match {
+      min-height: auto;
     }
 
-    .gateway-visual {
-      margin: 14px 0;
-    }
-
-    .gateway-actions {
+    .gateway-actions,
+    .gateway-dialog-actions {
       flex-direction: column;
     }
   }
@@ -267,6 +442,8 @@ import "../../styles/global.css";
     const companyInput = form.querySelector("[data-gateway-company]");
     const roleInput = form.querySelector("[data-gateway-role]");
     const skipButton = form.querySelector("[data-gateway-skip]");
+    const skipDialog = document.querySelector("[data-skip-dialog]");
+    const confirmSkipButton = document.querySelector("[data-confirm-skip]");
     const saved = getStoredSession().recruiterContext || {};
 
     nameInput.value = saved.name || "";
@@ -285,6 +462,23 @@ import "../../styles/global.css";
     });
 
     skipButton.addEventListener("click", () => {
+      if (skipDialog?.showModal) {
+        skipDialog.showModal();
+        return;
+      }
+
+      if (window.confirm("Continue without recruiter context? Accuracy may be lower without the recruiter name, company, and role being filled.")) {
+        saveContext({
+          name: "",
+          company: "",
+          hiringFor: "",
+          skipped: true,
+        });
+        goToMatcher();
+      }
+    });
+
+    confirmSkipButton?.addEventListener("click", () => {
       saveContext({
         name: "",
         company: "",
