@@ -203,7 +203,10 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
           <div class="detected-strip">
             <div class="detected-heading">
               <span>Detected role skills</span>
-              <strong data-detected-count>0 tags</strong>
+              <div class="detected-heading-actions">
+                <strong data-detected-count>0 tags</strong>
+                <button class="clear-tags-button" type="button" data-clear-detected-skills hidden>Clear all tags</button>
+              </div>
             </div>
             <div class="detected-list" data-detected-skills>
               <p>Paste role text and run a comparison to review the normalized skills.</p>
@@ -665,6 +668,30 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     font-size: 0.8rem;
   }
 
+  .detected-heading-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .clear-tags-button {
+    min-height: 28px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted-2);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .clear-tags-button:hover,
+  .clear-tags-button:focus-visible {
+    border-color: color-mix(in srgb, var(--accent-2), white 8%);
+    color: var(--text);
+  }
+
   .detected-list {
     display: flex;
     flex-wrap: wrap;
@@ -1122,6 +1149,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     const statusElement = page.querySelector("[data-match-status]");
     const detectedSkillsElement = page.querySelector("[data-detected-skills]");
     const detectedCountElement = page.querySelector("[data-detected-count]");
+    const clearDetectedSkillsButton = page.querySelector("[data-clear-detected-skills]");
     const scoreElement = page.querySelector("[data-match-score]");
     const summaryElement = page.querySelector("[data-match-summary]");
     const metricGridElement = page.querySelector("[data-match-metrics]");
@@ -1353,6 +1381,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     const renderDetectedSkills = () => {
       detectedSkillsElement.innerHTML = "";
       detectedCountElement.textContent = `${detectedSkills.length} tag${detectedSkills.length === 1 ? "" : "s"}`;
+      clearDetectedSkillsButton.hidden = detectedSkills.length === 0;
       if (!detectedSkills.length) {
         const empty = document.createElement("p");
         empty.textContent = "Paste role text and run a comparison to review the normalized skills.";
@@ -1789,6 +1818,11 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     aiButton.addEventListener("click", () => runAiCompare(true));
     fuzzyButton.addEventListener("click", () => runFuzzyCompare(true));
     clearButton.addEventListener("click", clearAll);
+    clearDetectedSkillsButton.addEventListener("click", () => {
+      setDetectedSkills([]);
+      resetResults();
+      input.focus();
+    });
     addManualSkillButton.addEventListener("click", addManualSkills);
     manualSkillInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {

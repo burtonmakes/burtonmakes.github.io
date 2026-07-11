@@ -1,7 +1,6 @@
 ---
 import BackgroundEffects from "../components/BackgroundEffects.jsx";
 import GlobalEffects from "../components/GlobalEffects.jsx";
-import RecruiterGateway from "../components/RecruiterGateway.astro";
 import { navigation, siteMeta } from "../data/site";
 import { ClientRouter } from "astro:transitions";
 
@@ -16,8 +15,6 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
 const defaultPlausibleScriptUrl = "https://plausible.io/js/pa-gczhG5VDj-KpJH97UfP9Y.js";
 const plausibleScriptUrl = import.meta.env.PUBLIC_PLAUSIBLE_SCRIPT_URL || defaultPlausibleScriptUrl;
 const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
-const showRecruiterGateway = /^\/recruiter\/?$/.test(Astro.url.pathname);
-const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
 ---
 
 <!doctype html>
@@ -90,7 +87,6 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
         </section>
       )}
 
-      {showRecruiterGateway && <RecruiterGateway />}
       <slot />
     </main>
 
@@ -250,129 +246,6 @@ const recruiterBuildId = import.meta.env.PROD ? String(Date.now()) : "dev";
         box-shadow: none !important;
       }
 
-      .recruiter-onepage .context-panel,
-      .recruiter-onepage .match-flow-card {
-        display: none !important;
-      }
-
-      .recruiter-onepage .recruiter-hero-grid,
-      .recruiter-onepage .recruiter-workspace {
-        grid-template-columns: minmax(0, 1fr) !important;
-      }
-
-      .recruiter-onepage .matcher-heading > span {
-        display: none !important;
-      }
-
-      .recruiter-onepage .role-text-field textarea {
-        font-family: Geist, Inter, "Avenir Next", "Segoe UI", system-ui, sans-serif !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-        line-height: 1.5 !important;
-        letter-spacing: 0 !important;
-        text-transform: none !important;
-      }
-
-      .recruiter-onepage .clear-tags-button {
-        min-height: 28px;
-        padding: 0 10px;
-        border: 1px solid var(--line);
-        border-radius: 7px;
-        background: transparent;
-        color: var(--muted-2);
-        font-size: 0.72rem;
-        font-weight: 700;
-        cursor: pointer;
-      }
     </style>
-
-    {showRecruiterGateway && (
-      <script define:vars={{ recruiterBuildId }}>
-        const recruiterSubmissionKey = "burton-recruiter-match-submissions-v1";
-        const recruiterBuildKey = "burton-recruiter-match-build-v1";
-
-        const simplifyManualReview = () => {
-          const list = document.querySelector("[data-gap-list]");
-          if (!list) return;
-
-          list.querySelectorAll("li").forEach((item) => {
-            const text = item.textContent?.replace(/\s+/g, " ").trim() || "";
-            const reviewMatch = text.match(/^Review\s+([^:]+):/i);
-
-            if (reviewMatch) {
-              item.textContent = `Manual review needed: ${reviewMatch[1].trim()}.`;
-              return;
-            }
-
-            if (/^No evidence\b/i.test(text)) {
-              const topic = text
-                .replace(/^No evidence\s+(?:of|for|that)\s*/i, "")
-                .replace(/[.!]+$/, "")
-                .trim();
-              item.textContent = topic
-                ? `Manual review needed: ${topic}.`
-                : "Manual review needed for this topic.";
-            }
-          });
-        };
-
-        const setupRecruiterControls = () => {
-          const page = document.querySelector("[data-recruiter-onepage]");
-          if (!page || page.dataset.cleanControls === "true") return;
-          page.dataset.cleanControls = "true";
-
-          const input = page.querySelector("[data-match-input]");
-          const characterLimit = page.querySelector("[data-character-limit]");
-          const clearAllButton = page.querySelector("[data-clear]");
-          const detectedHeading = page.querySelector(".detected-heading");
-          const detectedSkills = page.querySelector("[data-detected-skills]");
-
-          if (input && characterLimit) {
-            input.maxLength = 10000;
-            const updateLimit = () => {
-              characterLimit.textContent = `${input.value.length.toLocaleString()} / 10,000 CHARACTERS`;
-            };
-            input.addEventListener("input", updateLimit);
-            updateLimit();
-          }
-
-          if (clearAllButton) clearAllButton.textContent = "Clear all";
-
-          if (detectedHeading && detectedSkills && !detectedHeading.querySelector("[data-clear-tags]")) {
-            const clearTagsButton = document.createElement("button");
-            clearTagsButton.type = "button";
-            clearTagsButton.className = "clear-tags-button";
-            clearTagsButton.dataset.clearTags = "true";
-            clearTagsButton.textContent = "Clear all tags";
-            clearTagsButton.addEventListener("click", () => {
-              [...detectedSkills.querySelectorAll(".skill-chip button")].forEach((button) => button.click());
-            });
-            detectedHeading.append(clearTagsButton);
-          }
-        };
-
-        const setupRecruiterDeploymentState = () => {
-          try {
-            if (window.localStorage.getItem(recruiterBuildKey) !== recruiterBuildId) {
-              window.localStorage.removeItem(recruiterSubmissionKey);
-              window.localStorage.setItem(recruiterBuildKey, recruiterBuildId);
-            }
-          } catch {
-            // Browser storage is optional.
-          }
-
-          simplifyManualReview();
-          setupRecruiterControls();
-          const observer = new MutationObserver(() => {
-            simplifyManualReview();
-            setupRecruiterControls();
-          });
-          observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-        };
-
-        document.addEventListener("astro:page-load", setupRecruiterDeploymentState);
-        setupRecruiterDeploymentState();
-      </script>
-    )}
   </body>
 </html>
