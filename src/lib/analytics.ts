@@ -19,6 +19,16 @@ declare global {
   }
 }
 
+const removeSiteNotice = (): void => {
+  if (typeof document === "undefined") return;
+  document.querySelector(".site-notice")?.remove();
+};
+
+if (typeof document !== "undefined") {
+  removeSiteNotice();
+  document.addEventListener("astro:page-load", removeSiteNotice);
+}
+
 const isPrimitive = (value: unknown): value is AnalyticsPrimitive =>
   typeof value === "string" || typeof value === "number" || typeof value === "boolean";
 
