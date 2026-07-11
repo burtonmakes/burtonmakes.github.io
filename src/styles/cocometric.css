@@ -19,6 +19,7 @@ html {
   background: var(--coco-bg);
   color-scheme: dark;
   scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
 }
 
 body.cocometric-page {

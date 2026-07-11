@@ -82,13 +82,13 @@
 }
 
 .track {
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: none;
 }
 
 .beat {
   min-height: 125vh;
   min-height: 125svh;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
   scroll-snap-stop: always;
 }
 

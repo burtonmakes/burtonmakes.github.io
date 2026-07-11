@@ -228,6 +228,23 @@ stageButtons.forEach((button) => {
   });
 });
 
+let snapTimer = 0;
+let snapInProgress = false;
+
+function snapToNearestStage() {
+  if (snapInProgress || !beats.length) return;
+
+  const index = Math.max(0, Math.min(beats.length - 1, Math.round(stageFloat())));
+  const target = beats[index].offsetTop;
+  if (Math.abs(window.scrollY - target) < 8) return;
+
+  snapInProgress = true;
+  window.scrollTo({ top: target, behavior: reduceMotion ? "auto" : "smooth" });
+  window.setTimeout(() => {
+    snapInProgress = false;
+  }, reduceMotion ? 0 : 650);
+}
+
 let textUpdateFrame = 0;
 window.addEventListener(
   "scroll",
@@ -237,9 +254,13 @@ window.addEventListener(
       textUpdateFrame = 0;
       updateActiveStage();
     });
+    window.clearTimeout(snapTimer);
+    snapTimer = window.setTimeout(snapToNearestStage, 140);
   },
   { passive: true }
 );
+
+if ("onscrollend" in window) window.addEventListener("scrollend", snapToNearestStage, { passive: true });
 renderStageText(0);
 
 function decodeBase64(encoded) {
@@ -459,8 +480,12 @@ async function initializeViewer() {
   let animationFrame = 0;
   let running = false;
   let previousTime = 0;
-  const stageCamera = new THREE.Vector3();
-  const stageTarget = new THREE.Vector3();
+  const camA = new THREE.Vector3();
+  const camB = new THREE.Vector3();
+  const targetA = new THREE.Vector3();
+  const targetB = new THREE.Vector3();
+  const desiredCamera = new THREE.Vector3();
+  const desiredTarget = new THREE.Vector3();
 
   function render(time) {
     if (!running) return;
@@ -470,19 +495,29 @@ async function initializeViewer() {
     const motionBlend = reduceMotion ? 1 : 1 - Math.pow(0.001, delta / 1000);
 
     const value = stageFloat();
+    const fromIndex = Math.floor(value);
+    const toIndex = Math.min(stages.length - 1, fromIndex + 1);
+    const blend = smooth(value - fromIndex);
     const lockedStage = Math.max(0, Math.min(stages.length - 1, Math.round(value)));
     const stage = stages[lockedStage];
     updateActiveStage();
 
-    stageCamera.fromArray(stage.camera);
-    stageTarget.fromArray(stage.target);
-    camera.position.lerp(stageCamera, motionBlend);
-    cameraTarget.lerp(stageTarget, motionBlend);
+    // Keep the camera continuous along the scroll path while the active
+    // component remains discrete. This gives smooth movement without ever
+    // blending two component highlight states together.
+    camA.fromArray(stages[fromIndex].camera);
+    camB.fromArray(stages[toIndex].camera);
+    targetA.fromArray(stages[fromIndex].target);
+    targetB.fromArray(stages[toIndex].target);
+    desiredCamera.lerpVectors(camA, camB, blend);
+    desiredTarget.lerpVectors(targetA, targetB, blend);
 
     if (isMobile()) {
-      camera.position.multiplyScalar(1.24);
-      cameraTarget.y += 0.42;
+      desiredCamera.multiplyScalar(1.24);
+      desiredTarget.y += 0.42;
     }
+    camera.position.lerp(desiredCamera, motionBlend);
+    cameraTarget.lerp(desiredTarget, motionBlend);
     camera.lookAt(cameraTarget);
 
     const overviewWeight = lockedStage === 0 ? 1 : 0;
