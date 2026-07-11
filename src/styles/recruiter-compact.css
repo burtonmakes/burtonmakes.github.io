@@ -1,60 +1,72 @@
-/* Recruiter matcher: keep the complete input workflow in the first viewport. */
+/* Recruiter matcher: keep the complete input workflow visible before results. */
 [data-recruiter-onepage] {
-  padding-top: clamp(3.35rem, 5vh, 4.25rem) !important;
+  padding-top: clamp(2.15rem, 3.4vh, 3rem) !important;
 }
 
 [data-recruiter-onepage] .recruiter-shell {
-  gap: 14px !important;
+  gap: 16px !important;
 }
 
+/* Keep a compact page title, but remove the redundant explainer graphic and copy. */
 [data-recruiter-onepage] .recruiter-hero-grid {
   display: block !important;
 }
 
-[data-recruiter-onepage] .match-flow-card {
+[data-recruiter-onepage] .match-flow-card,
+[data-recruiter-onepage] .recruiter-hero-copy > p:last-child {
   display: none !important;
 }
 
 [data-recruiter-onepage] .recruiter-hero-copy {
-  display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  column-gap: 18px;
-  row-gap: 3px;
-  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 7px 13px;
 }
 
 [data-recruiter-onepage] .recruiter-hero-copy .eyebrow {
-  grid-column: 1 / -1;
-  margin-bottom: 0;
+  margin: 0 !important;
 }
 
 [data-recruiter-onepage] .recruiter-hero-copy h1 {
   max-width: none !important;
   margin: 0 !important;
-  font-size: clamp(1.8rem, 3.1vw, 3.15rem) !important;
+  font-size: clamp(1.7rem, 2.7vw, 2.65rem) !important;
   line-height: 1 !important;
-  white-space: nowrap;
 }
 
-[data-recruiter-onepage] .recruiter-hero-copy > p:last-child {
-  max-width: 70ch !important;
-  font-size: 0.84rem !important;
-  line-height: 1.35 !important;
+[data-recruiter-onepage] .recruiter-workspace {
+  display: block !important;
 }
 
+/* One working surface: role text on the left, context and tags on the right. */
 [data-recruiter-onepage] .matcher-panel {
-  gap: 8px !important;
-  padding: 12px 14px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.72fr);
+  grid-template-areas:
+    "heading heading"
+    "role context"
+    "role manual"
+    "role detected"
+    "count detected"
+    "actions detected";
+  column-gap: 18px !important;
+  row-gap: 8px !important;
+  padding: 15px 17px 16px !important;
 }
 
 [data-recruiter-onepage] .matcher-heading-row {
+  grid-area: heading;
   align-items: center !important;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 [data-recruiter-onepage] .matcher-heading {
+  display: grid !important;
   grid-template-columns: auto auto minmax(0, 1fr);
   align-items: baseline;
-  column-gap: 10px;
+  column-gap: 9px;
   row-gap: 2px;
 }
 
@@ -63,124 +75,300 @@
 }
 
 [data-recruiter-onepage] .matcher-heading p {
-  font-size: 0.75rem !important;
+  overflow: hidden;
+  font-size: 0.74rem !important;
   line-height: 1.3 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 [data-recruiter-onepage] .context-edit-button {
+  flex: 0 0 auto;
   min-height: 34px !important;
   padding-inline: 12px !important;
 }
 
 [data-recruiter-onepage] .context-quality {
-  display: flex;
-  align-items: baseline;
-  gap: 9px;
-  padding: 7px 10px !important;
+  grid-area: context;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  padding: 3px 0 10px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--line-soft) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
 }
 
 [data-recruiter-onepage] .context-quality strong {
-  flex: 0 0 auto;
   margin: 0 !important;
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
 }
 
 [data-recruiter-onepage] .context-quality p {
-  overflow: hidden;
+  margin: 0 !important;
+  color: var(--muted) !important;
   font-size: 0.72rem !important;
-  line-height: 1.25 !important;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.32 !important;
 }
 
-[data-recruiter-onepage] .role-text-field,
+[data-recruiter-onepage] .role-text-field {
+  grid-area: role;
+  gap: 6px !important;
+  min-width: 0;
+}
+
+[data-recruiter-onepage] .matcher-panel textarea {
+  min-height: 260px !important;
+  height: 260px;
+  padding: 12px 13px !important;
+  font-size: 0.88rem !important;
+  font-weight: 400 !important;
+  line-height: 1.42 !important;
+}
+
+[data-recruiter-onepage] .character-limit {
+  grid-area: count;
+  justify-self: end;
+  margin: -3px 0 0 !important;
+  font-size: 0.64rem !important;
+}
+
+[data-recruiter-onepage] .manual-skill-row {
+  grid-area: manual;
+  align-self: start;
+  gap: 8px !important;
+}
+
 [data-recruiter-onepage] .manual-skill-row label {
   gap: 5px !important;
 }
 
-[data-recruiter-onepage] .matcher-panel textarea {
-  min-height: 118px !important;
-  height: 118px;
-  padding: 10px 12px !important;
-  font-size: 0.86rem !important;
-  line-height: 1.35 !important;
-}
-
-[data-recruiter-onepage] .character-limit {
-  margin-top: -5px !important;
-  font-size: 0.64rem !important;
-}
-
 [data-recruiter-onepage] .manual-skill-row input {
-  min-height: 36px !important;
+  min-height: 37px !important;
 }
 
 [data-recruiter-onepage] .manual-skill-row .button,
 [data-recruiter-onepage] .action-row .button,
 [data-recruiter-onepage] .match-status {
-  min-height: 36px !important;
+  min-height: 37px !important;
 }
 
 [data-recruiter-onepage] .action-row {
+  grid-area: actions;
   gap: 7px !important;
+  align-self: end;
+}
+
+[data-recruiter-onepage] .action-row .button-primary {
+  min-width: 140px;
 }
 
 [data-recruiter-onepage] .match-status {
+  flex: 1 1 250px;
+  min-width: 0;
   padding-inline: 9px !important;
-  font-size: 0.72rem !important;
+  font-size: 0.71rem !important;
 }
 
 [data-recruiter-onepage] .detected-strip {
-  gap: 6px !important;
-  padding: 8px 10px !important;
+  grid-area: detected;
+  display: grid;
+  align-content: start;
+  gap: 8px !important;
+  min-width: 0;
+  height: 100%;
+  padding: 10px 0 0 18px !important;
+  border: 0 !important;
+  border-left: 1px solid var(--line-soft) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+[data-recruiter-onepage] .detected-heading {
+  align-items: center !important;
+}
+
+[data-recruiter-onepage] .detected-heading-actions {
+  gap: 8px !important;
+}
+
+[data-recruiter-onepage] .clear-tags-button {
+  min-height: 26px !important;
+  padding-inline: 8px !important;
+  font-size: 0.67rem !important;
 }
 
 [data-recruiter-onepage] .detected-list {
-  min-height: 30px !important;
-  max-height: 70px !important;
-  gap: 5px !important;
+  align-content: flex-start;
+  min-height: 168px !important;
+  max-height: 214px !important;
+  padding-right: 3px;
+  gap: 6px !important;
 }
 
 [data-recruiter-onepage] .detected-list p {
-  font-size: 0.75rem !important;
+  font-size: 0.76rem !important;
+  line-height: 1.35 !important;
 }
 
+[data-recruiter-onepage] :global(.skill-chip) {
+  min-height: 24px !important;
+  font-size: 0.71rem !important;
+}
+
+/* Results are visually secondary and begin immediately after the working surface. */
 [data-recruiter-onepage] .results-grid {
+  grid-template-columns: minmax(230px, 0.72fr) minmax(260px, 0.9fr) repeat(2, minmax(250px, 1fr)) !important;
+  gap: 12px !important;
   scroll-margin-top: 88px;
 }
 
-@media (max-width: 900px) {
-  [data-recruiter-onepage] .recruiter-hero-copy {
-    display: block;
+[data-recruiter-onepage] .score-card,
+[data-recruiter-onepage] .role-read-card,
+[data-recruiter-onepage] .match-list-card {
+  padding: 17px !important;
+}
+
+[data-recruiter-onepage] .score-card strong {
+  margin: 8px 0 !important;
+  font-size: clamp(3rem, 5vw, 4.25rem) !important;
+}
+
+[data-recruiter-onepage] .metric-stack {
+  gap: 6px !important;
+  margin-top: 12px !important;
+}
+
+[data-recruiter-onepage] .metric-stack div {
+  padding: 7px 8px !important;
+}
+
+[data-recruiter-onepage] .match-list-card ul {
+  margin-top: 11px !important;
+}
+
+[data-recruiter-onepage] .evidence-section {
+  gap: 13px !important;
+}
+
+[data-recruiter-onepage] .evidence-grid {
+  gap: 12px !important;
+}
+
+@media (max-height: 820px) and (min-width: 1081px) {
+  [data-recruiter-onepage] {
+    padding-top: 1.8rem !important;
   }
 
-  [data-recruiter-onepage] .recruiter-hero-copy h1 {
-    margin: 4px 0 7px !important;
-    white-space: normal;
+  [data-recruiter-onepage] .matcher-panel textarea {
+    min-height: 220px !important;
+    height: 220px;
+  }
+
+  [data-recruiter-onepage] .detected-list {
+    min-height: 140px !important;
+    max-height: 178px !important;
+  }
+}
+
+@media (max-width: 1240px) {
+  [data-recruiter-onepage] .results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1080px) {
+  [data-recruiter-onepage] .matcher-panel {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "heading"
+      "context"
+      "role"
+      "count"
+      "manual"
+      "actions"
+      "detected";
+  }
+
+  [data-recruiter-onepage] .matcher-heading {
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+
+  [data-recruiter-onepage] .matcher-panel textarea {
+    min-height: 210px !important;
+    height: 210px;
+  }
+
+  [data-recruiter-onepage] .detected-strip {
+    height: auto;
+    padding: 10px 0 0 !important;
+    border-top: 1px solid var(--line-soft) !important;
+    border-left: 0 !important;
+  }
+
+  [data-recruiter-onepage] .detected-list {
+    min-height: 48px !important;
+    max-height: 130px !important;
   }
 }
 
 @media (max-width: 720px) {
   [data-recruiter-onepage] {
-    padding-top: 3.2rem !important;
+    padding-top: 1.75rem !important;
+  }
+
+  [data-recruiter-onepage] .recruiter-hero-copy {
+    display: grid;
+    gap: 5px;
+  }
+
+  [data-recruiter-onepage] .recruiter-hero-copy h1 {
+    font-size: 1.75rem !important;
+  }
+
+  [data-recruiter-onepage] .matcher-panel {
+    padding: 13px !important;
+  }
+
+  [data-recruiter-onepage] .matcher-heading-row {
+    align-items: stretch !important;
   }
 
   [data-recruiter-onepage] .matcher-heading {
-    display: grid;
     grid-template-columns: 1fr;
   }
 
-  [data-recruiter-onepage] .context-quality {
-    display: grid;
-    gap: 3px;
-  }
-
-  [data-recruiter-onepage] .context-quality p {
+  [data-recruiter-onepage] .matcher-heading p {
     white-space: normal;
   }
 
+  [data-recruiter-onepage] .context-edit-button {
+    width: 100%;
+  }
+
   [data-recruiter-onepage] .matcher-panel textarea {
-    min-height: 150px !important;
-    height: 150px;
+    min-height: 185px !important;
+    height: 185px;
+  }
+
+  [data-recruiter-onepage] .action-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-recruiter-onepage] .action-row .button,
+  [data-recruiter-onepage] .match-status {
+    width: 100%;
+  }
+
+  [data-recruiter-onepage] .match-status {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  [data-recruiter-onepage] .results-grid {
+    grid-template-columns: 1fr !important;
   }
 }
