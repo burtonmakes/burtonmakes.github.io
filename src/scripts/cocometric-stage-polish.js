@@ -3,48 +3,61 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
 
 if (beats.length && !reduceMotion) {
   let settleTimer = 0;
+  let releaseTimer = 0;
   let isSettling = false;
-  let lastSettledIndex = -1;
+  let pointerActive = false;
 
   function nearestStage() {
-    const viewportCenter = window.scrollY + window.innerHeight * 0.5;
-    let nearestIndex = 0;
-    let nearestDistance = Number.POSITIVE_INFINITY;
-
-    beats.forEach((beat, index) => {
-      const center = beat.offsetTop + beat.offsetHeight * 0.5;
-      const distance = Math.abs(center - viewportCenter);
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestIndex = index;
-      }
-    });
-
-    return { index: nearestIndex, distance: nearestDistance };
+    const stageHeight = Math.max(1, beats[0].offsetHeight);
+    const raw = (window.scrollY - beats[0].offsetTop) / stageHeight;
+    return Math.max(0, Math.min(beats.length - 1, Math.round(raw)));
   }
 
-  function settleStage() {
-    const trackEnd = beats.at(-1).offsetTop + beats.at(-1).offsetHeight;
-    if (window.scrollY < 4 || window.scrollY > trackEnd - window.innerHeight * 0.15) return;
+  function lockToStage() {
+    if (pointerActive || isSettling) return;
 
-    const { index, distance } = nearestStage();
-    const tolerance = window.innerHeight * 0.045;
-    if (distance <= tolerance || index === lastSettledIndex) return;
+    const finalStart = beats.at(-1).offsetTop + beats.at(-1).offsetHeight * 0.72;
+    if (window.scrollY < 4 || window.scrollY >= finalStart) return;
 
-    const target = beats[index].offsetTop + beats[index].offsetHeight * 0.5 - window.innerHeight * 0.5;
-    lastSettledIndex = index;
+    const index = nearestStage();
+    const target = beats[index].offsetTop;
+    if (Math.abs(window.scrollY - target) < 2) return;
+
     isSettling = true;
     window.scrollTo({ top: target, behavior: "smooth" });
-    window.setTimeout(() => { isSettling = false; }, 520);
+    window.clearTimeout(releaseTimer);
+    releaseTimer = window.setTimeout(() => {
+      isSettling = false;
+    }, 460);
   }
 
-  window.addEventListener("scroll", () => {
-    if (isSettling) return;
+  function scheduleLock() {
+    if (isSettling || pointerActive) return;
     window.clearTimeout(settleTimer);
-    settleTimer = window.setTimeout(settleStage, 150);
+    settleTimer = window.setTimeout(lockToStage, 115);
+  }
+
+  window.addEventListener("scroll", scheduleLock, { passive: true });
+  window.addEventListener("wheel", scheduleLock, { passive: true });
+
+  window.addEventListener("pointerdown", () => {
+    pointerActive = true;
+    window.clearTimeout(settleTimer);
+  }, { passive: true });
+
+  window.addEventListener("pointerup", () => {
+    pointerActive = false;
+    scheduleLock();
+  }, { passive: true });
+
+  window.addEventListener("touchend", () => {
+    pointerActive = false;
+    scheduleLock();
   }, { passive: true });
 
   window.addEventListener("resize", () => {
-    lastSettledIndex = -1;
+    window.clearTimeout(settleTimer);
+    window.clearTimeout(releaseTimer);
+    isSettling = false;
   }, { passive: true });
 }
