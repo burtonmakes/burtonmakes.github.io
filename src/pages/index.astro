@@ -32,7 +32,11 @@ const originStory = [
     <div class="hero-copy reveal">
       <p class="eyebrow">Biomedical Systems Engineer · Medical Devices</p>
 
-      <h1>Biomedical sensing systems from prototype to clinical use.</h1>
+      <h1 class="hero-title-three-lines">
+        <span>Biomedical sensing</span>
+        <span>systems from prototype</span>
+        <span>to clinical use.</span>
+      </h1>
 
       <p class="hero-subtitle">
         Biomedical systems engineer building wearable and implantable medical-device
@@ -110,7 +114,16 @@ const originStory = [
   }
 
   :global(.studio-hero .hero-copy) {
-    max-width: 980px;
+    max-width: 1180px;
+  }
+
+  :global(.hero-title-three-lines) {
+    max-width: none;
+  }
+
+  :global(.hero-title-three-lines span) {
+    display: block;
+    white-space: nowrap;
   }
 
   :global(.audience-actions) {
@@ -215,6 +228,10 @@ const originStory = [
   @media (max-width: 760px) {
     :global(.studio-hero) {
       padding-top: 5.5rem;
+    }
+
+    :global(.hero-title-three-lines span) {
+      white-space: normal;
     }
 
     :global(.audience-actions) {
