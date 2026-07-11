@@ -1,5 +1,19 @@
 const beats = [...document.querySelectorAll(".beat")];
+const canvas = document.querySelector("#server-canvas");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const applyCameraFraming = () => {
+  if (!canvas) return;
+  const mobile = window.innerWidth <= 820;
+  canvas.style.transformOrigin = mobile ? "50% 52%" : "68% 50%";
+  canvas.style.transform = `scale(${mobile ? 0.94 : 0.88})`;
+};
+
+if (canvas) {
+  canvas.style.transition = "transform 420ms cubic-bezier(.22, 1, .36, 1)";
+  applyCameraFraming();
+  window.addEventListener("resize", applyCameraFraming, { passive: true });
+}
 
 if (beats.length && !reduceMotion) {
   let settleTimer = 0;
