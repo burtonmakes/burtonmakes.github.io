@@ -161,8 +161,8 @@ body.cocometric-page a {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(1, 5, 10, 0.96) 0%, rgba(1, 5, 10, 0.58) 34%, transparent 62%),
-    radial-gradient(circle at 68% 46%, transparent 0 34%, rgba(1, 5, 10, 0.24) 66%, rgba(1, 5, 10, 0.78) 100%);
+    linear-gradient(90deg, rgba(1, 5, 10, 0.78) 0%, rgba(1, 5, 10, 0.38) 34%, transparent 62%),
+    radial-gradient(circle at 68% 46%, transparent 0 34%, rgba(1, 5, 10, 0.16) 66%, rgba(1, 5, 10, 0.68) 100%);
   pointer-events: none;
 }
 

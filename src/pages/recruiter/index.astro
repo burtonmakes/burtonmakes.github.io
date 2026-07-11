@@ -120,57 +120,19 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       </div>
 
       <div class="recruiter-workspace">
-        <aside class="context-panel" aria-label="Recruiter context">
-          <div class="panel-heading">
-            <span>Step 1</span>
-            <h2>Hiring context</h2>
-            <p>These details improve the comparison by telling the matcher what kind of role is being filled.</p>
+        <main class="matcher-panel" aria-label="Role comparison tool">
+          <div class="matcher-heading-row">
+            <div class="panel-heading matcher-heading">
+              <span>Recruiter match</span>
+              <h2>Role comparison</h2>
+              <p>Paste a job description, requirements section, or recruiter skill list. The result is a screening aid, not a hiring decision.</p>
+            </div>
+            <button class="button button-secondary context-edit-button" type="button" data-edit-context>Recruiter info</button>
           </div>
-
-          <div class="context-fields">
-            <label for="recruiter-name">
-              <span>Your name</span>
-              <input id="recruiter-name" data-recruiter-name type="text" autocomplete="name" placeholder="Jordan Lee" />
-            </label>
-
-            <label for="recruiter-company">
-              <span>Company</span>
-              <input id="recruiter-company" data-recruiter-company type="text" autocomplete="organization" placeholder="Company or team" />
-            </label>
-
-            <label for="recruiter-role">
-              <span>Role being filled</span>
-              <input id="recruiter-role" data-recruiter-role type="text" placeholder="Senior sensor hardware engineer" />
-            </label>
-          </div>
-
-          <button class="context-skip" type="button" data-skip-context>Skip context</button>
 
           <div class="context-quality" data-context-quality>
             <strong>Context improves accuracy</strong>
-            <p>Without role title, company, and recruiter intent, the matcher can still run, but the comparison has less signal.</p>
-          </div>
-
-          <div class="data-path-card">
-            <strong>Data path</strong>
-            <ul>
-              <li>Fuzzy Compare runs in the browser against Alex’s public portfolio map.</li>
-              <li>AI Compare sends the pasted role, recruiter context, and portfolio index to a Cloudflare Worker.</li>
-              <li>The Worker uses Cloudflare Workers AI: <code>@cf/qwen/qwen3-30b-a3b-fp8</code>.</li>
-              <li>Current session text can be stored in this browser so the page does not clear while reviewing.</li>
-            </ul>
-            <div class="data-link-row">
-              <a href="https://developers.cloudflare.com/workers-ai/models/qwen3-30b-a3b-fp8/" target="_blank" rel="noreferrer">Model details</a>
-              <a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/" target="_blank" rel="noreferrer">Data usage</a>
-            </div>
-          </div>
-        </aside>
-
-        <main class="matcher-panel" aria-label="Role comparison tool">
-          <div class="panel-heading matcher-heading">
-            <span>Step 2</span>
-            <h2>Role comparison</h2>
-            <p>Paste a job description, requirements section, or recruiter skill list. The result is a screening aid, not a hiring decision.</p>
+            <p>Recruiter info has not been added yet.</p>
           </div>
 
           <label class="role-text-field" for="role-text">
@@ -275,20 +237,42 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       </section>
     </div>
 
-    <dialog class="context-dialog" data-context-dialog aria-labelledby="context-dialog-title">
-      <form method="dialog" class="context-modal">
-        <span class="warning-dot" aria-hidden="true">!</span>
-        <h2 id="context-dialog-title">Continue with less context?</h2>
-        <p>
-          The matcher can run without recruiter context, but accuracy is lower without the recruiter name,
-          company, and role being filled. Those fields help the next step compare the role against Alex’s evidence.
+    <dialog class="context-entry-dialog" data-context-entry-dialog aria-labelledby="context-entry-title">
+      <form method="dialog" class="context-entry-modal" data-context-entry-form>
+        <div class="panel-heading">
+          <span>Recruiter info</span>
+          <h2 id="context-entry-title">Add role context first.</h2>
+          <p>These details help compare the pasted role against Alex’s mapped evidence. You can skip and still use the matcher.</p>
+        </div>
+
+        <div class="context-fields">
+          <label for="recruiter-name">
+            <span>Your name</span>
+            <input id="recruiter-name" data-recruiter-name type="text" autocomplete="name" placeholder="Jordan Lee" />
+          </label>
+
+          <label for="recruiter-company">
+            <span>Company</span>
+            <input id="recruiter-company" data-recruiter-company type="text" autocomplete="organization" placeholder="Company or team" />
+          </label>
+
+          <label for="recruiter-role">
+            <span>Role being filled</span>
+            <input id="recruiter-role" data-recruiter-role type="text" placeholder="Senior sensor hardware engineer" />
+          </label>
+        </div>
+
+        <p class="context-entry-error" data-context-entry-error role="alert" hidden>
+          Complete all three fields, or skip context.
         </p>
-        <div class="dialog-actions">
-          <button class="button button-secondary" value="cancel" type="submit">Go back</button>
-          <button class="button button-primary" value="continue" type="submit" data-confirm-limited-context>Continue anyway</button>
+
+        <div class="context-entry-actions">
+          <button class="button button-primary" type="submit">Continue</button>
+          <button class="button button-secondary" type="button" data-skip-context>Skip context</button>
         </div>
       </form>
     </dialog>
+
   </section>
 </BaseLayout>
 
@@ -326,7 +310,6 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   }
 
   .match-flow-card,
-  .context-panel,
   .matcher-panel,
   .score-card,
   .role-read-card,
@@ -392,16 +375,28 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 
   .recruiter-workspace {
     display: grid;
-    grid-template-columns: minmax(300px, 0.38fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 14px;
     align-items: start;
   }
 
-  .context-panel,
   .matcher-panel {
     display: grid;
     gap: 14px;
     padding: clamp(16px, 2vw, 22px);
+  }
+
+  .matcher-heading-row {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .context-edit-button {
+    flex: 0 0 auto;
+    min-height: 38px;
+    border-radius: 8px;
   }
 
   .panel-heading {
@@ -446,6 +441,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   }
 
   .context-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
   }
 
@@ -515,7 +511,6 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   }
 
   .context-quality,
-  .data-path-card,
   .detected-strip {
     padding: 13px;
     border: 1px solid var(--line);
@@ -528,8 +523,12 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     background: rgba(111, 211, 255, 0.045);
   }
 
-  .context-quality strong,
-  .data-path-card strong {
+  .context-quality[data-state="skipped"] {
+    border-color: rgba(232, 111, 78, 0.3);
+    background: rgba(232, 111, 78, 0.055);
+  }
+
+  .context-quality strong {
     display: block;
     margin-bottom: 5px;
     color: var(--text);
@@ -542,36 +541,6 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     color: var(--muted-2);
     font-size: 0.8rem;
     line-height: 1.4;
-  }
-
-  .data-path-card ul {
-    display: grid;
-    gap: 5px;
-    margin: 0;
-    padding-left: 18px;
-    color: var(--muted-2);
-    font-size: 0.76rem;
-    line-height: 1.38;
-  }
-
-  .data-path-card code {
-    color: var(--text);
-    font-size: 0.74rem;
-  }
-
-  .data-link-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .data-link-row a {
-    color: var(--accent-2);
-    font-size: 0.72rem;
-    font-weight: 880;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
   }
 
   .character-limit {
@@ -938,60 +907,46 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     align-self: flex-start;
   }
 
-  .context-dialog {
-    width: min(470px, calc(100% - 32px));
+  .context-entry-dialog {
+    width: min(900px, calc(100% - 32px));
     padding: 0;
     border: 1px solid var(--line);
     border-radius: 14px;
     background: rgba(1, 5, 10, 0.98);
     color: var(--text);
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 24px 90px rgba(0, 0, 0, 0.65);
   }
 
-  .context-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.72);
-    backdrop-filter: blur(3px);
+  .context-entry-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.76);
+    backdrop-filter: blur(5px);
   }
 
-  .context-modal {
+  .context-entry-modal {
     display: grid;
-    gap: 12px;
-    padding: 22px;
+    gap: 16px;
+    padding: clamp(22px, 4vw, 32px);
   }
 
-  .warning-dot {
-    display: inline-grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    border: 1px solid rgba(232, 111, 78, 0.42);
-    border-radius: 999px;
+  .context-entry-modal .panel-heading h2 {
+    font-size: clamp(1.65rem, 3vw, 2.45rem);
+  }
+
+  .context-entry-error {
+    margin: -4px 0 0;
     color: #ffb39f;
-    font-weight: 950;
+    font-size: 0.8rem;
+    font-weight: 760;
   }
 
-  .context-modal h2 {
-    margin: 0;
-    font-size: clamp(1.45rem, 3vw, 2rem);
-    line-height: 1.08;
-  }
-
-  .context-modal p {
-    margin: 0;
-    color: var(--muted-2);
-    font-size: 0.9rem;
-    line-height: 1.44;
-  }
-
-  .dialog-actions {
+  .context-entry-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 4px;
   }
 
-  .dialog-actions .button {
-    min-height: 40px;
+  .context-entry-actions .button {
+    min-height: 42px;
     border-radius: 8px;
   }
 
@@ -1004,6 +959,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   @media (max-width: 1040px) {
     .recruiter-hero-grid,
     .recruiter-workspace,
+    .context-fields,
     .evidence-grid {
       grid-template-columns: 1fr;
     }
@@ -1019,8 +975,16 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       grid-template-columns: 1fr;
     }
 
+    .matcher-heading-row {
+      flex-direction: column;
+    }
+
+    .context-edit-button {
+      width: 100%;
+    }
+
     .action-row,
-    .dialog-actions {
+    .context-entry-actions {
       flex-direction: column;
       align-items: stretch;
     }
@@ -1041,6 +1005,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
   const maxLlmSubmissions = 10;
   const sessionStorageKey = "burton-recruiter-onepage-session-v2";
   const submissionStorageKey = "burton-recruiter-match-submissions-v1";
+  const contextPromptStorageKey = "burton-recruiter-context-prompt-v1";
 
   const normalize = (value) =>
     String(value || "")
@@ -1135,10 +1100,12 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     const nameInput = page.querySelector("[data-recruiter-name]");
     const companyInput = page.querySelector("[data-recruiter-company]");
     const roleInput = page.querySelector("[data-recruiter-role]");
+    const contextEntryDialog = page.querySelector("[data-context-entry-dialog]");
+    const contextEntryForm = page.querySelector("[data-context-entry-form]");
+    const contextEntryError = page.querySelector("[data-context-entry-error]");
     const contextQuality = page.querySelector("[data-context-quality]");
     const skipContextButton = page.querySelector("[data-skip-context]");
-    const contextDialog = page.querySelector("[data-context-dialog]");
-    const confirmLimitedContextButton = page.querySelector("[data-confirm-limited-context]");
+    const editContextButton = page.querySelector("[data-edit-context]");
     const input = page.querySelector("[data-match-input]");
     const characterLimitElement = page.querySelector("[data-character-limit]");
     const manualSkillInput = page.querySelector("[data-manual-skill]");
@@ -1175,6 +1142,22 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       }
     };
 
+    const markContextPromptHandled = () => {
+      try {
+        window.localStorage.setItem(contextPromptStorageKey, "true");
+      } catch {
+        // Browser storage is optional.
+      }
+    };
+
+    const hasHandledContextPrompt = () => {
+      try {
+        return window.localStorage.getItem(contextPromptStorageKey) === "true";
+      } catch {
+        return false;
+      }
+    };
+
     const getRecruiterContext = () => ({
       name: nameInput.value.trim(),
       company: companyInput.value.trim(),
@@ -1193,17 +1176,38 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       const title = contextQuality.querySelector("strong");
       const copy = contextQuality.querySelector("p");
       if (complete) {
-        title.textContent = "Context ready";
-        copy.textContent = "The comparison can use recruiter, company, and role intent to improve match accuracy.";
+        title.textContent = `${roleInput.value.trim()} at ${companyInput.value.trim()}`;
+        copy.textContent = `Recruiter context saved for ${nameInput.value.trim()}.`;
       } else if (skippedRecruiterContext) {
         title.textContent = "Context skipped";
         copy.textContent = "The matcher will run with less signal, so review the result manually before using the score.";
       } else {
         title.textContent = "Context improves accuracy";
-        copy.textContent = "Without role title, company, and recruiter intent, the matcher can still run, but the comparison has less signal.";
+        copy.textContent = "Add recruiter name, company, and role context before comparing, or skip to continue.";
       }
-      skipContextButton.dataset.skipped = String(skippedRecruiterContext);
-      skipContextButton.textContent = skippedRecruiterContext ? "Context skipped" : "Skip context";
+    };
+
+    const openContextEntry = () => {
+      contextEntryError.hidden = true;
+      [nameInput, companyInput, roleInput].forEach((field) => field.removeAttribute("aria-invalid"));
+      if (contextEntryDialog?.showModal) {
+        contextEntryDialog.showModal();
+      } else {
+        nameInput.focus();
+      }
+    };
+
+    const closeContextEntry = () => {
+      if (contextEntryDialog?.open) contextEntryDialog.close();
+    };
+
+    const runPendingAction = () => {
+      const action = pendingAction;
+      pendingAction = null;
+      window.setTimeout(() => {
+        if (action === "ai") runAiCompare(false);
+        if (action === "fuzzy") runFuzzyCompare(false);
+      }, 0);
     };
 
     const getReadyStatus = () => {
@@ -1238,14 +1242,7 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     const requireContextOrConfirm = (action) => {
       if (hasCompleteContext() || skippedRecruiterContext) return true;
       pendingAction = action;
-      if (contextDialog?.showModal) {
-        contextDialog.showModal();
-      } else if (window.confirm("Continue with less context? Accuracy is lower without recruiter name, company, and role being filled.")) {
-        skippedRecruiterContext = true;
-        updateContextQuality();
-        saveSession();
-        return true;
-      }
+      openContextEntry();
       return false;
     };
 
@@ -1781,6 +1778,8 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
     [nameInput, companyInput, roleInput].forEach((field) => {
       field.addEventListener("input", () => {
         if (hasCompleteContext()) skippedRecruiterContext = false;
+        field.removeAttribute("aria-invalid");
+        if (hasCompleteContext()) contextEntryError.hidden = true;
         updateContextQuality();
         saveSession();
       });
@@ -1792,27 +1791,45 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       if (input.value.trim()) setStatus(getReadyStatus(), "ready");
     });
 
-    skipContextButton.addEventListener("click", () => {
-      pendingAction = null;
-      if (contextDialog?.showModal) {
-        contextDialog.showModal();
-      } else if (window.confirm("Continue without recruiter context? Accuracy may be lower.")) {
-        skippedRecruiterContext = true;
-        updateContextQuality();
-        saveSession();
+    contextEntryForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const fields = [nameInput, companyInput, roleInput];
+      const emptyFields = fields.filter((field) => !field.value.trim());
+      fields.forEach((field) => field.toggleAttribute("aria-invalid", emptyFields.includes(field)));
+      if (emptyFields.length) {
+        contextEntryError.hidden = false;
+        emptyFields[0].focus();
+        return;
       }
-    });
 
-    confirmLimitedContextButton?.addEventListener("click", () => {
-      skippedRecruiterContext = true;
+      skippedRecruiterContext = false;
+      contextEntryError.hidden = true;
       updateContextQuality();
       saveSession();
-      const action = pendingAction;
+      markContextPromptHandled();
+      closeContextEntry();
+      runPendingAction();
+      input.focus();
+    });
+
+    skipContextButton.addEventListener("click", () => {
+      nameInput.value = "";
+      companyInput.value = "";
+      roleInput.value = "";
+      skippedRecruiterContext = true;
+      contextEntryError.hidden = true;
+      [nameInput, companyInput, roleInput].forEach((field) => field.removeAttribute("aria-invalid"));
+      updateContextQuality();
+      saveSession();
+      markContextPromptHandled();
+      closeContextEntry();
+      runPendingAction();
+      input.focus();
+    });
+
+    editContextButton.addEventListener("click", () => {
       pendingAction = null;
-      window.setTimeout(() => {
-        if (action === "ai") runAiCompare(false);
-        if (action === "fuzzy") runFuzzyCompare(false);
-      }, 0);
+      openContextEntry();
     });
 
     aiButton.addEventListener("click", () => runAiCompare(true));
@@ -1861,6 +1878,10 @@ const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
       setDetectedSkills([]);
       resetResults();
       setStatus(getReadyStatus(), "ready");
+    }
+
+    if (!hasCompleteContext() && (!skippedRecruiterContext || !hasHandledContextPrompt())) {
+      window.requestAnimationFrame(openContextEntry);
     }
   };
 
