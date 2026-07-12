@@ -230,62 +230,18 @@ stageButtons.forEach((button) => {
   });
 });
 
-let snapTimer = 0;
-let snapInProgress = false;
-
-function shouldAutoSnap() {
-  if (isMobile() || !storyExit) return false;
-
-  // Release scroll control before the animation story ends so the transition
-  // and services section can be entered normally instead of snapping back.
-  const releaseDistance = Math.min(window.innerHeight * 0.55, 520);
-  return window.scrollY < storyExit.offsetTop - releaseDistance;
-}
-
-function snapToNearestStage() {
-  if (snapInProgress || !beats.length || !shouldAutoSnap()) return;
-
-  const index = Math.max(0, Math.min(beats.length - 1, Math.round(stageFloat())));
-  const target = beats[index].offsetTop;
-  if (Math.abs(window.scrollY - target) < 8) return;
-
-  snapInProgress = true;
-  window.scrollTo({ top: target, behavior: reduceMotion ? "auto" : "smooth" });
-  window.setTimeout(() => {
-    snapInProgress = false;
-  }, reduceMotion ? 0 : 650);
-}
-
 let textUpdateFrame = 0;
 window.addEventListener(
   "scroll",
   () => {
-    if (!textUpdateFrame) {
-      textUpdateFrame = window.requestAnimationFrame(() => {
-        textUpdateFrame = 0;
-        updateActiveStage();
-      });
-    }
-
-    window.clearTimeout(snapTimer);
-    if (shouldAutoSnap()) {
-      snapTimer = window.setTimeout(snapToNearestStage, 140);
-    } else {
-      snapInProgress = false;
-    }
+    if (textUpdateFrame) return;
+    textUpdateFrame = window.requestAnimationFrame(() => {
+      textUpdateFrame = 0;
+      updateActiveStage();
+    });
   },
   { passive: true }
 );
-
-if ("onscrollend" in window) {
-  window.addEventListener(
-    "scrollend",
-    () => {
-      if (shouldAutoSnap()) snapToNearestStage();
-    },
-    { passive: true }
-  );
-}
 renderStageText(0);
 
 function decodeBase64(encoded) {
@@ -492,12 +448,12 @@ async function initializeViewer() {
     renderWidth = width;
     renderHeight = height;
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1.2 : 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1.2 : 1.35));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
-    camera.fov = phone ? 38 : 32;
+    camera.fov = phone ? 38 : 34;
     camera.updateProjectionMatrix();
-    modelRoot.scale.setScalar(phone ? 0.94 : 1);
+    modelRoot.scale.setScalar(phone ? 0.94 : 0.98);
     modelRoot.position.x = 0;
   }
 
@@ -524,6 +480,7 @@ async function initializeViewer() {
   const targetB = new THREE.Vector3();
   const desiredCamera = new THREE.Vector3();
   const desiredTarget = new THREE.Vector3();
+  const cameraOffset = new THREE.Vector3();
 
   function render(time) {
     if (!running) return;
@@ -537,12 +494,11 @@ async function initializeViewer() {
     const toIndex = Math.min(stages.length - 1, fromIndex + 1);
     const blend = smooth(value - fromIndex);
     const lockedStage = Math.max(0, Math.min(stages.length - 1, Math.round(value)));
-    const stage = stages[lockedStage];
     updateActiveStage();
 
-    // Keep the camera continuous along the scroll path while the active
-    // component remains discrete. This gives smooth movement without ever
-    // blending two component highlight states together.
+    // Keep the camera continuous along the scroll path. Scale its distance from
+    // the active target instead of scaling from the world origin so component
+    // framing remains stable across every stage and viewport aspect ratio.
     camA.fromArray(stages[fromIndex].camera);
     camB.fromArray(stages[toIndex].camera);
     targetA.fromArray(stages[fromIndex].target);
@@ -550,26 +506,30 @@ async function initializeViewer() {
     desiredCamera.lerpVectors(camA, camB, blend);
     desiredTarget.lerpVectors(targetA, targetB, blend);
 
-    if (isMobile()) {
-      desiredCamera.multiplyScalar(1.24);
-      desiredTarget.y += 0.42;
-    }
+    const phone = isMobile();
+    const cameraScale = phone ? 1.24 : 1.1;
+    const targetLift = phone ? 0.42 : 0.22;
+    cameraOffset.subVectors(desiredCamera, desiredTarget).multiplyScalar(cameraScale);
+    desiredCamera.copy(desiredTarget).add(cameraOffset);
+    desiredCamera.y += targetLift;
+    desiredTarget.y += targetLift;
+
     camera.position.lerp(desiredCamera, motionBlend);
     cameraTarget.lerp(desiredTarget, motionBlend);
     camera.lookAt(cameraTarget);
 
-    const overviewWeight = lockedStage === 0 ? 1 : 0;
+    const overviewWeight = stageWeight(value, 0);
     componentGroups.forEach((group, component) => {
       if (component === "rack") return;
-      const selectedWeight = stage.focus.includes(component) ? 1 : 0;
+      const selectedWeight = componentWeight(value, component, "focus");
       const targetScale = 1 + selectedWeight * 0.025;
       const scale = THREE.MathUtils.lerp(group.scale.x, targetScale, motionBlend);
       group.scale.setScalar(scale);
     });
 
     materialStates.forEach((state) => {
-      const selectedWeight = stage.focus.includes(state.component) ? 1 : 0;
-      const contextWeight = stage.context.includes(state.component) ? 1 : 0;
+      const selectedWeight = componentWeight(value, state.component, "focus");
+      const contextWeight = componentWeight(value, state.component, "context");
       const visibility = state.component === "rack"
         ? 1
         : Math.max(overviewWeight, selectedWeight, contextWeight * 0.48, 0.16);
