@@ -3,6 +3,7 @@ import "../../styles/global.css";
 import "../../styles/cocometric.css";
 import "../../styles/cocometric-production.css";
 import "../../styles/cocometric-mobile.css";
+import "../../styles/cocometric-desktop.css";
 
 const stages = [
   ["01", "Complete system", "Show the complete Cocometric system"],
@@ -173,7 +174,7 @@ const stages = [
 
     <script src="../../scripts/cocometric-viewer.js"></script>
     <script is:inline>
-      const mobileStageTags = {
+      const stageTagsByName = {
         "Cocometric system": ["Private infrastructure", "Serviceable hardware", "Local control"],
         "Rack + chassis": ["Replaceable parts", "Expandable", "Serviceable chassis"],
         Storage: ["ZFS", "RAID redundancy", "Snapshot backups", "Restore testing"],
@@ -189,7 +190,7 @@ const stages = [
       const syncStageTags = () => {
         if (!stageStep || !stageTags) return;
         const stageName = stageStep.textContent?.split("·")[0]?.trim();
-        const tags = mobileStageTags[stageName];
+        const tags = stageTagsByName[stageName];
         if (!tags) return;
         stageTags.replaceChildren(
           ...tags.map((label) => {
