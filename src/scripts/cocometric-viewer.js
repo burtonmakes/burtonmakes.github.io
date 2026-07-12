@@ -116,6 +116,7 @@ const stageNote = document.querySelector("#stage-note");
 const stageTags = document.querySelector("#stage-tags");
 const stageButtons = [...document.querySelectorAll("[data-stage-button]")];
 const beats = [...document.querySelectorAll(".beat")];
+const storyExit = document.querySelector("#story-exit");
 const finalSection = document.querySelector("#contact");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = () => window.innerWidth <= 820;
@@ -134,6 +135,7 @@ const requiredElements = [
   stageTitle,
   stageNote,
   stageTags,
+  storyExit,
   finalSection,
 ];
 
@@ -231,8 +233,17 @@ stageButtons.forEach((button) => {
 let snapTimer = 0;
 let snapInProgress = false;
 
+function shouldAutoSnap() {
+  if (isMobile() || !storyExit) return false;
+
+  // Release scroll control before the animation story ends so the transition
+  // and services section can be entered normally instead of snapping back.
+  const releaseDistance = Math.min(window.innerHeight * 0.55, 520);
+  return window.scrollY < storyExit.offsetTop - releaseDistance;
+}
+
 function snapToNearestStage() {
-  if (snapInProgress || !beats.length) return;
+  if (snapInProgress || !beats.length || !shouldAutoSnap()) return;
 
   const index = Math.max(0, Math.min(beats.length - 1, Math.round(stageFloat())));
   const target = beats[index].offsetTop;
@@ -249,18 +260,32 @@ let textUpdateFrame = 0;
 window.addEventListener(
   "scroll",
   () => {
-    if (textUpdateFrame) return;
-    textUpdateFrame = window.requestAnimationFrame(() => {
-      textUpdateFrame = 0;
-      updateActiveStage();
-    });
+    if (!textUpdateFrame) {
+      textUpdateFrame = window.requestAnimationFrame(() => {
+        textUpdateFrame = 0;
+        updateActiveStage();
+      });
+    }
+
     window.clearTimeout(snapTimer);
-    snapTimer = window.setTimeout(snapToNearestStage, 140);
+    if (shouldAutoSnap()) {
+      snapTimer = window.setTimeout(snapToNearestStage, 140);
+    } else {
+      snapInProgress = false;
+    }
   },
   { passive: true }
 );
 
-if ("onscrollend" in window) window.addEventListener("scrollend", snapToNearestStage, { passive: true });
+if ("onscrollend" in window) {
+  window.addEventListener(
+    "scrollend",
+    () => {
+      if (shouldAutoSnap()) snapToNearestStage();
+    },
+    { passive: true }
+  );
+}
 renderStageText(0);
 
 function decodeBase64(encoded) {
@@ -455,12 +480,21 @@ async function initializeViewer() {
   setLoadingProgress(100, "Cocometric hardware ready");
   hideLoading();
 
-  
+  let renderWidth = 0;
+  let renderHeight = 0;
+
   function resize() {
     const phone = isMobile();
+    const width = Math.max(1, Math.round(sceneElement.clientWidth || window.innerWidth));
+    const height = Math.max(1, Math.round(sceneElement.clientHeight || window.innerHeight));
+
+    if (width === renderWidth && height === renderHeight) return;
+    renderWidth = width;
+    renderHeight = height;
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1.2 : 1.5));
-    renderer.setSize(window.innerWidth, window.innerHeight, false);
-    camera.aspect = window.innerWidth / window.innerHeight;
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
     camera.fov = phone ? 38 : 32;
     camera.updateProjectionMatrix();
     modelRoot.scale.setScalar(phone ? 0.94 : 1);
@@ -468,13 +502,17 @@ async function initializeViewer() {
   }
 
   let resizeFrame = 0;
-  window.addEventListener("resize", () => {
+  const scheduleResize = () => {
     if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
     resizeFrame = window.requestAnimationFrame(() => {
       resizeFrame = 0;
       resize();
     });
-  });
+  };
+
+  const resizeObserver = new ResizeObserver(scheduleResize);
+  resizeObserver.observe(sceneElement);
+  window.addEventListener("resize", scheduleResize, { passive: true });
   resize();
 
   let animationFrame = 0;
@@ -532,7 +570,6 @@ async function initializeViewer() {
     materialStates.forEach((state) => {
       const selectedWeight = stage.focus.includes(state.component) ? 1 : 0;
       const contextWeight = stage.context.includes(state.component) ? 1 : 0;
-      const rackOpacity = state.component === "rack" ? 1 : 0;
       const visibility = state.component === "rack"
         ? 1
         : Math.max(overviewWeight, selectedWeight, contextWeight * 0.48, 0.16);
@@ -605,6 +642,7 @@ async function initializeViewer() {
 
   window.addEventListener("pagehide", () => {
     stopRendering();
+    resizeObserver.disconnect();
     renderer.dispose();
   }, { once: true });
 
