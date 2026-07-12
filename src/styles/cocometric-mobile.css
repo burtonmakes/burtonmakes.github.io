@@ -11,15 +11,18 @@
   }
 
   .beat,
+  .story-exit,
   .final {
     scroll-snap-align: none !important;
     scroll-snap-stop: normal !important;
   }
 
-  /* Keep the renderer full-screen so its camera proportions stay correct, then
-     fade the lower edge instead of clipping it into a hard horizontal line. */
+  /* Keep the renderer on a stable small-viewport box. Mobile Safari changes
+     window.innerHeight as its browser chrome moves; the pre-viewer script
+     ignores those height-only resize events so this projection does not warp. */
   .scene {
     inset: 0;
+    width: 100vw;
     height: 100svh;
     clip-path: none;
     background: transparent;
@@ -42,7 +45,9 @@
   }
 
   #server-canvas {
-    transform: translateY(-5svh);
+    width: 100%;
+    height: 100%;
+    transform: translate3d(0, -5svh, 0);
     transform-origin: 50% 50%;
   }
 
@@ -91,6 +96,23 @@
     -webkit-backdrop-filter: blur(7px);
   }
 
+  /* A dedicated transition section covers the fixed final component copy before
+     the services card enters. This prevents both text layers from occupying the
+     same viewport and gives the last animation a clean visual ending. */
+  .story-exit {
+    position: relative;
+    z-index: 18;
+    min-height: 52svh;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(1, 5, 10, 0) 0%,
+      rgba(1, 5, 10, 0.72) 28%,
+      #01050a 62%,
+      #000 100%
+    );
+  }
+
   /* The final section is normal document flow rather than a one-screen snap
      target. Its height grows with the content and leaves room below the CTA for
      Safari's bottom toolbar and the device safe area. */
@@ -99,12 +121,12 @@
     display: block;
     min-height: auto;
     padding:
-      max(104px, calc(env(safe-area-inset-top) + 84px))
+      max(82px, calc(env(safe-area-inset-top) + 62px))
       max(18px, env(safe-area-inset-right))
       max(104px, calc(env(safe-area-inset-bottom) + 76px))
       max(18px, env(safe-area-inset-left));
     overflow: visible;
-    background: linear-gradient(180deg, rgba(1, 5, 10, 0.96), #000 24%, #000 100%);
+    background: #000;
   }
 
   .final-card {
@@ -166,8 +188,12 @@
     font-size: 0.59rem;
   }
 
+  .story-exit {
+    min-height: 58svh;
+  }
+
   .final {
-    padding-top: max(88px, calc(env(safe-area-inset-top) + 70px));
+    padding-top: max(72px, calc(env(safe-area-inset-top) + 54px));
     padding-bottom: max(92px, calc(env(safe-area-inset-bottom) + 68px));
   }
 }
