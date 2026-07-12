@@ -42,7 +42,8 @@
   }
 
   #server-canvas {
-    transform: none;
+    transform: translateY(-5svh);
+    transform-origin: 50% 50%;
   }
 
   .vignette {
