@@ -167,14 +167,26 @@
     padding: 9px 14px;
   }
 
-  /* Mobile uses two clear zones: copy above and the active 3D component below. */
+  /* Keep the full-size renderer untouched and reveal its upper half. This
+     preserves the model's authored proportions instead of stretching the canvas. */
+  .scene {
+    inset: 0;
+    height: 100svh;
+    clip-path: inset(0 0 44svh 0);
+  }
+
+  #server-canvas {
+    transform: none;
+  }
+
+  /* Mobile copy sits in a separate lower reading zone. */
   .copy {
-    top: max(104px, calc(env(safe-area-inset-top) + 86px));
+    top: auto;
     right: max(20px, env(safe-area-inset-right));
-    bottom: auto;
+    bottom: max(28px, calc(env(safe-area-inset-bottom) + 18px));
     left: max(20px, env(safe-area-inset-left));
     width: auto;
-    max-height: calc(45svh - 112px);
+    max-height: calc(44svh - 42px);
     overflow: hidden;
     transform: none;
   }
@@ -196,21 +208,10 @@
     display: none;
   }
 
-  .scene {
-    top: 46svh;
-    bottom: 0;
-    height: auto;
-  }
-
-  #server-canvas {
-    transform: scale(1.22);
-    transform-origin: 50% 50%;
-  }
-
   .vignette {
     background:
-      linear-gradient(180deg, rgba(1, 5, 10, 0.96) 0%, rgba(1, 5, 10, 0.22) 18%, transparent 48%),
-      radial-gradient(circle at 50% 50%, transparent 0 36%, rgba(1, 5, 10, 0.14) 70%, rgba(1, 5, 10, 0.62) 100%);
+      linear-gradient(0deg, rgba(1, 5, 10, 0.96) 0%, rgba(1, 5, 10, 0.2) 18%, transparent 44%),
+      radial-gradient(circle at 50% 34%, transparent 0 34%, rgba(1, 5, 10, 0.14) 70%, rgba(1, 5, 10, 0.62) 100%);
   }
 
   .beat {
@@ -224,9 +225,13 @@
 }
 
 @media (max-width: 520px) {
+  .scene {
+    clip-path: inset(0 0 45svh 0);
+  }
+
   .copy {
-    top: max(96px, calc(env(safe-area-inset-top) + 78px));
-    max-height: calc(46svh - 104px);
+    bottom: max(24px, calc(env(safe-area-inset-bottom) + 14px));
+    max-height: calc(45svh - 34px);
   }
 
   .copy h1 {
@@ -236,20 +241,16 @@
   .copy-note {
     font-size: 0.86rem;
   }
-
-  .scene {
-    top: 46svh;
-  }
-
-  #server-canvas {
-    transform: scale(1.28);
-  }
 }
 
 @media (max-height: 700px) and (max-width: 820px) {
+  .scene {
+    clip-path: inset(0 0 48svh 0);
+  }
+
   .copy {
-    top: max(88px, calc(env(safe-area-inset-top) + 70px));
-    max-height: calc(48svh - 94px);
+    bottom: max(18px, calc(env(safe-area-inset-bottom) + 10px));
+    max-height: calc(48svh - 26px);
   }
 
   .copy h1 {
@@ -259,10 +260,6 @@
   .copy-note {
     margin-top: 9px;
     font-size: 0.82rem;
-  }
-
-  .scene {
-    top: 48svh;
   }
 }
 
