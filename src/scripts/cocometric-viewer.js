@@ -494,6 +494,7 @@ async function initializeViewer() {
     const toIndex = Math.min(stages.length - 1, fromIndex + 1);
     const blend = smooth(value - fromIndex);
     const lockedStage = Math.max(0, Math.min(stages.length - 1, Math.round(value)));
+    const activeFocus = stages[lockedStage].focus;
     updateActiveStage();
 
     // Keep the camera continuous along the scroll path. Scale its distance from
@@ -530,15 +531,18 @@ async function initializeViewer() {
     materialStates.forEach((state) => {
       const selectedWeight = componentWeight(value, state.component, "focus");
       const contextWeight = componentWeight(value, state.component, "context");
+      const isHighlighted = activeFocus.includes(state.component);
       const visibility = state.component === "rack"
         ? 1
         : Math.max(overviewWeight, selectedWeight, contextWeight * 0.48, 0.16);
-      const targetOpacity = state.originalOpacity * visibility;
+      const targetOpacity = isHighlighted ? 1 : state.originalOpacity * visibility;
 
-      // Keep solid hardware on the opaque render path. Marking every GLB
-      // material transparent creates unstable sorting where adjacent metal
-      // panels meet at shallow angles; only dimmed stages need blending.
-      const useTransparency = state.requiresTransparency || targetOpacity < 0.998;
+      // The component named by the active stage must be solid. Context hardware
+      // may fade, but the highlighted part stays on the opaque render path with
+      // full depth writing on both mobile and desktop.
+      const useTransparency = isHighlighted
+        ? false
+        : state.requiresTransparency || targetOpacity < 0.998;
       if (state.material.transparent !== useTransparency) {
         state.material.transparent = useTransparency;
         state.material.needsUpdate = true;
@@ -549,12 +553,10 @@ async function initializeViewer() {
         state.material.polygonOffsetUnits = state.depthBias;
       }
 
-      state.material.opacity = THREE.MathUtils.lerp(
-        state.material.opacity,
-        targetOpacity,
-        motionBlend
-      );
-      state.material.depthWrite = targetOpacity > 0.92;
+      state.material.opacity = isHighlighted
+        ? 1
+        : THREE.MathUtils.lerp(state.material.opacity, targetOpacity, motionBlend);
+      state.material.depthWrite = isHighlighted || targetOpacity > 0.92;
 
       if (state.material.emissive && state.originalEmissive) {
         const targetEmissive = selectedWeight > 0.08 ? highlight : state.originalEmissive;
