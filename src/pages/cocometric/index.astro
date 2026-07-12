@@ -171,39 +171,7 @@ const stages = [
       </section>
     </noscript>
 
-    <script is:inline>
-      if (window.matchMedia("(max-width: 820px)").matches) {
-        const nativeScrollTo = window.scrollTo.bind(window);
-        const nativeAddEventListener = window.addEventListener.bind(window);
-        let stableViewportWidth = window.innerWidth;
-
-        window.scrollTo = (first, second) => {
-          if (typeof first === "object" && first?.behavior === "smooth") {
-            return;
-          }
-          return nativeScrollTo(first, second);
-        };
-
-        window.addEventListener = (type, listener, options) => {
-          if (type !== "resize") {
-            return nativeAddEventListener(type, listener, options);
-          }
-
-          const stableResizeListener = (event) => {
-            const nextWidth = window.innerWidth;
-            if (Math.abs(nextWidth - stableViewportWidth) < 2) return;
-            stableViewportWidth = nextWidth;
-
-            if (typeof listener === "function") listener.call(window, event);
-            else listener?.handleEvent?.(event);
-          };
-
-          return nativeAddEventListener(type, stableResizeListener, options);
-        };
-      }
-    </script>
     <script src="../../scripts/cocometric-viewer.js"></script>
-    <script src="../../scripts/cocometric-stage-polish.js"></script>
     <script is:inline>
       const mobileStageTags = {
         "Cocometric system": ["Private infrastructure", "Serviceable hardware", "Local control"],
