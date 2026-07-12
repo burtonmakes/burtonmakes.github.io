@@ -1,6 +1,21 @@
 /* Mobile-only refinements for the Cocometric scroll story. */
 
 @media (max-width: 820px) {
+  /* Safari can trap an oversized final section inside the page-level snap
+     container. Mobile uses native scrolling so the services CTA is always
+     reachable. */
+  html,
+  body.cocometric-page,
+  .track {
+    scroll-snap-type: none !important;
+  }
+
+  .beat,
+  .final {
+    scroll-snap-align: none !important;
+    scroll-snap-stop: normal !important;
+  }
+
   /* Keep the renderer full-screen so its camera proportions stay correct, then
      fade the lower edge instead of clipping it into a hard horizontal line. */
   .scene {
@@ -75,28 +90,35 @@
     -webkit-backdrop-filter: blur(7px);
   }
 
-  /* The final section must fully replace the fixed story layers and remain
-     tall enough for every service option and button to be tapped. */
+  /* The final section is normal document flow rather than a one-screen snap
+     target. Its height grows with the content and leaves room below the CTA for
+     Safari's bottom toolbar and the device safe area. */
   .final {
     z-index: 20;
-    min-height: 100svh;
-    place-items: start center;
+    display: block;
+    min-height: auto;
     padding:
       max(104px, calc(env(safe-area-inset-top) + 84px))
       max(18px, env(safe-area-inset-right))
-      max(38px, calc(env(safe-area-inset-bottom) + 24px))
+      max(104px, calc(env(safe-area-inset-bottom) + 76px))
       max(18px, env(safe-area-inset-left));
+    overflow: visible;
     background: linear-gradient(180deg, rgba(1, 5, 10, 0.96), #000 24%, #000 100%);
   }
 
   .final-card {
     width: min(100%, 620px);
-    margin: auto 0;
+    margin: 0 auto;
     padding: 26px 20px;
   }
 
   .final-card h2 {
-    font-size: clamp(2rem, 9.2vw, 3rem);
+    font-size: clamp(1.95rem, 8.6vw, 2.8rem);
+  }
+
+  .final-card > p:not(.step) {
+    font-size: 0.95rem;
+    line-height: 1.52;
   }
 
   .service-options {
@@ -110,6 +132,7 @@
 
   .actions {
     margin-top: 22px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
   .actions .button-primary {
@@ -144,5 +167,6 @@
 
   .final {
     padding-top: max(88px, calc(env(safe-area-inset-top) + 70px));
+    padding-bottom: max(92px, calc(env(safe-area-inset-bottom) + 68px));
   }
 }
