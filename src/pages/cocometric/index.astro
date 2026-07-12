@@ -2,6 +2,7 @@
 import "../../styles/global.css";
 import "../../styles/cocometric.css";
 import "../../styles/cocometric-production.css";
+import "../../styles/cocometric-mobile.css";
 
 const stages = [
   ["01", "Complete system", "Show the complete Cocometric system"],
@@ -83,7 +84,7 @@ const stages = [
         the rack, storage, compute, accelerators, cooling, power, and network hardware.
       </p>
       <div class="component-tags" id="stage-tags" aria-hidden="true">
-        <span>Rack</span><span>Storage</span><span>Compute</span><span>GPU</span>
+        <span>Private infrastructure</span><span>Serviceable hardware</span><span>Local control</span>
       </div>
     </section>
 
@@ -165,7 +166,51 @@ const stages = [
       </section>
     </noscript>
 
+    <script is:inline>
+      if (window.matchMedia("(max-width: 820px)").matches) {
+        const nativeScrollTo = window.scrollTo.bind(window);
+        window.scrollTo = (first, second) => {
+          if (typeof first === "object" && first?.behavior === "smooth") {
+            return;
+          }
+          return nativeScrollTo(first, second);
+        };
+      }
+    </script>
     <script src="../../scripts/cocometric-viewer.js"></script>
     <script src="../../scripts/cocometric-stage-polish.js"></script>
+    <script is:inline>
+      const mobileStageTags = {
+        "Cocometric system": ["Private infrastructure", "Serviceable hardware", "Local control"],
+        "Rack + chassis": ["Replaceable parts", "Expandable", "Serviceable chassis"],
+        Storage: ["ZFS", "RAID redundancy", "Snapshot backups", "Restore testing"],
+        Compute: ["Multi-core CPU", "Power efficient", "High-memory capacity"],
+        "AI accelerators": ["GPU acceleration", "Power efficient", "Local AI", "Private inference"],
+        Cooling: ["Directed airflow", "Thermal control", "Sustained load"],
+        "Power + network": ["Redundant power", "Power efficient", "Network segmentation", "Controlled access"],
+      };
+
+      const stageStep = document.querySelector("#stage-step");
+      const stageTags = document.querySelector("#stage-tags");
+
+      const syncStageTags = () => {
+        if (!stageStep || !stageTags) return;
+        const stageName = stageStep.textContent?.split("·")[0]?.trim();
+        const tags = mobileStageTags[stageName];
+        if (!tags) return;
+        stageTags.replaceChildren(
+          ...tags.map((label) => {
+            const tag = document.createElement("span");
+            tag.textContent = label;
+            return tag;
+          })
+        );
+      };
+
+      if (stageStep) {
+        new MutationObserver(syncStageTags).observe(stageStep, { childList: true });
+      }
+      syncStageTags();
+    </script>
   </body>
 </html>
