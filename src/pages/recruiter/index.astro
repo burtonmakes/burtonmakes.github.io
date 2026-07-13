@@ -12,21 +12,26 @@ const slugify = (value: string) =>
     .replace(/^-+|-+$/g, "");
 
 const sourceTagsByKey = new Map<string, string[]>();
+const sourcePeriodByKey = new Map<string, string>();
 
 workHistory.forEach((role) => {
-  sourceTagsByKey.set(`work:${slugify(role.title)}:${slugify(role.company)}`, [
+  const key = `work:${slugify(role.title)}:${slugify(role.company)}`;
+  sourceTagsByKey.set(key, [
     ...role.skills,
   ]);
+  sourcePeriodByKey.set(key, role.dates);
 });
 
 projects.forEach((project) => {
-  sourceTagsByKey.set(`project:${project.slug}`, [
+  const key = `project:${project.slug}`;
+  sourceTagsByKey.set(key, [
     ...project.skills,
     ...project.labels,
     ...project.stack,
     project.section,
     project.type,
   ]);
+  sourcePeriodByKey.set(key, project.timeline);
 });
 
 const portfolioEvidence = new Map<
@@ -37,6 +42,7 @@ const portfolioEvidence = new Map<
     kind: string;
     href: string;
     summary: string;
+    period: string;
     tags: string[];
     highlights: readonly string[];
     capabilities: string[];
@@ -53,6 +59,7 @@ capabilityTaxonomy.forEach((group) => {
         kind: item.kind,
         href: item.href,
         summary: item.summary,
+        period: current?.period || sourcePeriodByKey.get(item.key) || "",
         tags: [
           ...new Set([
             ...(current?.tags ?? []),
@@ -819,6 +826,17 @@ const recruiterAssistantApi =
     color: var(--text);
   }
 
+  .evidence-match-label {
+    white-space: nowrap;
+  }
+
+  .evidence-period {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
   .evidence-filters {
     display: flex;
     gap: 5px;
@@ -1495,6 +1513,33 @@ const recruiterAssistantApi =
       });
     };
 
+    const appendEvidenceMatchLabels = (container, sourceId, requirementIds) => {
+      const requirements = new Map(
+        (state.analysis?.requirements || []).map((requirement) => [
+          requirement.id,
+          requirement.label,
+        ]),
+      );
+      const labels = [...new Set(
+        (requirementIds || [])
+          .map((id) => requirements.get(id))
+          .filter(Boolean),
+      )].slice(0, 4);
+      if (!labels.length) return;
+
+      const row = document.createElement("div");
+      row.className = "source-chip-row evidence-match-labels";
+      labels.forEach((label) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "source-chip evidence-match-label";
+        button.textContent = label;
+        button.addEventListener("click", () => openSource(sourceId));
+        row.append(button);
+      });
+      container.append(row);
+    };
+
     const renderReasons = () => {
       clearElement(elements.reasonList);
       const reasons = state.analysis?.reasons || [];
@@ -1561,25 +1606,39 @@ const recruiterAssistantApi =
         const type = document.createElement("span");
         type.className = "evidence-type";
         type.textContent =
-          source.type === "work" ? "Work evidence" : "Project evidence";
+          source.type === "work" ? "Work" : "Project";
         const title = document.createElement("h3");
         title.textContent = source.title;
         titleWrap.append(type, title);
-
-        const count = document.createElement("span");
-        count.className = "card-support-label";
-        const requirementCount = item.requirementIds?.length || 0;
-        count.textContent = `${requirementCount} ${
-          requirementCount === 1 ? "requirement" : "requirements"
-        } supported`;
 
         header.append(titleWrap);
 
         const copy = document.createElement("p");
         copy.textContent = item.whyRelevant;
 
+        const count = document.createElement("span");
+        count.className = "card-support-label";
+        const requirementCount = item.requirementIds?.length || 0;
+        count.textContent = `Supports ${requirementCount} ${
+          requirementCount === 1 ? "requirement" : "requirements"
+        }`;
+
+        const sourceIndexItem = portfolioIndex.find(
+          (candidate) =>
+            candidate.id === source.id ||
+            candidate.href === source.href ||
+            candidate.title === source.title,
+        );
+        const period = source.period || sourceIndexItem?.period;
+        if (period) {
+          const time = document.createElement("small");
+          time.className = "evidence-period";
+          time.textContent = period;
+          header.append(time);
+        }
+
         article.append(header, copy, count);
-        appendSourceButtons(article, [item.sourceId]);
+        appendEvidenceMatchLabels(article, item.sourceId, item.requirementIds);
         elements.evidenceList.append(article);
       });
     };
