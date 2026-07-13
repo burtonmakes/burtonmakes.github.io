@@ -1,0 +1,38 @@
+name: Temporary repository audit
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Print tracked repository files
+        run: |
+          echo "=== TRACKED FILES ==="
+          git ls-files | sort
+
+      - name: Inspect helper and generated files
+        run: |
+          echo "=== SCRIPTS ==="
+          find scripts -maxdepth 2 -type f -print 2>/dev/null | sort || true
+          echo "=== ROOT HTML / NOTES / BACKUPS ==="
+          find . -maxdepth 2 -type f \( -name '*.html' -o -name '*NOTE*' -o -name '*BACKUP*' -o -name '*.bak' -o -name '*.tmp' \) -print | sort
+          echo "=== MODEL / GENERATION REFERENCES ==="
+          grep -RInE 'generate|generator|one[- ]off|temporary|backup|preview|helper|convert|embed|optimi[sz]e' scripts src public workers .github 2>/dev/null | head -1000 || true
+
+      - name: Show package and workflow references
+        run: |
+          echo "=== PACKAGE SCRIPTS ==="
+          node -e "console.log(JSON.stringify(require('./package.json').scripts, null, 2))"
+          echo "=== WORKFLOWS ==="
+          find .github/workflows -maxdepth 1 -type f -print | sort
