@@ -8,12 +8,18 @@ on:
     paths:
       - scripts/reposition-cocometric-antennas.py
       - .github/workflows/fix-cocometric-glb-antennas-final.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/reposition-cocometric-antennas.py
+      - .github/workflows/fix-cocometric-glb-antennas-final.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: fix-cocometric-glb-antennas-final
+  group: fix-cocometric-glb-antennas-final-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -27,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: fix-cocometric-glb-antennas-final
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -75,4 +81,4 @@ jobs:
           fi
 
           git commit -m "Fix Cocometric GLB antenna orientation and rear mounting"
-          git push origin HEAD:fix-cocometric-glb-antennas-final
+          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
