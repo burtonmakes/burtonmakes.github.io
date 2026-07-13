@@ -84,11 +84,9 @@ const recruiterAssistantApi =
     <div class="portal-header">
       <div>
         <p class="eyebrow">Recruiter portfolio review</p>
-        <h1>Review the role against documented experience.</h1>
+        <h1>A fast, evidence-backed role review.</h1>
         <p class="portal-intro">
-          Paste the full role, review the condensed hiring need, and open the
-          strongest work and project evidence. Continue with source-grounded
-          questions in the portfolio chat.
+          Paste a role and see the strongest portfolio evidence in under a minute.
         </p>
       </div>
     </div>
@@ -122,11 +120,10 @@ const recruiterAssistantApi =
         <section class="role-entry-panel" aria-labelledby="role-text-heading">
           <div class="panel-heading-row">
             <div>
-              <span class="section-label">Job description</span>
-              <h2 id="role-text-heading">Paste or edit the full role.</h2>
+              <span class="section-label">Role details</span>
+              <h2 id="role-text-heading">What are you hiring for?</h2>
               <p>
-                Responsibilities, requirements, qualifications, and recruiter
-                notes can all go in the same field.
+                Paste the job description or the key requirements.
               </p>
             </div>
             <div class="usage-summary" aria-label="Daily usage limits">
@@ -139,9 +136,9 @@ const recruiterAssistantApi =
             <textarea
               id="recruiter-role-text"
               data-role-text
-              rows="14"
+              rows="9"
               maxlength="10000"
-              placeholder="Paste the complete job description, requirements, responsibilities, or recruiter notes here. You can edit the text before analyzing it."
+              placeholder="Paste the job description, requirements, or recruiter notes here."
             ></textarea>
           </label>
 
@@ -244,22 +241,20 @@ const recruiterAssistantApi =
         <div class="chat-header">
           <div>
             <span class="section-label">Portfolio chat</span>
-            <h2 id="chat-heading">Ask the portfolio assistant</h2>
+            <h2 id="chat-heading">Ask about the fit</h2>
           </div>
           <span class="chat-usage" data-chat-remaining>
             5 questions left today
           </span>
         </div>
 
-        <p class="chat-context">Ask a follow-up about the role, experience, or evidence. Answers are grounded in the public portfolio.</p>
+        <p class="chat-context">Get a quick, source-backed answer about the role or evidence.</p>
 
         <div class="chat-messages" data-chat-messages aria-live="polite">
           <article class="chat-message assistant">
             <span class="chat-speaker">Portfolio assistant</span>
             <p>
-              Analyze the role first. Then ask about hardware ownership,
-              validation, manufacturing, sensing, research, or a specific
-              requirement.
+              Analyze the role first, then ask about fit, gaps, or evidence.
             </p>
           </article>
         </div>
@@ -387,27 +382,28 @@ const recruiterAssistantApi =
   .recruiter-portal {
     display: block;
     min-height: auto;
-    padding-top: clamp(6rem, 9vh, 8rem);
-    padding-bottom: clamp(4rem, 8vh, 7rem);
+    padding-top: clamp(4.5rem, 7vh, 6.5rem);
+    padding-bottom: clamp(3rem, 6vh, 5rem);
   }
 
   .portal-header {
-    max-width: 980px;
-    margin-bottom: 28px;
+    max-width: 1080px;
+    margin-bottom: 20px;
   }
 
   .portal-header h1 {
-    max-width: 17ch;
-    margin-bottom: 16px;
-    font-size: clamp(2.6rem, 4.8vw, 5rem);
-    line-height: 0.98;
+    max-width: 24ch;
+    margin-bottom: 10px;
+    font-size: clamp(2.4rem, 4vw, 4.15rem);
+    line-height: 1;
     letter-spacing: -0.045em;
   }
 
   .portal-intro {
-    max-width: 74ch;
+    max-width: 60ch;
     margin: 0;
     color: var(--muted-2);
+    font-size: 0.95rem;
   }
 
   .section-label {
@@ -439,7 +435,7 @@ const recruiterAssistantApi =
     gap: 24px;
     align-items: center;
     padding: 18px 20px;
-    margin-bottom: 18px;
+    margin-bottom: 0;
   }
 
   .review-context h2,
@@ -491,12 +487,21 @@ const recruiterAssistantApi =
     gap: 18px;
   }
 
+  .analysis-shell {
+    grid-template-columns: minmax(0, 1.25fr) minmax(230px, 0.75fr);
+  }
+
+  .analysis-shell > .reasons-panel,
+  .analysis-shell > .evidence-panel {
+    grid-column: 1 / -1;
+  }
+
   .role-entry-panel,
   .role-summary-panel,
   .coverage-panel,
   .reasons-panel,
   .evidence-panel {
-    padding: clamp(18px, 2.4vw, 28px);
+    padding: clamp(17px, 2vw, 24px);
   }
 
   .panel-heading-row,
@@ -509,7 +514,7 @@ const recruiterAssistantApi =
   }
 
   .panel-heading-row p {
-    max-width: 66ch;
+    max-width: 54ch;
     margin: 7px 0 0;
     color: var(--muted);
     font-size: 0.86rem;
@@ -525,7 +530,7 @@ const recruiterAssistantApi =
 
   .role-text-label {
     display: block;
-    margin-top: 18px;
+    margin-top: 14px;
   }
 
   .role-text-label textarea,
@@ -541,11 +546,12 @@ const recruiterAssistantApi =
   }
 
   .role-text-label textarea {
-    min-height: 310px;
+    height: 84px;
+    min-height: 0;
     resize: vertical;
-    padding: 15px 16px;
+    padding: 13px 14px;
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.42;
   }
 
   .role-text-label textarea:focus,
@@ -561,7 +567,7 @@ const recruiterAssistantApi =
     justify-content: space-between;
     gap: 14px;
     align-items: center;
-    margin-top: 11px;
+    margin-top: 7px;
   }
 
   .character-count,
@@ -808,9 +814,9 @@ const recruiterAssistantApi =
     top: 88px;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 108px);
-    min-height: 560px;
-    max-height: calc(100vh - 108px);
+    height: min(350px, calc(100vh - 150px));
+    min-height: 320px;
+    max-height: 350px;
     overflow: hidden;
     padding: 18px;
   }
@@ -908,7 +914,8 @@ const recruiterAssistantApi =
   }
 
   .chat-form textarea {
-    min-height: 74px;
+    height: 60px;
+    min-height: 60px;
     max-height: 150px;
     resize: none;
     padding: 11px 12px;
@@ -1027,9 +1034,18 @@ const recruiterAssistantApi =
 
     .portfolio-chat {
       position: static;
-      height: 620px;
-      min-height: 580px;
+      height: 520px;
+      min-height: 480px;
       max-height: none;
+    }
+
+    .analysis-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .analysis-shell > .reasons-panel,
+    .analysis-shell > .evidence-panel {
+      grid-column: auto;
     }
   }
 
@@ -1437,7 +1453,7 @@ const recruiterAssistantApi =
         const copy = document.createElement("p");
         copy.textContent = state.analysis
           ? "The role is ready. Ask about a requirement, project, work example, or area of ownership."
-          : "Analyze the role first. Then ask about hardware ownership, validation, manufacturing, sensing, research, or a specific requirement.";
+          : "Analyze the role first, then ask about fit, gaps, or evidence.";
         article.append(speaker, copy);
         elements.chatMessages.append(article);
         return;
