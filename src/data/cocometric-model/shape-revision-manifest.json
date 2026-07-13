@@ -1,5 +1,5 @@
 {
-  "profile": "shape-revision-v2-rear-orange-antennas",
+  "profile": "shape-revision-v3-attached-rear-antennas",
   "geometryChanged": true,
   "backupBranch": "backup/cocometric-glb-original-2026-07-12",
   "original": {
@@ -9,20 +9,28 @@
   },
   "revised": {
     "path": "public/models/cocometric-shape-revision.glb",
-    "bytes": 233248,
-    "sha256": "ee18fe627f380028e8ee3932685337e4d2165eceee3ebbcea15a025ce224f6d4"
+    "bytes": 232528,
+    "sha256": "62687d62f1e218427380e6bb7de7555a26c4b06659fcdc234b2e67aabfc91a0a"
   },
   "changes": [
     "Replaced oversized GPU discs with compact recessed fan assemblies and swept blades.",
     "Preserved all non-target geometry and the original material palette.",
-    "Moved all three router antennas to the rear face so the mounting connections are concealed.",
-    "Applied the Cocometric coral-orange palette color #E8834A to the antenna bases and rods."
+    "Removed the detached vertical router slab that appeared as a strange back wall.",
+    "Removed the depth-facing antenna parts that appeared as three floating dots.",
+    "Added three attached vertical antennas along the rear edge of the router box.",
+    "Kept the antennas in the Cocometric coral-orange palette color #E8834A."
   ],
-  "antennaPlacement": "rear-mounted",
+  "antennaPlacement": "rear-mounted-vertical",
   "antennaColor": "#E8834A",
   "antennaBackup": {
     "path": "public/models/cocometric-before-rear-antennas.glb",
     "bytes": 232176,
     "sha256": "962fa56917cdeb724f674ca6349a2004fa7cecfcb13b16ddcf33408e092f12e2"
+  },
+  "routerWallRemoved": true,
+  "routerCleanupBackup": {
+    "path": "public/models/cocometric-before-router-cleanup.glb",
+    "bytes": 233248,
+    "sha256": "ee18fe627f380028e8ee3932685337e4d2165eceee3ebbcea15a025ce224f6d4"
   }
 }
