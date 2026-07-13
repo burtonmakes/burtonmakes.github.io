@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - cocometric-modern-materials
+    paths:
+      - scripts/modernize-cocometric-model.mjs
+      - .github/workflows/modernize-cocometric-model.yml
+  pull_request:
+    branches:
       - main
     paths:
       - scripts/modernize-cocometric-model.mjs
@@ -13,7 +19,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: modernize-cocometric-model
+  group: modernize-cocometric-model-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -23,10 +29,11 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Check out repository
+      - name: Check out source branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -68,4 +75,4 @@ jobs:
           fi
 
           git commit -m "Modernize Cocometric GLB materials with original backup"
-          git push origin HEAD:main
+          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
