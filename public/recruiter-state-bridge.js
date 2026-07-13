@@ -1,4 +1,7 @@
 (() => {
+  if (window.__burtonRecruiterStateBridgeLoaded) return;
+  window.__burtonRecruiterStateBridgeLoaded = true;
+
   const storageKey = "burton-recruiter-onepage-session-v3";
   const nativeGetItem = Storage.prototype.getItem;
   const nativeSetItem = Storage.prototype.setItem;
@@ -61,14 +64,9 @@
           JSON.stringify(previous.recruiterContext || {}) !==
           JSON.stringify(next.recruiterContext || {});
 
-        if (
-          isRecruiterRoute() &&
-          contextChanged &&
-          previous.analysis &&
-          next.analysis
-        ) {
+        if (contextChanged && previous.analysis && next.analysis) {
           next.analysisStale = true;
-          if (!contextReloadScheduled) {
+          if (isRecruiterRoute() && !contextReloadScheduled) {
             contextReloadScheduled = true;
             window.setTimeout(() => window.location.reload(), 0);
           }
