@@ -40,20 +40,27 @@ flowchart TD
 flowchart TD
     A[Analyze role click] --> B[src/pages/recruiter/index.astro]
     B --> C[POST action analyze]
-    C --> D[workers/recruiter-match/src/index-v2.ts]
-    D --> E[Validate role text and portfolio index]
-    E --> F[Check Durable Object quota]
-    F -->|Allowed| G[Cloudflare AI Search]
-    F -->|Limit reached| Z[Return HTTP 429 and remaining quota]
-    G --> H[Hybrid semantic and keyword retrieval]
-    H --> I[BGE reranking]
-    I --> J[Consolidate work and project sources]
-    J --> K[Gemma 4 26B A4B at temperature 0.05]
-    K --> L[Validate returned source IDs]
-    L --> M[Calculate supported-by-work count in code]
-    L --> N[Calculate supported-by-project count in code]
-    M --> O[Render role summary, reasons, and evidence]
-    N --> O
+    C --> D[workers/recruiter-match/src/index.ts]
+    D --> E[workers/recruiter-match/src/index-v2.ts]
+    E --> F[Validate role text and portfolio index]
+    F --> G[Check Durable Object quota]
+    G -->|Allowed| H[Cloudflare AI Search]
+    G -->|Limit reached| Z[Return HTTP 429 and remaining quota]
+    H --> I[Hybrid semantic and keyword retrieval]
+    I --> J[BGE reranking]
+    J --> K[Consolidate work and project sources]
+    K --> L[Gemma 4 26B A4B at temperature 0.05]
+    L --> M{Valid JSON object?}
+    M -->|Yes| N[Validate returned source IDs]
+    M -->|No| R[Llama 3.1 8B JSON-schema repair]
+    R --> S{Repair valid?}
+    S -->|Yes| N
+    S -->|No| T[Retry generation once]
+    T --> M
+    N --> O[Calculate supported-by-work count in code]
+    N --> P[Calculate supported-by-project count in code]
+    O --> Q[Render role summary, reasons, and evidence]
+    P --> Q
 ```
 
 The model does not create the displayed evidence counts directly. The Worker counts unique requirement IDs linked to validated work sources and validated project sources.
@@ -70,10 +77,13 @@ flowchart TD
     F --> G[Run a new AI Search retrieval]
     G --> H[Rerank and keep strongest sources]
     H --> I[Generate answer with Gemma]
-    I --> J[Reject unknown source IDs]
-    J --> K[Return answer and cited source objects]
-    K --> L[Render answer in Portfolio chat]
-    L --> M[Source chips open exact evidence]
+    I --> J{Valid JSON object?}
+    J -->|No| K[Repair against chat JSON schema]
+    J -->|Yes| L[Reject unknown source IDs]
+    K --> L
+    L --> M[Return answer and cited source objects]
+    M --> N[Render answer in Portfolio chat]
+    N --> O[Source chips open exact evidence]
 ```
 
 Each chat question runs a fresh retrieval. The chat does not rely only on the evidence cards from the initial analysis.
@@ -96,6 +106,7 @@ The static page builds `portfolioIndex` from `src/data/site.ts` and `src/data/ca
 
 | File | Responsibility |
 | --- | --- |
+| `workers/recruiter-match/src/index.ts` | Production entrypoint. Normalizes structured responses, repairs malformed JSON with a schema-capable model, and hides raw parser errors. |
 | `workers/recruiter-match/src/index-v2.ts` | Analyze and chat API, retrieval, model calls, source validation, and quota handling. |
 | `workers/recruiter-match/wrangler.toml` | Workers AI binding, AI Search binding, Durable Object binding, model selection, origins, and quotas. |
 | `workers/recruiter-match/README.md` | Deployment and Cloudflare configuration instructions. |
@@ -115,7 +126,8 @@ If AI Search is unavailable or empty, the Worker falls back to ranking the compa
 
 | Setting | Value |
 | --- | --- |
-| Generation model | `@cf/google/gemma-4-26b-a4b-it` |
+| Primary generation model | `@cf/google/gemma-4-26b-a4b-it` |
+| JSON repair model | `@cf/meta/llama-3.1-8b-instruct-fast` |
 | Temperature | `0.05` |
 | Top-p | `0.9` |
 | Seed | `1701` |
@@ -124,7 +136,7 @@ If AI Search is unavailable or empty, the Worker falls back to ranking the compa
 | Analysis sources | Up to 8 consolidated sources |
 | Chat sources | Up to 6 consolidated sources |
 
-The Worker retries once with a shorter corrective instruction if the model output is not valid JSON.
+Gemma performs the evidence reasoning and writing. If its response is not valid JSON, the entrypoint sends only the malformed structured response to the smaller repair model with an explicit JSON Schema. The repair model cannot add portfolio evidence because source IDs are still validated by the core Worker. The core generation path also retries once. Raw JSON parser messages are never returned to the recruiter.
 
 ## Source-safety rules
 
@@ -134,6 +146,7 @@ The Worker retries once with a shorter corrective instruction if the model outpu
 4. Reasons without a valid source are removed.
 5. Evidence entries without a valid source and requirement ID are removed.
 6. Chat answers may state that the public portfolio does not clearly document an answer.
+7. JSON repair may correct structure but cannot bypass source-ID validation.
 
 ## Daily limits
 
@@ -158,7 +171,7 @@ It runs these checks on recruiter-related pull requests and manual dispatches:
 4. Build the complete Astro site.
 5. Confirm the Cocometric model output still validates through the normal build command.
 
-The repository validation script is `scripts/validate-recruiter-assistant.mjs`. It checks required UI controls, Worker functions, Cloudflare bindings, documentation, and removal of the obsolete fuzzy-matcher files.
+The repository validation script is `scripts/validate-recruiter-assistant.mjs`. It checks required UI controls, Worker functions, structured-response protection, Cloudflare bindings, documentation, and removal of obsolete fuzzy-matcher files.
 
 ## Deployment dependencies
 
