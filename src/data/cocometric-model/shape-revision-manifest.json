@@ -10,7 +10,7 @@
   "revised": {
     "path": "public/models/cocometric-shape-revision.glb",
     "bytes": 232528,
-    "sha256": "62687d62f1e218427380e6bb7de7555a26c4b06659fcdc234b2e67aabfc91a0a"
+    "sha256": "786d2673a696326ee33befe369b4ab36a5298f50a65f2e92822fe0c9b2fbe9a2"
   },
   "changes": [
     "Replaced oversized GPU discs with compact recessed fan assemblies and swept blades.",
