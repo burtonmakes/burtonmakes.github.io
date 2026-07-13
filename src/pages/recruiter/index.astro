@@ -1243,6 +1243,35 @@ const recruiterAssistantApi =
 
   }
 
+  @media (min-width: 1081px) {
+    .portal-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 410px;
+      gap: 24px;
+      padding-right: 0;
+      align-items: start;
+    }
+
+    .portal-main {
+      min-width: 0;
+    }
+
+    .portfolio-chat {
+      position: sticky;
+      top: 120px;
+      right: auto;
+      bottom: auto;
+      width: 100%;
+      height: calc(100vh - 164px);
+      max-height: calc(100vh - 164px);
+      margin-top: 0;
+    }
+
+    .chat-messages {
+      max-height: none;
+    }
+  }
+
   @media (max-width: 760px) {
     .review-context,
     .panel-heading-row,
