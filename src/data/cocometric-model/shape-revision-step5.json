@@ -1,0 +1,56 @@
+{
+  "revision": "step5-remove-wheel-like-gpu-fans-v1",
+  "generatedAt": "2026-07-13T05:57:21.966Z",
+  "backupModel": "public/models/cocometric-modern-pre-step5-wheel-removal.glb",
+  "removedMeshCount": 8,
+  "removed": [
+    {
+      "nodeIndex": 253,
+      "nodeName": "GPU_0_Fan_0",
+      "meshIndex": 559,
+      "meshName": "GPU_0_Fan_0_Modern"
+    },
+    {
+      "nodeIndex": 254,
+      "nodeName": "GPU_0_Hub_0",
+      "meshIndex": 560,
+      "meshName": "GPU_0_Hub_0_Modern"
+    },
+    {
+      "nodeIndex": 255,
+      "nodeName": "GPU_0_Fan_1",
+      "meshIndex": 561,
+      "meshName": "GPU_0_Fan_1_Modern"
+    },
+    {
+      "nodeIndex": 256,
+      "nodeName": "GPU_0_Hub_1",
+      "meshIndex": 562,
+      "meshName": "GPU_0_Hub_1_Modern"
+    },
+    {
+      "nodeIndex": 262,
+      "nodeName": "GPU_1_Fan_0",
+      "meshIndex": 568,
+      "meshName": "GPU_1_Fan_0_Modern"
+    },
+    {
+      "nodeIndex": 263,
+      "nodeName": "GPU_1_Hub_0",
+      "meshIndex": 569,
+      "meshName": "GPU_1_Hub_0_Modern"
+    },
+    {
+      "nodeIndex": 264,
+      "nodeName": "GPU_1_Fan_1",
+      "meshIndex": 570,
+      "meshName": "GPU_1_Fan_1_Modern"
+    },
+    {
+      "nodeIndex": 265,
+      "nodeName": "GPU_1_Hub_1",
+      "meshIndex": 571,
+      "meshName": "GPU_1_Hub_1_Modern"
+    }
+  ]
+}

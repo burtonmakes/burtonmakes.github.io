@@ -27,5 +27,15 @@
     "psu": "Brushed redundant power supply",
     "portMetal": "Machined network and I/O metal",
     "accent": "Cocometric signal coral accent"
+  },
+  "shapeRevision": {
+    "id": "step5-remove-wheel-like-gpu-fans-v1",
+    "geometryChanged": true,
+    "backup": "public/models/cocometric-modern-pre-step5-wheel-removal.glb",
+    "beforeBytes": 253640,
+    "beforeSha256": "35abf50e7ac11c63f6f0538617232ce951072b0f4225d9b102472bef8fc61fcb",
+    "afterBytes": 254628,
+    "afterSha256": "860b672919fed3aa4d68f888f18cd4142e9002eff2ffda70eef3b5a02868c45a",
+    "removedMeshCount": 8
   }
 }
