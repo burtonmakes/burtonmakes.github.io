@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import copy
 import gzip
 import hashlib
 import json
@@ -8,7 +9,6 @@ import math
 import shutil
 from pathlib import Path
 
-import numpy as np
 import trimesh
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,8 +68,6 @@ def main() -> None:
         roughnessFactor=0.36,
     )
 
-    # Move the mounting bases to the rear face of the router body and move the
-    # antenna rods farther behind it so their connection points are concealed.
     for index in range(3):
         base = scene.geometry[f"NIC_Antenna_Base_{index}"]
         rod = scene.geometry[f"NIC_Antenna_{index}"]
@@ -77,8 +75,8 @@ def main() -> None:
         base.apply_translation([0.0, -0.37, 0.0])
         rod.apply_translation([0.0, -0.80, 0.0])
 
-        base.visual = trimesh.visual.TextureVisuals(material=orange_material.copy())
-        rod.visual = trimesh.visual.TextureVisuals(material=orange_material.copy())
+        base.visual = trimesh.visual.TextureVisuals(material=copy.deepcopy(orange_material))
+        rod.visual = trimesh.visual.TextureVisuals(material=copy.deepcopy(orange_material))
 
     revised = scene.export(file_type="glb")
     OUTPUT_GLB.write_bytes(revised)
@@ -112,11 +110,7 @@ def main() -> None:
             },
         }
     )
-    changes = [
-        change
-        for change in manifest.get("changes", [])
-        if "antenna" not in change.lower()
-    ]
+    changes = [change for change in manifest.get("changes", []) if "antenna" not in change.lower()]
     changes.extend(
         [
             "Moved all three router antennas to the rear face so the mounting connections are concealed.",
