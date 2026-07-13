@@ -46,7 +46,24 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy trimesh
 
       - name: Revise GPU and router geometry
-        run: python scripts/revise-cocometric-shapes.py
+        id: revise
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/revise-cocometric-shapes.py 2>&1 | tee cocometric-shape-revision.log
+
+      - name: Upload shape diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cocometric-shape-diagnostics-${{ github.run_id }}
+          retention-days: 7
+          path: cocometric-shape-revision.log
+
+      - name: Stop after shape generation failure
+        if: steps.revise.outcome == 'failure'
+        run: exit 1
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
