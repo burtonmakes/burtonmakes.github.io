@@ -21,8 +21,6 @@ import "../../styles/global.css";
 
       <form
         class="entry-form"
-        action="/recruiter/"
-        method="get"
         data-recruiter-entry-form
       >
         <div class="entry-fields">
@@ -123,7 +121,8 @@ import "../../styles/global.css";
     companyInput.value = context.company || "";
     roleInput.value = context.hiringFor || "";
 
-    form.addEventListener("submit", () => {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
       try {
         localStorage.setItem(
           storageKey,
@@ -138,6 +137,7 @@ import "../../styles/global.css";
           }),
         );
       } catch {}
+      window.location.assign("/recruiter/");
     });
   })();
 </script>
