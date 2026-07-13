@@ -103,7 +103,7 @@ type ChatModelResult = {
 
 type QuotaAction = "analyze" | "chat";
 
-const DEFAULT_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
+const DEFAULT_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8";
 const MAX_JOB_TEXT_LENGTH = 10_000;
 const MAX_CHAT_QUESTION_LENGTH = 1_200;
 const MAX_PORTFOLIO_ITEMS = 60;

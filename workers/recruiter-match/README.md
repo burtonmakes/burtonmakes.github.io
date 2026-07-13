@@ -15,7 +15,7 @@ The recruiter page does not expose a fuzzy score or hiring percentage.
 
 ## Models and retrieval
 
-- Primary generation: `@cf/meta/llama-3.1-8b-instruct-fast` (Cloudflare JSON Mode supported)
+- Primary generation: `@cf/qwen/qwen3-30b-a3b-fp8` (reasoning-capable, low-cost model)
 - Structured-response repair: `@cf/meta/llama-3.1-8b-instruct-fast`
 - Temperature: `0.05`
 - Seed: `1701`
@@ -23,7 +23,7 @@ The recruiter page does not expose a fuzzy score or hiring percentage.
 - Reranker: `@cf/baai/bge-reranker-base`
 - AI Search instance: `burton-portfolio`
 
-Gemma performs the evidence reasoning and writing. The production entrypoint validates every generated JSON object. When Gemma returns malformed JSON, the smaller repair model receives only that malformed response and an explicit JSON Schema. It repairs structure without receiving new portfolio facts. All source IDs are still validated by the core Worker before anything is shown to the recruiter. Raw parser errors are replaced with a concise retry message if both generation attempts fail.
+Qwen performs the evidence reasoning and writing. The production entrypoint validates every generated JSON object. When Qwen returns malformed JSON, the smaller repair model receives only that malformed response and an explicit JSON Schema. It repairs structure without receiving new portfolio facts. All source IDs are still validated by the core Worker before anything is shown to the recruiter. Raw parser errors are replaced with a concise retry message if both generation attempts fail.
 
 The Worker uses the AI Search instance when available. During local setup or before the instance is populated, it falls back to ranking the compact public portfolio index supplied by the static site. This fallback only retrieves evidence; the recruiter does not see a separate fuzzy-analysis mode.
 

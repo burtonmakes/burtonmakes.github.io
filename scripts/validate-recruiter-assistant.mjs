@@ -75,7 +75,7 @@ requireText(workerCore, workerCorePath, [
   "fallbackPortfolioSearch",
   "validateSourceIds",
   "class RateLimiter",
-  "@cf/meta/llama-3.1-8b-instruct-fast",
+  "@cf/qwen/qwen3-30b-a3b-fp8",
 ]);
 
 requireText(workerEntry, workerEntryPath, [
@@ -100,6 +100,7 @@ requireText(wrangler, wranglerPath, [
   'main = "src/index.ts"',
   'binding = "AI_SEARCH"',
   'name = "RATE_LIMITER"',
+  'GENERATION_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8"',
   'JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"',
   'PER_CLIENT_ANALYSIS_LIMIT = "10"',
   'PER_CLIENT_CHAT_LIMIT = "5"',
