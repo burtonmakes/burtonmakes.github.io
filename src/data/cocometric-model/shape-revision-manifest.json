@@ -1,5 +1,5 @@
 {
-  "profile": "shape-revision-v4-rear-y-axis-antennas",
+  "profile": "shape-revision-v5-short-rear-antennas",
   "geometryChanged": true,
   "backupBranch": "backup/cocometric-glb-original-2026-07-12",
   "original": {
@@ -9,15 +9,16 @@
   },
   "revised": {
     "path": "public/models/cocometric-shape-revision.glb",
-    "bytes": 232524,
-    "sha256": "e7cca5ff35a2b4cd62e3bf0dbb115888ff18c290855c2ae7469f9d86bfc41e4f"
+    "bytes": 232792,
+    "sha256": "e56b82ac12999a0f5cd7300c2e81fda67b2571be1e0d48b1599c4ff1636b21aa"
   },
   "changes": [
     "Replaced oversized GPU discs with compact recessed fan assemblies and swept blades.",
     "Preserved all non-target geometry and the original material palette.",
     "Removed the detached router panel and the forward-facing antenna rods.",
     "Rebuilt three coral-orange antennas on the GLB Y axis so they rise vertically.",
-    "Mounted the antenna roots inside the rear edge of the router so the connections are hidden."
+    "Mounted the antenna roots inside the rear edge of the router so the connections are hidden.",
+    "Shortened the three rear router antennas to 58% of their previous height and reduced their diameter so they remain present but visually subdued."
   ],
   "antennaPlacement": "rear-mounted-y-axis",
   "antennaColor": "#E8834A",
@@ -36,5 +37,12 @@
     "path": "public/models/cocometric-before-antenna-axis-fix.glb",
     "bytes": 232528,
     "sha256": "786d2673a696326ee33befe369b4ab36a5298f50a65f2e92822fe0c9b2fbe9a2"
+  },
+  "antennaLengthScale": 0.58,
+  "antennaDiameterScale": 0.82,
+  "shortAntennaBackup": {
+    "path": "public/models/cocometric-before-shorter-antennas.glb",
+    "bytes": 232524,
+    "sha256": "e7cca5ff35a2b4cd62e3bf0dbb115888ff18c290855c2ae7469f9d86bfc41e4f"
   }
 }
