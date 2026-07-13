@@ -239,57 +239,72 @@ const recruiterAssistantApi =
 
       <aside class="portfolio-chat" aria-labelledby="chat-heading">
         <div class="chat-header">
-          <div>
-            <span class="section-label">Portfolio chat</span>
-            <h2 id="chat-heading">Ask about the fit</h2>
+          <div class="chat-brand">
+            <img src="/logo.svg" alt="Coco the husky" class="chat-avatar" />
+            <div>
+              <span class="section-label">Portfolio assistant</span>
+              <h2 id="chat-heading">Chat with Coco</h2>
+            </div>
           </div>
-          <span class="chat-usage" data-chat-remaining>
-            5 questions left today
-          </span>
-        </div>
-
-        <p class="chat-context">Get a quick, source-backed answer about the role or evidence.</p>
-
-        <div class="chat-messages" data-chat-messages aria-live="polite">
-          <article class="chat-message assistant">
-            <span class="chat-speaker">Portfolio assistant</span>
-            <p>
-              Analyze the role first, then ask about fit, gaps, or evidence.
-            </p>
-          </article>
-        </div>
-
-        <div class="suggested-questions" data-suggested-questions hidden>
-          <button type="button">What evidence supports hardware debugging?</button>
-          <button type="button">What manufacturing experience is documented?</button>
-          <button type="button">Show the strongest sensor integration example.</button>
-        </div>
-
-        <form class="chat-form" data-chat-form>
-          <label for="portfolio-chat-input" class="sr-only">
-            Ask a portfolio question
-          </label>
-          <textarea
-            id="portfolio-chat-input"
-            data-chat-input
-            rows="3"
-            maxlength="1200"
-            placeholder="Analyze a role before asking a question."
-            disabled
-          ></textarea>
-          <div class="chat-form-footer">
-            <span data-chat-count>0 / 1,200</span>
+          <div class="chat-header-actions">
+            <span class="chat-usage" data-chat-remaining>5 questions left today</span>
             <button
-              class="button button-primary compact-button"
-              type="submit"
-              data-chat-submit
-              disabled
+              class="chat-minimize"
+              type="button"
+              data-chat-toggle
+              aria-controls="portfolio-chat-body"
+              aria-expanded="true"
+              aria-label="Minimize Chat with Coco"
             >
-              Send
+              <span aria-hidden="true">−</span>
             </button>
           </div>
-        </form>
-        <p class="chat-status" data-chat-status role="status"></p>
+        </div>
+
+        <div class="chat-body" id="portfolio-chat-body">
+          <p class="chat-context">Ask Coco about the role, evidence, or fit.</p>
+
+          <div class="chat-messages" data-chat-messages aria-live="polite">
+            <article class="chat-message assistant">
+              <span class="chat-speaker">Coco</span>
+              <p>
+                Analyze the role first, then ask about fit, gaps, or evidence.
+              </p>
+            </article>
+          </div>
+
+          <div class="suggested-questions" data-suggested-questions hidden>
+            <button type="button">What evidence supports hardware debugging?</button>
+            <button type="button">What manufacturing experience is documented?</button>
+            <button type="button">Show the strongest sensor integration example.</button>
+          </div>
+
+          <form class="chat-form" data-chat-form>
+            <label for="portfolio-chat-input" class="sr-only">
+              Ask a portfolio question
+            </label>
+            <textarea
+              id="portfolio-chat-input"
+              data-chat-input
+              rows="3"
+              maxlength="1200"
+              placeholder="Ask Coco a question..."
+              disabled
+            ></textarea>
+            <div class="chat-form-footer">
+              <span data-chat-count>0 / 1,200</span>
+              <button
+                class="button button-primary compact-button"
+                type="submit"
+                data-chat-submit
+                disabled
+              >
+                Send
+              </button>
+            </div>
+          </form>
+          <p class="chat-status" data-chat-status role="status"></p>
+        </div>
       </aside>
     </div>
 
@@ -475,10 +490,7 @@ const recruiterAssistantApi =
   }
 
   .portal-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(340px, 430px);
-    gap: 18px;
-    align-items: start;
+    display: block;
   }
 
   .portal-main,
@@ -810,15 +822,80 @@ const recruiterAssistantApi =
   }
 
   .portfolio-chat {
-    position: sticky;
-    top: 88px;
+    position: fixed;
+    z-index: 20;
+    right: 24px;
+    bottom: 24px;
     display: flex;
     flex-direction: column;
-    height: min(350px, calc(100vh - 150px));
-    min-height: 320px;
-    max-height: 350px;
+    width: min(390px, calc(100vw - 48px));
+    height: min(470px, calc(100vh - 48px));
+    min-height: 0;
+    max-height: none;
     overflow: hidden;
     padding: 18px;
+    background: color-mix(in srgb, #081426, transparent 4%);
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(145, 200, 229, 0.08);
+    backdrop-filter: blur(18px);
+  }
+
+  .portfolio-chat[data-minimized="true"] {
+    width: min(300px, calc(100vw - 48px));
+    height: auto;
+  }
+
+  .portfolio-chat[data-minimized="true"] .chat-body {
+    display: none;
+  }
+
+  .chat-brand,
+  .chat-header-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .chat-brand {
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .chat-avatar {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(145, 200, 229, 0.45);
+    border-radius: 12px;
+    object-fit: cover;
+  }
+
+  .chat-header-actions {
+    gap: 8px;
+  }
+
+  .chat-minimize {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--muted-2);
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .chat-minimize:hover {
+    border-color: var(--line-strong);
+    color: var(--text);
+  }
+
+  .chat-body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
   }
 
   .chat-header {
@@ -1028,15 +1105,11 @@ const recruiterAssistantApi =
   }
 
   @media (max-width: 1080px) {
-    .portal-grid {
-      grid-template-columns: 1fr;
-    }
-
     .portfolio-chat {
-      position: static;
-      height: 520px;
-      min-height: 480px;
-      max-height: none;
+      right: 18px;
+      bottom: 18px;
+      width: min(390px, calc(100vw - 36px));
+      height: min(470px, calc(100vh - 36px));
     }
 
     .analysis-shell {
@@ -1077,6 +1150,17 @@ const recruiterAssistantApi =
     .role-actions,
     .role-actions .button {
       width: 100%;
+    }
+
+    .portfolio-chat,
+    .portfolio-chat[data-minimized="true"] {
+      right: 12px;
+      bottom: 12px;
+      width: calc(100vw - 24px);
+    }
+
+    .portfolio-chat {
+      height: min(520px, calc(100vh - 24px));
     }
 
     .role-actions {
@@ -1140,6 +1224,8 @@ const recruiterAssistantApi =
       evidenceList: page.querySelector("[data-evidence-list]"),
       evidenceFilters: [...page.querySelectorAll("[data-evidence-filter]")],
       chatRemaining: page.querySelector("[data-chat-remaining]"),
+      chatPanel: page.querySelector(".portfolio-chat"),
+      chatToggle: page.querySelector("[data-chat-toggle]"),
       chatMessages: page.querySelector("[data-chat-messages]"),
       suggestedQuestions: page.querySelector("[data-suggested-questions]"),
       chatForm: page.querySelector("[data-chat-form]"),
@@ -1449,7 +1535,7 @@ const recruiterAssistantApi =
         article.className = "chat-message assistant";
         const speaker = document.createElement("span");
         speaker.className = "chat-speaker";
-        speaker.textContent = "Portfolio assistant";
+        speaker.textContent = "Coco";
         const copy = document.createElement("p");
         copy.textContent = state.analysis
           ? "The role is ready. Ask about a requirement, project, work example, or area of ownership."
@@ -1464,7 +1550,7 @@ const recruiterAssistantApi =
         article.className = `chat-message ${message.role}`;
         const speaker = document.createElement("span");
         speaker.className = "chat-speaker";
-        speaker.textContent = message.role === "user" ? "You" : "Portfolio assistant";
+        speaker.textContent = message.role === "user" ? "You" : "Coco";
         const copy = document.createElement("p");
         copy.textContent = message.content;
         article.append(speaker, copy);
@@ -1735,6 +1821,17 @@ const recruiterAssistantApi =
           submitChat(elements.chatInput.value);
         }
       }
+    });
+
+    elements.chatToggle.addEventListener("click", () => {
+      const minimized = elements.chatPanel.dataset.minimized === "true";
+      elements.chatPanel.dataset.minimized = minimized ? "false" : "true";
+      elements.chatToggle.setAttribute("aria-expanded", String(minimized));
+      elements.chatToggle.setAttribute(
+        "aria-label",
+        minimized ? "Minimize Chat with Coco" : "Expand Chat with Coco",
+      );
+      elements.chatToggle.querySelector("span").textContent = minimized ? "−" : "+";
     });
 
     elements.chatForm.addEventListener("submit", (event) => {
