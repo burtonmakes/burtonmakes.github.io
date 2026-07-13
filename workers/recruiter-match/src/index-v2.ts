@@ -609,13 +609,13 @@ Schema:
     {
       "statement": "specific source-backed reason to interview",
       "relevance": "why this evidence matters for this role",
-      "sourceIds": ["S1"],
+      "sourceIds": ["supplied-source-id"],
       "requirementIds": ["R1"]
     }
   ],
   "evidence": [
     {
-      "sourceId": "S1",
+      "sourceId": "supplied-source-id",
       "whyRelevant": "concise explanation",
       "requirementIds": ["R1"]
     }
@@ -640,7 +640,7 @@ Every sourceId must exactly match a supplied source ID.
 Schema:
 {
   "answer": "concise answer in plain text, normally 2 to 5 short paragraphs",
-  "sourceIds": ["S1"]
+  "sourceIds": ["supplied-source-id"]
 }`;
 
 const validateSourceIds = (
@@ -649,7 +649,7 @@ const validateSourceIds = (
   limit = 4,
 ) =>
   Array.isArray(value)
-    ? [...new Set(value.map((id) => clean(id, 100)))]
+    ? [...new Set(value.map((id) => clean(id, 120)))]
         .filter((id) => validSourceIds.has(id))
         .slice(0, limit)
     : [];
@@ -713,7 +713,7 @@ const normalizeAnalysis = (
 
   const evidence = (Array.isArray(result.evidence) ? result.evidence : [])
     .map((item) => {
-      const sourceId = clean(item?.sourceId, 100);
+      const sourceId = clean(item?.sourceId, 120);
       return {
         sourceId,
         whyRelevant: clean(item?.whyRelevant, 420),
