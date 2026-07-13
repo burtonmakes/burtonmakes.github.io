@@ -25,10 +25,15 @@ PART_COUNT = 6
 
 def read_part(path: Path) -> str:
     source = path.read_text(encoding="utf-8")
-    match = re.fullmatch(r'\s*export\s+default\s+("(?:[^"\\]|\\.)*")\s*;?\s*', source, re.S)
-    if not match:
-        raise RuntimeError(f"Could not parse embedded model part: {path}")
-    return json.loads(match.group(1))
+    direct = re.fullmatch(r'\s*export\s+default\s+("(?:[^"\\]|\\.)*")\s*;?\s*', source, re.S)
+    if direct:
+        return json.loads(direct.group(1))
+
+    imports = re.findall(r'import\s+\w+\s+from\s+["\'](.+?)["\']\s*;', source)
+    if imports and ".join" in source:
+        return "".join(read_part((path.parent / imported).resolve()) for imported in imports)
+
+    raise RuntimeError(f"Could not parse embedded model part: {path}")
 
 
 def read_embedded_glb() -> bytes:
@@ -38,8 +43,7 @@ def read_embedded_glb() -> bytes:
 
 def preserve_original_parts() -> None:
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
-    for index in range(PART_COUNT):
-        source = MODEL_DIR / f"part-{index}.js"
+    for source in sorted(MODEL_DIR.glob("part-*.js")):
         destination = BACKUP_DIR / source.name
         if not destination.exists():
             shutil.copyfile(source, destination)
