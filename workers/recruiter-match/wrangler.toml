@@ -18,7 +18,7 @@ tag = "v1"
 new_sqlite_classes = ["RateLimiter"]
 
 [vars]
-ALLOWED_ORIGINS = "https://burtonmakes.github.io,https://cocometric.com,https://www.cocometric.com,http://localhost:4321,http://127.0.0.1:4321,http://localhost:4322,http://127.0.0.1:4322,http://localhost:4323,http://127.0.0.1:4323"
+ALLOWED_ORIGINS = "https://burtonmakes.github.io,https://cocometric.com,https://www.cocometric.com,http://localhost:4321,http://127.0.0.1:4321,http://localhost:4322,http://127.0.0.1:4322,http://localhost:4323,http://127.0.0.1:4323,http://localhost:4324,http://127.0.0.1:4324"
 GENERATION_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8"
 JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"
 AI_SEARCH_INSTANCE = "burton-portfolio"

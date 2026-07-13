@@ -73,7 +73,8 @@ capabilityTaxonomy.forEach((group) => {
 
 const portfolioJson = JSON.stringify([...portfolioEvidence.values()]);
 const recruiterAssistantApi =
-  import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
+  import.meta.env.PUBLIC_RECRUITER_MATCH_API ||
+  "https://burton-recruiter-match.burtonmakes.workers.dev/match";
 ---
 
 <BaseLayout
@@ -172,7 +173,10 @@ const recruiterAssistantApi =
           <section class="role-summary-panel">
             <div class="section-heading-inline">
               <div>
-                <span class="section-label">Condensed role summary</span>
+                <span class="section-label section-label-numbered">
+                  <span aria-hidden="true">01</span>
+                  Condensed role summary
+                </span>
                 <h2>From what I understand, you’re looking for</h2>
               </div>
               <span class="analysis-stale" data-analysis-stale hidden>
@@ -186,7 +190,10 @@ const recruiterAssistantApi =
 
           <section class="coverage-panel" aria-labelledby="coverage-heading">
             <div class="coverage-heading">
-              <span class="section-label">Evidence coverage</span>
+              <span class="section-label section-label-numbered">
+                <span aria-hidden="true">02</span>
+                Evidence coverage
+              </span>
               <h2 id="coverage-heading">How the documented experience lines up</h2>
             </div>
             <div class="coverage-grid">
@@ -206,21 +213,14 @@ const recruiterAssistantApi =
             </div>
           </section>
 
-          <section class="reasons-panel" aria-labelledby="reasons-heading">
-            <div class="section-heading-inline">
-              <div>
-                <span class="section-label">Reasons to interview</span>
-                <h2 id="reasons-heading">Why this could be a strong match</h2>
-              </div>
-            </div>
-            <div class="reason-list" data-reason-list></div>
-          </section>
-
           <section class="evidence-panel" aria-labelledby="evidence-heading">
             <div class="section-heading-inline evidence-heading-row">
               <div>
-                <span class="section-label">Relevant evidence</span>
-                <h2 id="evidence-heading">Relevant work and projects</h2>
+                <span class="section-label section-label-numbered">
+                  <span aria-hidden="true">03</span>
+                  Relevant evidence
+                </span>
+                <h2 id="evidence-heading">Why this could be a strong match</h2>
               </div>
               <div class="evidence-filters" role="group" aria-label="Evidence filters">
                 <button type="button" data-evidence-filter="all" data-active="true">
@@ -232,6 +232,8 @@ const recruiterAssistantApi =
                 </button>
               </div>
             </div>
+            <div class="reason-list" data-reason-list></div>
+            <p class="evidence-list-label">Open a card for the supporting work or project evidence.</p>
             <div class="evidence-list" data-evidence-list></div>
           </section>
         </section>
@@ -431,11 +433,29 @@ const recruiterAssistantApi =
     text-transform: uppercase;
   }
 
+  .section-label-numbered {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label-numbered > span {
+    display: inline-grid;
+    width: 23px;
+    height: 23px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--cta-2), transparent 25%);
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--cta-2), transparent 82%);
+    color: var(--cta-1);
+    font-size: 0.66rem;
+    letter-spacing: 0;
+  }
+
   .review-context,
   .role-entry-panel,
   .role-summary-panel,
   .coverage-panel,
-  .reasons-panel,
   .evidence-panel,
   .portfolio-chat {
     border: 1px solid var(--line);
@@ -457,7 +477,6 @@ const recruiterAssistantApi =
   .role-entry-panel h2,
   .role-summary-panel h2,
   .coverage-panel h2,
-  .reasons-panel h2,
   .evidence-panel h2,
   .portfolio-chat h2,
   .dialog-panel h2,
@@ -511,7 +530,6 @@ const recruiterAssistantApi =
   .role-entry-panel,
   .role-summary-panel,
   .coverage-panel,
-  .reasons-panel,
   .evidence-panel {
     padding: clamp(17px, 2vw, 24px);
   }
@@ -701,11 +719,20 @@ const recruiterAssistantApi =
     margin-top: 16px;
   }
 
+  .reason-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .evidence-list-label {
+    margin: 18px 0 -4px;
+    color: var(--muted);
+    font-size: 0.76rem;
+  }
+
   .evidence-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .reason-card,
   .evidence-card {
     padding: 17px;
     border: 1px solid var(--line-soft);
@@ -716,6 +743,8 @@ const recruiterAssistantApi =
   .reason-card {
     position: relative;
     padding-left: 20px;
+    border-color: color-mix(in srgb, var(--accent), var(--line-soft) 62%);
+    background: color-mix(in srgb, var(--accent), transparent 94%);
   }
 
   .reason-card::before {
@@ -840,12 +869,35 @@ const recruiterAssistantApi =
   }
 
   .portfolio-chat[data-minimized="true"] {
-    width: min(300px, calc(100vw - 48px));
+    width: max-content;
+    max-width: calc(100vw - 48px);
     height: auto;
+    padding: 10px 12px;
+    border-radius: 999px;
   }
 
   .portfolio-chat[data-minimized="true"] .chat-body {
     display: none;
+  }
+
+  .portfolio-chat[data-minimized="true"] .chat-header {
+    align-items: center;
+  }
+
+  .portfolio-chat[data-minimized="true"] .chat-brand .section-label,
+  .portfolio-chat[data-minimized="true"] .chat-usage {
+    display: none;
+  }
+
+  .portfolio-chat[data-minimized="true"] .chat-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+  }
+
+  .portfolio-chat[data-minimized="true"] .chat-brand h2 {
+    font-size: 0.92rem;
+    white-space: nowrap;
   }
 
   .chat-brand,
@@ -1116,9 +1168,12 @@ const recruiterAssistantApi =
       grid-template-columns: 1fr;
     }
 
-    .analysis-shell > .reasons-panel,
     .analysis-shell > .evidence-panel {
       grid-column: auto;
+    }
+
+    .reason-list {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -1152,15 +1207,26 @@ const recruiterAssistantApi =
       width: 100%;
     }
 
-    .portfolio-chat,
-    .portfolio-chat[data-minimized="true"] {
+    .portfolio-chat {
       right: 12px;
       bottom: 12px;
       width: calc(100vw - 24px);
     }
 
+    .portfolio-chat[data-minimized="true"] {
+      right: 12px;
+      bottom: 12px;
+      width: max-content;
+      max-width: calc(100vw - 24px);
+    }
+
     .portfolio-chat {
       height: min(520px, calc(100vh - 24px));
+    }
+
+    .portfolio-chat[data-minimized="true"] .chat-header {
+      flex-direction: row;
+      align-items: center;
     }
 
     .role-actions {
@@ -1485,6 +1551,7 @@ const recruiterAssistantApi =
         elements.chatInput.placeholder =
           "Analyze a role before asking a question.";
         elements.suggestedQuestions.hidden = true;
+        setStatus(elements.chatStatus, "Analyze the role above to unlock Coco.");
         return;
       }
 
@@ -1524,6 +1591,10 @@ const recruiterAssistantApi =
         ? "Ask a question about the role or Alex's documented experience."
         : "Analyze the edited role before continuing the chat.";
       elements.suggestedQuestions.hidden = !chatReady;
+      setStatus(
+        elements.chatStatus,
+        chatReady ? "" : "Re-analyze the role to continue chatting with Coco.",
+      );
       renderUsage();
     };
 
