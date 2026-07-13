@@ -43,21 +43,30 @@ jobs:
         run: npm install
 
       - name: Preserve and modernize GLB
-        run: node scripts/modernize-cocometric-model.mjs
+        id: modernize
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/modernize-cocometric-model.mjs 2>&1 | tee modernize-cocometric-model.log
 
       - name: Validate model structure
+        if: steps.modernize.outcome == 'success'
         run: npm run validate:cocometric
 
       - name: Validate production build
+        if: steps.modernize.outcome == 'success'
         run: npm run build
 
-      - name: Upload generated GLB and backup
+      - name: Upload generated GLB, backup, and diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cocometric-modern-model
-          if-no-files-found: error
+          name: cocometric-modern-model-${{ github.run_id }}
+          if-no-files-found: warn
           retention-days: 14
           path: |
+            modernize-cocometric-model.log
             src/data/cocometric-model/part-0.js
             src/data/cocometric-model/part-1.js
             src/data/cocometric-model/part-2.js
@@ -68,3 +77,7 @@ jobs:
             src/data/cocometric-model-backup/original-2026-07-12
             public/models/cocometric-original-2026-07-12.glb
             public/models/cocometric-modern.glb
+
+      - name: Fail if model generation failed
+        if: steps.modernize.outcome == 'failure'
+        run: exit 1
