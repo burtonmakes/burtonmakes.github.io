@@ -741,7 +741,7 @@ const recruiterAssistantApi =
   }
 
   .evidence-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .evidence-card {
@@ -988,6 +988,7 @@ const recruiterAssistantApi =
     min-height: 0;
     flex: 1;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .chat-header {
@@ -1012,22 +1013,22 @@ const recruiterAssistantApi =
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 14px 5px 14px 0;
+    padding: 16px 5px 16px 0;
   }
 
   .chat-message {
     width: fit-content;
-    max-width: 92%;
-    padding: 10px 13px;
-    border-radius: 10px;
-    margin-bottom: 9px;
+    max-width: 94%;
+    padding: 15px 17px;
+    border-radius: 15px;
+    margin-bottom: 13px;
   }
 
   .chat-speaker {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     color: var(--accent-2);
-    font-size: 0.66rem;
+    font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -1041,18 +1042,20 @@ const recruiterAssistantApi =
   .chat-message p {
     margin: 0;
     white-space: pre-wrap;
-    font-size: 0.82rem;
-    line-height: 1.48;
+    font-size: 0.92rem;
+    line-height: 1.5;
   }
 
   .chat-message.assistant {
-    border: 1px solid var(--line-soft);
-    background: rgba(255, 255, 255, 0.024);
+    border: 1px solid rgba(145, 200, 229, 0.14);
+    background: rgba(255, 255, 255, 0.035);
   }
 
   .chat-message.user {
+    max-width: 88%;
     margin-left: auto;
-    background: rgba(76, 141, 255, 0.14);
+    border: 1px solid rgba(76, 141, 255, 0.16);
+    background: rgba(76, 141, 255, 0.18);
   }
 
   .chat-message .source-chip-row {
@@ -1060,21 +1063,23 @@ const recruiterAssistantApi =
   }
 
   .suggested-questions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 6px;
     margin: 8px 0 10px;
-    max-height: 84px;
+    max-height: 100px;
     overflow-y: auto;
   }
 
   .suggested-questions button {
-    padding: 6px 8px;
+    width: 100%;
+    padding: 9px 11px;
     border: 1px solid var(--line-soft);
-    border-radius: 7px;
+    border-radius: 10px;
     background: transparent;
     color: var(--muted);
-    font-size: 0.68rem;
+    font-size: 0.76rem;
+    text-align: left;
     cursor: pointer;
   }
 
@@ -1096,8 +1101,8 @@ const recruiterAssistantApi =
   }
 
   .chat-form textarea {
-    height: 60px;
-    min-height: 60px;
+    height: 76px;
+    min-height: 76px;
     max-height: 150px;
     resize: none;
     padding: 11px 12px;
