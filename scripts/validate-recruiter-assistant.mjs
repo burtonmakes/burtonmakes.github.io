@@ -78,10 +78,18 @@ requireText(workerEntry, workerEntryPath, [
   "createGuardedAi",
   "analysisSchema",
   "chatSchema",
-  "json_schema",
+  "json_object",
   "JSON_REPAIR_MODEL",
+  "deterministicAnalysisFallback",
+  "deterministicChatFallback",
+  "deterministicFallback(details)",
   "model_output_invalid",
   "@cf/meta/llama-3.1-8b-instruct-fast",
+]);
+
+forbidText(workerEntry, workerEntryPath, [
+  "return primaryResponse;",
+  "Model did not return parseable JSON",
 ]);
 
 requireText(wrangler, wranglerPath, [
