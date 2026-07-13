@@ -4,29 +4,25 @@ import "../../../styles/global.css";
 ---
 
 <BaseLayout
-  title="Recruiter Match"
-  description="The recruiter matcher now lives on one page."
+  title="Recruiter Role Review"
+  description="Continue to the current recruiter role-review workspace."
 >
-  <section class="section recruiter-match-redirect">
+  <section class="section recruiter-redirect">
     <article class="redirect-card reveal">
-      <p class="eyebrow">Recruiter fast path</p>
-      <h1>Recruiter Match moved to one page.</h1>
-      <p>
-        The context form and comparison tool now live together on the recruiter page so hiring context,
-        role text, match score, and evidence are reviewed in one flow.
-      </p>
-      <a class="button button-primary" href="/recruiter/">Open recruiter matcher</a>
+      <p class="eyebrow">Recruiter portal</p>
+      <h1>Continue to the role review.</h1>
+      <p>This legacy address now redirects to the current recruiter workspace.</p>
+      <a class="button button-primary" href="/recruiter/">Open role review</a>
     </article>
   </section>
 </BaseLayout>
 
 <style>
-  .recruiter-match-redirect {
+  .recruiter-redirect {
     display: grid;
     min-height: calc(100vh - 96px);
     place-items: center;
-    padding-top: clamp(4.5rem, 7vh, 5.8rem);
-    padding-bottom: clamp(1.8rem, 4vh, 3rem);
+    padding-block: clamp(4.5rem, 7vh, 5.8rem) clamp(1.8rem, 4vh, 3rem);
   }
 
   .redirect-card {
@@ -40,16 +36,18 @@ import "../../../styles/global.css";
     box-shadow: var(--shadow-soft);
   }
 
-  .redirect-card h1 {
-    max-width: 13ch;
+  .redirect-card h1,
+  .redirect-card p {
     margin: 0;
+  }
+
+  .redirect-card h1 {
+    max-width: 14ch;
     font-size: clamp(2.1rem, 4vw, 3.7rem);
     line-height: 0.98;
   }
 
   .redirect-card p:not(.eyebrow) {
-    max-width: 58ch;
-    margin: 0;
     color: var(--muted-2);
     font-size: 0.95rem;
     line-height: 1.48;
