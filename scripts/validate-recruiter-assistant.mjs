@@ -27,14 +27,16 @@ const forbidText = (content, path, values) => {
 
 const recruiterPagePath = "src/pages/recruiter/index.astro";
 const recruiterStartPath = "src/pages/recruiter/start.astro";
-const workerPath = "workers/recruiter-match/src/index-v2.ts";
+const workerEntryPath = "workers/recruiter-match/src/index.ts";
+const workerCorePath = "workers/recruiter-match/src/index-v2.ts";
 const wranglerPath = "workers/recruiter-match/wrangler.toml";
 const stateBridgePath = "public/recruiter-state-bridge.js";
 const workflowDocPath = "docs/RECRUITER_ASSISTANT_WORKFLOW.md";
 
 const recruiterPage = read(recruiterPagePath);
 const recruiterStart = read(recruiterStartPath);
-const worker = read(workerPath);
+const workerEntry = read(workerEntryPath);
+const workerCore = read(workerCorePath);
 const wrangler = read(wranglerPath);
 const stateBridge = read(stateBridgePath);
 const workflowDoc = read(workflowDocPath);
@@ -62,7 +64,7 @@ forbidText(recruiterPage, recruiterPagePath, [
   "Common match score",
 ]);
 
-requireText(worker, workerPath, [
+requireText(workerCore, workerCorePath, [
   "handleAnalyze",
   "handleChat",
   "searchAiIndex",
@@ -72,10 +74,21 @@ requireText(worker, workerPath, [
   "@cf/google/gemma-4-26b-a4b-it",
 ]);
 
+requireText(workerEntry, workerEntryPath, [
+  "createGuardedAi",
+  "analysisSchema",
+  "chatSchema",
+  "json_schema",
+  "JSON_REPAIR_MODEL",
+  "model_output_invalid",
+  "@cf/meta/llama-3.1-8b-instruct-fast",
+]);
+
 requireText(wrangler, wranglerPath, [
-  'main = "src/index-v2.ts"',
+  'main = "src/index.ts"',
   'binding = "AI_SEARCH"',
   'name = "RATE_LIMITER"',
+  'JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"',
   'PER_CLIENT_ANALYSIS_LIMIT = "10"',
   'PER_CLIENT_CHAT_LIMIT = "5"',
 ]);
@@ -90,13 +103,12 @@ requireText(workflowDoc, workflowDocPath, [
   "```mermaid",
   "Analyze role",
   "Portfolio chat",
-  "workers/recruiter-match/src/index-v2.ts",
+  "workers/recruiter-match/src/index.ts",
 ]);
 
 [
   "src/data/recruiter-normalizer.ts",
   "src/styles/recruiter-compact.css",
-  "workers/recruiter-match/src/index.ts",
 ].forEach((path) => {
   if (existsSync(path)) fail(`obsolete file still exists: ${path}`);
 });
