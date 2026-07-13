@@ -81,11 +81,11 @@ const stages = [
       <p class="step" id="stage-step">Cocometric system · 01</p>
       <h1 id="stage-title">One system. Every layer visible.</h1>
       <p class="copy-note" id="stage-note">
-        The complete system stays visible in a clean exploded view while each scroll section highlights
-        the rack, storage, compute, accelerators, cooling, power, and network hardware.
+        A complete private infrastructure stack designed to support storage, local AI, networking,
+        and internal tools.
       </p>
       <div class="component-tags" id="stage-tags" aria-hidden="true">
-        <span>Private infrastructure</span><span>Serviceable hardware</span><span>Local control</span>
+        <span>System design</span><span>Private infrastructure</span><span>Deployment planning</span>
       </div>
     </section>
 
@@ -111,25 +111,25 @@ const stages = [
 
     <main class="track" id="track">
       <section class="beat" data-stage="0">
-        <div class="sr-only"><h2>Complete Cocometric system</h2><p>Full exploded view of the supplied three-dimensional server model.</p></div>
+        <div class="sr-only"><h2>Complete Cocometric system</h2><p>System design, private infrastructure, and deployment planning.</p></div>
       </section>
       <section class="beat" data-stage="1">
-        <div class="sr-only"><h2>Rack and chassis</h2><p>Serviceable rack enclosure, rails, chassis, and installed server bays.</p></div>
+        <div class="sr-only"><h2>Rack and chassis</h2><p>Hardware selection, assembly, integration, and serviceable system builds.</p></div>
       </section>
       <section class="beat" data-stage="2">
-        <div class="sr-only"><h2>Storage</h2><p>Six removable drives for primary data, snapshots, retention, and backup tiers.</p></div>
+        <div class="sr-only"><h2>Storage</h2><p>Backup architecture, redundancy planning, recovery workflows, and data protection.</p></div>
       </section>
       <section class="beat" data-stage="3">
-        <div class="sr-only"><h2>Compute</h2><p>Motherboard, dual processors, heat sinks, input and output, and twelve memory modules.</p></div>
+        <div class="sr-only"><h2>Compute</h2><p>Compute sizing, local workloads, system tuning, and performance planning.</p></div>
       </section>
       <section class="beat" data-stage="4">
-        <div class="sr-only"><h2>AI accelerators</h2><p>Two GPU assemblies for local model inference, retrieval, OCR, and image processing.</p></div>
+        <div class="sr-only"><h2>AI accelerators</h2><p>Local AI deployment, inference workflows, private model hosting, and GPU system design.</p></div>
       </section>
       <section class="beat" data-stage="5">
-        <div class="sr-only"><h2>Cooling</h2><p>Six fan assemblies and a dedicated fan wall for controlled airflow.</p></div>
+        <div class="sr-only"><h2>Cooling</h2><p>Thermal planning, cooling design, reliability under load, and long-run stability.</p></div>
       </section>
       <section class="beat" data-stage="6">
-        <div class="sr-only"><h2>Power and network</h2><p>Two power supplies and a dedicated multi-port network interface.</p></div>
+        <div class="sr-only"><h2>Power and network</h2><p>Power resilience, network setup, secure access, and remote management.</p></div>
       </section>
 
       <section class="story-exit" id="story-exit" aria-hidden="true"></section>
@@ -174,26 +174,59 @@ const stages = [
 
     <script src="../../scripts/cocometric-viewer.js"></script>
     <script is:inline>
-      const stageTagsByName = {
-        "Cocometric system": ["Private infrastructure", "Serviceable hardware", "Local control"],
-        "Rack + chassis": ["Replaceable parts", "Expandable", "Serviceable chassis"],
-        Storage: ["ZFS", "RAID redundancy", "Snapshot backups", "Restore testing"],
-        Compute: ["Multi-core CPU", "Power efficient", "High-memory capacity"],
-        "AI accelerators": ["GPU acceleration", "Power efficient", "Local AI", "Private inference"],
-        Cooling: ["Directed airflow", "Thermal control", "Sustained load"],
-        "Power + network": ["Redundant power", "Power efficient", "Network segmentation", "Controlled access"],
+      const stageContentByName = {
+        "Cocometric system": {
+          title: "One system. Every layer visible.",
+          note: "A complete private infrastructure stack designed to support storage, local AI, networking, and internal tools.",
+          tags: ["System design", "Private infrastructure", "Deployment planning"],
+        },
+        "Rack + chassis": {
+          title: "Hardware built to be owned and serviced.",
+          note: "Select, assemble, and deploy serviceable hardware that can grow with your workload and support path.",
+          tags: ["Hardware selection", "Assembly + integration", "Serviceable builds"],
+        },
+        Storage: {
+          title: "Storage planned around protection and recovery.",
+          note: "Design storage systems with redundancy, backup structure, and recovery workflows that support real operational use.",
+          tags: ["Backup architecture", "Redundancy planning", "Recovery workflows", "Data protection"],
+        },
+        Compute: {
+          title: "Compute sized for local workloads.",
+          note: "Plan CPU, memory, and system resources for private infrastructure, internal tools, and day-to-day workloads.",
+          tags: ["Compute sizing", "Local workloads", "System tuning", "Performance planning"],
+        },
+        "AI accelerators": {
+          title: "Local inference without sending data away.",
+          note: "Deploy GPU-backed local AI workflows for private inference, OCR, retrieval, and internal model use.",
+          tags: ["Local AI deployment", "Inference workflows", "Private model hosting", "GPU system design"],
+        },
+        Cooling: {
+          title: "Thermal design for reliable long-run operation.",
+          note: "Support stable performance with airflow and cooling planned for sustained load and continuous use.",
+          tags: ["Thermal planning", "Reliability under load", "Cooling design", "Long-run stability"],
+        },
+        "Power + network": {
+          title: "Reliable power and secure access.",
+          note: "Support resilient operation with power planning, network setup, secure remote access, and edge connectivity.",
+          tags: ["Power resilience", "Network setup", "Secure access", "Remote management"],
+        },
       };
 
       const stageStep = document.querySelector("#stage-step");
+      const stageTitle = document.querySelector("#stage-title");
+      const stageNote = document.querySelector("#stage-note");
       const stageTags = document.querySelector("#stage-tags");
 
-      const syncStageTags = () => {
-        if (!stageStep || !stageTags) return;
+      const syncStageContent = () => {
+        if (!stageStep || !stageTitle || !stageNote || !stageTags) return;
         const stageName = stageStep.textContent?.split("·")[0]?.trim();
-        const tags = stageTagsByName[stageName];
-        if (!tags) return;
+        const content = stageContentByName[stageName];
+        if (!content) return;
+
+        stageTitle.textContent = content.title;
+        stageNote.textContent = content.note;
         stageTags.replaceChildren(
-          ...tags.map((label) => {
+          ...content.tags.map((label) => {
             const tag = document.createElement("span");
             tag.textContent = label;
             return tag;
@@ -202,9 +235,9 @@ const stages = [
       };
 
       if (stageStep) {
-        new MutationObserver(syncStageTags).observe(stageStep, { childList: true });
+        new MutationObserver(syncStageContent).observe(stageStep, { childList: true });
       }
-      syncStageTags();
+      syncStageContent();
     </script>
   </body>
 </html>
