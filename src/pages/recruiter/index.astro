@@ -712,7 +712,7 @@ const recruiterAssistantApi =
   .reason-list,
   .evidence-list {
     display: grid;
-    gap: 11px;
+    gap: 14px;
     margin-top: 16px;
   }
 
@@ -731,31 +731,30 @@ const recruiterAssistantApi =
   .evidence-card {
     padding: 18px;
     border: 1px solid var(--line);
-    border-radius: 16px;
-    background: rgba(7, 18, 31, 0.86);
-    box-shadow: inset 0 1px rgba(255, 255, 255, 0.03);
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(10, 22, 37, 0.94), rgba(7, 18, 31, 0.88));
+    box-shadow:
+      inset 0 1px rgba(255, 255, 255, 0.04),
+      0 18px 40px rgba(0, 0, 0, 0.2);
   }
 
   .reason-card {
-    position: relative;
-    padding: 0 0 0 20px;
-    border: 0;
-    background: transparent;
-  }
-
-  .reason-card::before {
-    position: absolute;
-    top: 0.55em;
-    left: 0;
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--accent-2);
-    content: "";
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(10, 22, 37, 0.9), rgba(7, 18, 31, 0.82));
+    box-shadow:
+      inset 0 1px rgba(255, 255, 255, 0.04),
+      0 18px 40px rgba(0, 0, 0, 0.16);
   }
 
   .reason-card .card-kicker {
     display: block;
+    margin-bottom: 0;
   }
 
   .reason-card h3,
