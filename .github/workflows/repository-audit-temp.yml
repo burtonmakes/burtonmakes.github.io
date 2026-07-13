@@ -16,23 +16,32 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Print tracked repository files
+      - name: Build repository inventory
         run: |
-          echo "=== TRACKED FILES ==="
-          git ls-files | sort
+          git ls-files | sort > tracked-files.txt
+          {
+            echo "=== SCRIPTS ==="
+            find scripts -maxdepth 3 -type f -print 2>/dev/null | sort || true
+            echo
+            echo "=== WORKFLOWS ==="
+            find .github/workflows -maxdepth 1 -type f -print | sort
+            echo
+            echo "=== ROOT HTML / NOTES / BACKUPS ==="
+            find . -maxdepth 3 -type f \( -name '*.html' -o -name '*NOTE*' -o -name '*BACKUP*' -o -name '*.bak' -o -name '*.tmp' \) -print | sort
+            echo
+            echo "=== PACKAGE SCRIPTS ==="
+            node -e "console.log(JSON.stringify(require('./package.json').scripts, null, 2))"
+            echo
+            echo "=== MODEL / GENERATION REFERENCES ==="
+            grep -RInE 'generate|generator|one[- ]off|temporary|backup|preview|helper|convert|embed|optimi[sz]e' scripts src public workers .github 2>/dev/null | head -2000 || true
+          } > repository-audit.txt
 
-      - name: Inspect helper and generated files
-        run: |
-          echo "=== SCRIPTS ==="
-          find scripts -maxdepth 2 -type f -print 2>/dev/null | sort || true
-          echo "=== ROOT HTML / NOTES / BACKUPS ==="
-          find . -maxdepth 2 -type f \( -name '*.html' -o -name '*NOTE*' -o -name '*BACKUP*' -o -name '*.bak' -o -name '*.tmp' \) -print | sort
-          echo "=== MODEL / GENERATION REFERENCES ==="
-          grep -RInE 'generate|generator|one[- ]off|temporary|backup|preview|helper|convert|embed|optimi[sz]e' scripts src public workers .github 2>/dev/null | head -1000 || true
-
-      - name: Show package and workflow references
-        run: |
-          echo "=== PACKAGE SCRIPTS ==="
-          node -e "console.log(JSON.stringify(require('./package.json').scripts, null, 2))"
-          echo "=== WORKFLOWS ==="
-          find .github/workflows -maxdepth 1 -type f -print | sort
+      - name: Upload repository inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-audit
+          path: |
+            tracked-files.txt
+            repository-audit.txt
+          if-no-files-found: error
+          retention-days: 1
