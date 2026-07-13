@@ -8,18 +8,12 @@ on:
     paths:
       - scripts/reposition-cocometric-antennas.py
       - .github/workflows/fix-cocometric-glb-antennas-final.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - scripts/reposition-cocometric-antennas.py
-      - .github/workflows/fix-cocometric-glb-antennas-final.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: fix-cocometric-glb-antennas-final-${{ github.event.pull_request.number || github.ref_name }}
+  group: fix-cocometric-glb-antennas-final
   cancel-in-progress: false
 
 jobs:
@@ -33,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          ref: fix-cocometric-glb-antennas-final
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -44,27 +38,40 @@ jobs:
         run: python -m pip install --disable-pip-version-check trimesh
 
       - name: Correct antenna geometry
-        run: python scripts/reposition-cocometric-antennas.py
+        id: correct
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/reposition-cocometric-antennas.py 2>&1 | tee cocometric-antenna-fix.log
 
       - name: Set up Node.js
+        if: steps.correct.outcome == 'success'
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install site dependencies
+        if: steps.correct.outcome == 'success'
         run: npm install
 
       - name: Validate Cocometric model
+        if: steps.correct.outcome == 'success'
         run: npm run validate:cocometric
 
       - name: Build production site
+        if: steps.correct.outcome == 'success'
         run: npm run build
 
-      - name: Commit corrected GLB and embedded parts
+      - name: Commit generated GLB or failure diagnostics
+        if: always()
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
+          touch cocometric-antenna-fix.log
+          git add cocometric-antenna-fix.log
+          for path in \
             src/data/cocometric-model/part-0.js \
             src/data/cocometric-model/part-1.js \
             src/data/cocometric-model/part-2.js \
@@ -73,12 +80,17 @@ jobs:
             src/data/cocometric-model/part-5.js \
             src/data/cocometric-model/shape-revision-manifest.json \
             public/models/cocometric-before-antenna-axis-fix.glb \
-            public/models/cocometric-shape-revision.glb
+            public/models/cocometric-shape-revision.glb; do
+            if [ -e "$path" ]; then git add "$path"; fi
+          done
 
           if git diff --cached --quiet; then
-            echo "Corrected GLB is already current."
             exit 0
           fi
 
-          git commit -m "Fix Cocometric GLB antenna orientation and rear mounting"
-          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
+          git commit -m "Generate corrected Cocometric antenna GLB"
+          git push origin HEAD:fix-cocometric-glb-antennas-final
+
+      - name: Fail if geometry correction failed
+        if: steps.correct.outcome == 'failure'
+        run: exit 1
