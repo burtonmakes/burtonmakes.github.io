@@ -1,4 +1,4 @@
-name: Temporary repository audit
+name: Temporary repository cleanup
 
 on:
   pull_request:
@@ -6,68 +6,62 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  audit:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out cleanup branch
+        uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
-      - name: Build repository inventory
+      - name: Remove audited stale files
         run: |
-          git ls-files | sort > tracked-files.txt
-          {
-            echo "=== SCRIPTS ==="
-            find scripts -maxdepth 3 -type f -print 2>/dev/null | sort || true
-            echo
-            echo "=== WORKFLOWS ==="
-            find .github/workflows -maxdepth 1 -type f -print | sort
-            echo
-            echo "=== ROOT HTML / NOTES / BACKUPS ==="
-            find . -maxdepth 3 -type f \( -name '*.html' -o -name '*NOTE*' -o -name '*BACKUP*' -o -name '*.bak' -o -name '*.tmp' \) -print | sort
-            echo
-            echo "=== PACKAGE SCRIPTS ==="
-            node -e "console.log(JSON.stringify(require('./package.json').scripts, null, 2))"
-          } > repository-audit.txt
+          rm -rf \
+            public/models \
+            src/data/cocometric-model-backup \
+            scripts/reposition-cocometric-antennas.py \
+            scripts/revise-cocometric-shapes.py \
+            src/data/cocometric-model/part-5-0.js \
+            src/data/cocometric-model/part-5-1.js \
+            src/data/cocometric-model/part-5-2.js \
+            src/data/cocometric-model/part-5-3.js \
+            src/data/cocometric-model/part-5-4.js \
+            src/data/cocometric-model/part-5-5.js \
+            src/data/cocometric-model/shape-revision-manifest.json \
+            src/scripts/cocometric-stage-polish.js \
+            src/scripts/cocometric-viewer-v2.js \
+            .github/workflows/repository-audit-temp.yml
 
-          {
-            for term in \
-              cocometric-viewer-v2 \
-              cocometric-stage-polish \
-              cocometric-model-backup \
-              shape-revision-manifest \
-              part-5-0 part-5-1 part-5-2 part-5-3 part-5-4 part-5-5 \
-              reposition-cocometric-antennas \
-              revise-cocometric-shapes \
-              cocometric-before-antenna-axis-fix \
-              cocometric-before-rear-antennas \
-              cocometric-before-router-cleanup \
-              cocometric-before-shorter-antennas \
-              cocometric-original-before-shape-revision \
-              cocometric-shape-revision.glb \
-              recruiter/match; do
-              echo "=== $term ==="
-              grep -RIn --exclude='repository-audit-temp.yml' --exclude='candidate-references.txt' "$term" . 2>/dev/null || true
-              echo
-            done
-          } > candidate-references.txt
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
 
-          {
-            echo "=== LARGEST TRACKED FILES ==="
-            git ls-files -z | xargs -0 du -h | sort -h | tail -80
-          } > tracked-file-sizes.txt
+      - name: Validate production build
+        run: npm run build
+        env:
+          PUBLIC_ANALYTICS_ENABLED: "false"
+          PUBLIC_RECRUITER_MATCH_API: "https://example.invalid/recruiter-assistant"
 
-      - name: Upload repository inventory
-        uses: actions/upload-artifact@v4
-        with:
-          name: repository-audit
-          path: |
-            tracked-files.txt
-            repository-audit.txt
-            candidate-references.txt
-            tracked-file-sizes.txt
-          if-no-files-found: error
-          retention-days: 1
+      - name: Compile recruiter Worker
+        run: >-
+          npx wrangler deploy --dry-run
+          --config workers/recruiter-match/wrangler.toml
+          --outdir .wrangler/recruiter-cleanup-dry-run
+
+      - name: Commit audited cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "Repository is already clean."
+            exit 0
+          fi
+          git commit -m "Remove stale model backups and helper files"
+          git push origin HEAD:${GITHUB_HEAD_REF}
