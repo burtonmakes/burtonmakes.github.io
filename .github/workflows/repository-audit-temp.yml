@@ -31,10 +31,34 @@ jobs:
             echo
             echo "=== PACKAGE SCRIPTS ==="
             node -e "console.log(JSON.stringify(require('./package.json').scripts, null, 2))"
-            echo
-            echo "=== MODEL / GENERATION REFERENCES ==="
-            grep -RInE 'generate|generator|one[- ]off|temporary|backup|preview|helper|convert|embed|optimi[sz]e' scripts src public workers .github 2>/dev/null | head -2000 || true
           } > repository-audit.txt
+
+          {
+            for term in \
+              cocometric-viewer-v2 \
+              cocometric-stage-polish \
+              cocometric-model-backup \
+              shape-revision-manifest \
+              part-5-0 part-5-1 part-5-2 part-5-3 part-5-4 part-5-5 \
+              reposition-cocometric-antennas \
+              revise-cocometric-shapes \
+              cocometric-before-antenna-axis-fix \
+              cocometric-before-rear-antennas \
+              cocometric-before-router-cleanup \
+              cocometric-before-shorter-antennas \
+              cocometric-original-before-shape-revision \
+              cocometric-shape-revision.glb \
+              recruiter/match; do
+              echo "=== $term ==="
+              grep -RIn --exclude='repository-audit-temp.yml' --exclude='candidate-references.txt' "$term" . 2>/dev/null || true
+              echo
+            done
+          } > candidate-references.txt
+
+          {
+            echo "=== LARGEST TRACKED FILES ==="
+            git ls-files -z | xargs -0 du -h | sort -h | tail -80
+          } > tracked-file-sizes.txt
 
       - name: Upload repository inventory
         uses: actions/upload-artifact@v4
@@ -43,5 +67,7 @@ jobs:
           path: |
             tracked-files.txt
             repository-audit.txt
+            candidate-references.txt
+            tracked-file-sizes.txt
           if-no-files-found: error
           retention-days: 1
