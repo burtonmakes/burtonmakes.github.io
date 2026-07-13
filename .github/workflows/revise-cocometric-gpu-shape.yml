@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - cocometric-shape-revision
+      - main
     paths:
       - scripts/remove-cocometric-gpu-fans.mjs
       - .github/workflows/revise-cocometric-gpu-shape.yml
@@ -19,11 +19,11 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Check out shape revision branch
+      - name: Check out main
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: cocometric-shape-revision
+          ref: main
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -61,4 +61,4 @@ jobs:
           fi
 
           git commit -m "Remove circular GPU fan geometry from stage 05"
-          git push origin HEAD:cocometric-shape-revision
+          git push origin HEAD:main
