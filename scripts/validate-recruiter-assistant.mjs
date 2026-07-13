@@ -75,7 +75,7 @@ requireText(workerCore, workerCorePath, [
   "fallbackPortfolioSearch",
   "validateSourceIds",
   "class RateLimiter",
-  "@cf/google/gemma-4-26b-a4b-it",
+  "@cf/meta/llama-3.1-8b-instruct-fast",
 ]);
 
 requireText(workerEntry, workerEntryPath, [

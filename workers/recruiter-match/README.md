@@ -15,7 +15,7 @@ The recruiter page does not expose a fuzzy score or hiring percentage.
 
 ## Models and retrieval
 
-- Primary generation: `@cf/google/gemma-4-26b-a4b-it`
+- Primary generation: `@cf/meta/llama-3.1-8b-instruct-fast` (Cloudflare JSON Mode supported)
 - Structured-response repair: `@cf/meta/llama-3.1-8b-instruct-fast`
 - Temperature: `0.05`
 - Seed: `1701`

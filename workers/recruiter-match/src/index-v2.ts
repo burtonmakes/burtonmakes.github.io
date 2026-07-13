@@ -103,7 +103,7 @@ type ChatModelResult = {
 
 type QuotaAction = "analyze" | "chat";
 
-const DEFAULT_MODEL = "@cf/google/gemma-4-26b-a4b-it";
+const DEFAULT_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const MAX_JOB_TEXT_LENGTH = 10_000;
 const MAX_CHAT_QUESTION_LENGTH = 1_200;
 const MAX_PORTFOLIO_ITEMS = 60;
@@ -570,7 +570,7 @@ const runJsonModel = async <T>(
       temperature: 0.05,
       top_p: 0.9,
       seed: 1701,
-      max_completion_tokens:
+      max_tokens:
         attempt === 0 ? maxTokens : Math.max(300, Math.floor(maxTokens * 0.72)),
       response_format: { type: "json_object" },
     });
