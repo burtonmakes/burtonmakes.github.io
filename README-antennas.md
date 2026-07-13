@@ -1,0 +1,1 @@
+Rear-mounted Cocometric router antennas use the site coral-orange palette color #E8834A. This file is temporary and will be removed before merge.
