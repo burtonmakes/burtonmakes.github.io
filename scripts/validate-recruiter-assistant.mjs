@@ -31,6 +31,8 @@ const workerEntryPath = "workers/recruiter-match/src/index.ts";
 const workerCorePath = "workers/recruiter-match/src/index-v2.ts";
 const wranglerPath = "workers/recruiter-match/wrangler.toml";
 const stateBridgePath = "public/recruiter-state-bridge.js";
+const responseGuardPath = "public/recruiter-response-guard.js";
+const baseLayoutPath = "src/layouts/BaseLayout.astro";
 const workflowDocPath = "docs/RECRUITER_ASSISTANT_WORKFLOW.md";
 
 const recruiterPage = read(recruiterPagePath);
@@ -39,6 +41,8 @@ const workerEntry = read(workerEntryPath);
 const workerCore = read(workerCorePath);
 const wrangler = read(wranglerPath);
 const stateBridge = read(stateBridgePath);
+const responseGuard = read(responseGuardPath);
+const baseLayout = read(baseLayoutPath);
 const workflowDoc = read(workflowDocPath);
 
 requireText(recruiterStart, recruiterStartPath, [
@@ -110,6 +114,20 @@ requireText(stateBridge, stateBridgePath, [
   "Searching portfolio evidence",
   "Building the sourced review",
   "Review ready",
+]);
+
+requireText(responseGuard, responseGuardPath, [
+  "parserFailurePattern",
+  "minimumAnalysisDurationMs = 7_500",
+  "stageBoundariesMs = [0, 2_500, 5_000]",
+  "model_output_invalid",
+  "sanitizeRecruiterResponse",
+  "startStageClock",
+]);
+
+requireText(baseLayout, baseLayoutPath, [
+  '<script is:inline src="/recruiter-response-guard.js"></script>',
+  '<script is:inline src="/recruiter-state-bridge.js"></script>',
 ]);
 
 requireText(workflowDoc, workflowDocPath, [
