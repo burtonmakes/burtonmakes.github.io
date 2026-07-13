@@ -85,57 +85,33 @@ const recruiterAssistantApi =
 ---
 
 <BaseLayout
-  title="Recruiter Portfolio Review"
-  description="Compare an open role with Alex Burton's public work and project evidence."
+  title="Portfolio Chat"
+  description="Ask the portfolio assistant about Alex Burton's work and project evidence."
 >
   <section class="section recruiter-portal" data-recruiter-portal>
     <div class="portal-header">
-      <div>
-        <p class="eyebrow">Recruiter portfolio review</p>
-        <h1>A fast, evidence-backed role review.</h1>
+      <div class="portal-header-copy">
+        <p class="eyebrow">Portfolio chat</p>
+        <h1>Ask the portfolio assistant</h1>
         <p class="portal-intro">
-          Paste a role and see the strongest portfolio evidence in under a minute.
+          Ask a follow-up about the role, experience, or evidence. Answers are grounded in the public portfolio.
         </p>
       </div>
     </div>
-
-    <section class="review-context" aria-labelledby="role-context-heading">
-      <div>
-        <span class="section-label">Role being reviewed</span>
-        <h2 id="role-context-heading" data-context-title>
-          Add recruiter information
-        </h2>
-        <p data-context-summary>
-          Add your name, company, and the role you are recruiting for.
-        </p>
-      </div>
-      <div class="context-actions">
-        <span class="context-warning" data-context-warning>
-          Missing recruiter information may lower accuracy.
-        </span>
-        <button
-          class="button button-secondary compact-button"
-          type="button"
-          data-edit-context
-        >
-          Edit recruiter information
-        </button>
-      </div>
-    </section>
 
     <div class="portal-grid">
       <main class="portal-main">
         <section class="role-entry-panel" aria-labelledby="role-text-heading">
           <div class="panel-heading-row">
             <div>
-              <span class="section-label">Role details</span>
+              <span class="section-label">Role review</span>
               <h2 id="role-text-heading">What are you hiring for?</h2>
               <p>
                 Paste the job description or the key requirements.
               </p>
             </div>
             <div class="usage-summary" aria-label="Daily usage limits">
-              <span data-analysis-remaining>10 role analyses left today</span>
+              <span data-analysis-remaining>3 questions left today</span>
             </div>
           </div>
 
@@ -227,7 +203,7 @@ const recruiterAssistantApi =
                   <span aria-hidden="true">03</span>
                   Relevant evidence
                 </span>
-                <h2 id="evidence-heading">Why this could be a strong match</h2>
+                <h2 id="evidence-heading">Why this is a strong match</h2>
               </div>
               <div class="evidence-filters" role="group" aria-label="Evidence filters">
                 <button type="button" data-evidence-filter="all" data-active="true">
@@ -240,7 +216,6 @@ const recruiterAssistantApi =
               </div>
             </div>
             <div class="reason-list" data-reason-list></div>
-            <p class="evidence-list-label">Open a card for the supporting work or project evidence.</p>
             <div class="evidence-list" data-evidence-list></div>
           </section>
         </section>
@@ -270,20 +245,22 @@ const recruiterAssistantApi =
         </div>
 
         <div class="chat-body" id="portfolio-chat-body">
-          <span class="chat-usage" data-chat-remaining>5 questions left today</span>
-          <p class="chat-context">Ask Coco about the role, evidence, or fit.</p>
+          <span class="chat-usage" data-chat-remaining>3 questions left today</span>
+          <p class="chat-context">
+            Ask a follow-up about the role, experience, or evidence. Answers are grounded in the public portfolio.
+          </p>
 
           <div class="chat-messages" data-chat-messages aria-live="polite">
             <article class="chat-message assistant">
-              <span class="chat-speaker">Coco</span>
+              <span class="chat-speaker">Portfolio assistant</span>
               <p>
-                Analyze the role first, then ask about fit, gaps, or evidence.
+                Analyze the role first. Then ask about hardware ownership, validation, manufacturing, sensing, research, or a specific requirement.
               </p>
             </article>
           </div>
 
           <div class="suggested-questions" data-suggested-questions hidden>
-            <button type="button">What evidence supports hardware debugging?</button>
+            <button type="button">What optical sensor experience is documented?</button>
             <button type="button">What manufacturing experience is documented?</button>
             <button type="button">Show the strongest sensor integration example.</button>
           </div>
@@ -297,7 +274,7 @@ const recruiterAssistantApi =
               data-chat-input
               rows="3"
               maxlength="1200"
-              placeholder="Ask Coco a question..."
+              placeholder="Ask a portfolio question"
               disabled
             ></textarea>
             <div class="chat-form-footer">
@@ -406,18 +383,27 @@ const recruiterAssistantApi =
   .recruiter-portal {
     display: block;
     min-height: auto;
-    padding-top: clamp(4.5rem, 7vh, 6.5rem);
+    padding-top: clamp(2rem, 4vh, 3rem);
     padding-bottom: clamp(3rem, 6vh, 5rem);
   }
 
   .portal-header {
     max-width: 1080px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
+  }
+
+  .portal-header-copy {
+    max-width: 780px;
+    padding: clamp(18px, 2.5vw, 28px);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(6, 16, 28, 0.88), rgba(6, 16, 28, 0.64));
+    box-shadow: var(--shadow-soft);
   }
 
   .portal-header h1 {
     max-width: 24ch;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     font-size: clamp(2.4rem, 4vw, 4.15rem);
     line-height: 1;
     letter-spacing: -0.045em;
@@ -517,7 +503,7 @@ const recruiterAssistantApi =
 
   .portal-grid {
     display: block;
-    padding-right: 434px;
+    padding-right: 430px;
   }
 
   .portal-grid:has(.portfolio-chat[data-minimized="true"]) {
@@ -542,7 +528,7 @@ const recruiterAssistantApi =
   .role-summary-panel,
   .coverage-panel,
   .evidence-panel {
-    padding: clamp(17px, 2vw, 24px);
+    padding: clamp(18px, 2vw, 24px);
   }
 
   .panel-heading-row,
@@ -735,9 +721,7 @@ const recruiterAssistantApi =
   }
 
   .evidence-list-label {
-    margin: 18px 0 -4px;
-    color: var(--muted);
-    font-size: 0.76rem;
+    display: none;
   }
 
   .evidence-list {
@@ -745,10 +729,11 @@ const recruiterAssistantApi =
   }
 
   .evidence-card {
-    padding: 17px;
-    border: 1px solid var(--line-soft);
-    border-radius: 11px;
-    background: rgba(255, 255, 255, 0.016);
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(7, 18, 31, 0.86);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.03);
   }
 
   .reason-card {
@@ -769,18 +754,15 @@ const recruiterAssistantApi =
     content: "";
   }
 
-  .reason-card .card-kicker,
-  .reason-card .card-support-label,
-  .reason-card .source-chip-row,
-  .reason-card p {
-    display: none;
+  .reason-card .card-kicker {
+    display: block;
   }
 
   .reason-card h3,
   .evidence-card h3 {
     margin: 0;
-    font-size: 1rem;
-    line-height: 1.3;
+    font-size: 1.05rem;
+    line-height: 1.25;
   }
 
   .card-kicker,
@@ -804,8 +786,8 @@ const recruiterAssistantApi =
   .evidence-card p {
     margin: 8px 0 0;
     color: var(--muted);
-    font-size: 0.82rem;
-    line-height: 1.45;
+    font-size: 0.86rem;
+    line-height: 1.52;
   }
 
   .source-chip-row {
@@ -820,10 +802,20 @@ const recruiterAssistantApi =
     cursor: pointer;
   }
 
+  .evidence-label {
+    cursor: default;
+  }
+
   .source-chip:hover,
   .source-chip:focus-visible {
     border-color: var(--accent);
     color: var(--text);
+  }
+
+  .evidence-label:hover,
+  .evidence-label:focus-visible {
+    border-color: var(--line);
+    color: var(--muted-2);
   }
 
   .evidence-match-label {
@@ -841,8 +833,9 @@ const recruiterAssistantApi =
     display: flex;
     gap: 5px;
     padding: 3px;
-    border: 1px solid var(--line-soft);
-    border-radius: 9px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .evidence-filters button {
@@ -856,7 +849,7 @@ const recruiterAssistantApi =
   }
 
   .evidence-filters button[data-active="true"] {
-    background: rgba(76, 141, 255, 0.14);
+    background: rgba(76, 141, 255, 0.16);
     color: var(--text);
   }
 
@@ -873,6 +866,13 @@ const recruiterAssistantApi =
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.07em;
+  }
+
+  .evidence-summary {
+    margin: 6px 0 0;
+    color: var(--muted-2);
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 
   .evidence-card small {
@@ -893,7 +893,9 @@ const recruiterAssistantApi =
     max-height: none;
     overflow: hidden;
     padding: 18px;
-    background: color-mix(in srgb, #081426, transparent 4%);
+    border: 1px solid rgba(145, 200, 229, 0.18);
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(10, 21, 40, 0.97), rgba(8, 18, 33, 0.94));
     box-shadow: 0 22px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(145, 200, 229, 0.08);
     backdrop-filter: blur(18px);
   }
@@ -996,17 +998,22 @@ const recruiterAssistantApi =
     display: flex;
     width: 100%;
     align-items: flex-start;
+    gap: 12px;
   }
 
   .chat-body > .chat-usage {
     display: block;
     margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 700;
   }
 
   .chat-context {
-    margin: 8px 0 14px;
-    color: var(--muted);
-    font-size: 0.76rem;
+    margin: 14px 0 16px;
+    color: var(--muted-2);
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 
   .chat-messages {
@@ -1019,8 +1026,8 @@ const recruiterAssistantApi =
   .chat-message {
     width: fit-content;
     max-width: 94%;
-    padding: 15px 17px;
-    border-radius: 15px;
+    padding: 15px 17px 16px;
+    border-radius: 18px;
     margin-bottom: 13px;
   }
 
@@ -1054,8 +1061,8 @@ const recruiterAssistantApi =
   .chat-message.user {
     max-width: 88%;
     margin-left: auto;
-    border: 1px solid rgba(76, 141, 255, 0.16);
-    background: rgba(76, 141, 255, 0.18);
+    border: 1px solid rgba(76, 141, 255, 0.22);
+    background: linear-gradient(180deg, rgba(22, 49, 90, 0.94), rgba(19, 36, 68, 0.95));
   }
 
   .chat-message .source-chip-row {
@@ -1073,12 +1080,12 @@ const recruiterAssistantApi =
 
   .suggested-questions button {
     width: 100%;
-    padding: 9px 11px;
-    border: 1px solid var(--line-soft);
-    border-radius: 10px;
-    background: transparent;
-    color: var(--muted);
-    font-size: 0.76rem;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.015);
+    color: var(--muted-2);
+    font-size: 0.9rem;
     text-align: left;
     cursor: pointer;
   }
@@ -1101,12 +1108,12 @@ const recruiterAssistantApi =
   }
 
   .chat-form textarea {
-    height: 76px;
-    min-height: 76px;
+    height: 82px;
+    min-height: 82px;
     max-height: 150px;
     resize: none;
-    padding: 11px 12px;
-    font-size: 0.8rem;
+    padding: 13px 14px;
+    font-size: 0.92rem;
     line-height: 1.45;
   }
 
@@ -1194,9 +1201,9 @@ const recruiterAssistantApi =
   .source-excerpt {
     margin: 20px 0;
     padding: 16px;
-    border: 1px solid var(--line-soft);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.018);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.022);
     white-space: pre-wrap;
     color: var(--muted-2);
     font-size: 0.86rem;
@@ -1565,12 +1572,9 @@ const recruiterAssistantApi =
         label.textContent = "Why this matters";
         const title = document.createElement("h3");
         title.textContent = reason.statement;
-        const evidenceLabel = document.createElement("span");
-        evidenceLabel.className = "card-support-label";
-        evidenceLabel.textContent = "Evidence behind it";
         const copy = document.createElement("p");
         copy.textContent = reason.relevance;
-        article.append(label, title, evidenceLabel, copy);
+        article.append(label, title, copy);
         appendSourceButtons(article, reason.sourceIds || []);
         elements.reasonList.append(article);
       });
@@ -1610,16 +1614,15 @@ const recruiterAssistantApi =
         const titleWrap = document.createElement("div");
         const type = document.createElement("span");
         type.className = "evidence-type";
-        type.textContent =
-          source.type === "work" ? "Work" : "Project";
+        type.textContent = source.type === "work" ? "Work" : "Project";
         const title = document.createElement("h3");
         title.textContent = source.title;
-        titleWrap.append(type, title);
+        const summary = document.createElement("p");
+        summary.className = "evidence-summary";
+        summary.textContent = source.summary;
+        titleWrap.append(type, title, summary);
 
         header.append(titleWrap);
-
-        const copy = document.createElement("p");
-        copy.textContent = item.whyRelevant;
 
         const count = document.createElement("span");
         count.className = "card-support-label";
@@ -1642,8 +1645,22 @@ const recruiterAssistantApi =
           header.append(time);
         }
 
-        article.append(header, copy, count);
+        article.append(header, count);
+        const labelRow = document.createElement("div");
+        labelRow.className = "source-chip-row";
+        (source.tags || []).slice(0, 3).forEach((tag) => {
+          const chip = document.createElement("span");
+          chip.className = "source-chip evidence-label";
+          chip.textContent = tag;
+          labelRow.append(chip);
+        });
+        if (labelRow.childElementCount) article.append(labelRow);
         appendEvidenceMatchLabels(article, item.sourceId, item.requirementIds);
+        if (item.whyRelevant) {
+          const copy = document.createElement("p");
+          copy.textContent = item.whyRelevant;
+          article.append(copy);
+        }
         elements.evidenceList.append(article);
       });
     };
