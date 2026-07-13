@@ -1543,13 +1543,14 @@ const recruiterAssistantApi =
     };
 
     const renderContext = () => {
+      if (!elements.contextTitle || !elements.contextSummary) return;
       const context = state.recruiterContext;
       const complete = contextComplete();
 
       if (complete) {
         elements.contextTitle.textContent = context.hiringFor;
         elements.contextSummary.textContent = `${context.name} · ${context.company}`;
-        elements.contextWarning.hidden = true;
+        if (elements.contextWarning) elements.contextWarning.hidden = true;
       } else {
         elements.contextTitle.textContent =
           context.hiringFor || "Recruiter information incomplete";
@@ -1557,12 +1558,12 @@ const recruiterAssistantApi =
         elements.contextSummary.textContent = parts.length
           ? parts.join(" · ")
           : "Add your name, company, and the role you are recruiting for.";
-        elements.contextWarning.hidden = false;
+        if (elements.contextWarning) elements.contextWarning.hidden = false;
       }
 
-      elements.recruiterName.value = context.name || "";
-      elements.recruiterCompany.value = context.company || "";
-      elements.recruiterRole.value = context.hiringFor || "";
+      if (elements.recruiterName) elements.recruiterName.value = context.name || "";
+      if (elements.recruiterCompany) elements.recruiterCompany.value = context.company || "";
+      if (elements.recruiterRole) elements.recruiterRole.value = context.hiringFor || "";
     };
 
     const renderUsage = () => {
@@ -2047,25 +2048,33 @@ const recruiterAssistantApi =
       }
     };
 
-    elements.editContext.addEventListener("click", () => {
-      renderContext();
-      elements.contextDialog.showModal();
-    });
+    if (elements.editContext && elements.contextDialog && elements.contextForm) {
+      elements.editContext.addEventListener("click", () => {
+        renderContext();
+        elements.contextDialog.showModal();
+      });
+    }
 
-    elements.closeContext.addEventListener("click", () => {
-      elements.contextDialog.close();
-    });
+    if (elements.closeContext && elements.contextDialog) {
+      elements.closeContext.addEventListener("click", () => {
+        elements.contextDialog.close();
+      });
+    }
 
-    elements.contextForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      saveContextFromFields(false);
-      elements.contextDialog.close();
-    });
+    if (elements.contextForm && elements.contextDialog) {
+      elements.contextForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        saveContextFromFields(false);
+        elements.contextDialog.close();
+      });
+    }
 
-    elements.skipContext.addEventListener("click", () => {
-      saveContextFromFields(true);
-      elements.contextDialog.close();
-    });
+    if (elements.skipContext && elements.contextDialog) {
+      elements.skipContext.addEventListener("click", () => {
+        saveContextFromFields(true);
+        elements.contextDialog.close();
+      });
+    }
 
     elements.roleText.addEventListener("input", () => {
       state.jobText = elements.roleText.value;
@@ -2161,7 +2170,7 @@ const recruiterAssistantApi =
     renderUsage();
     updateCharacterCounts();
 
-    if (!contextComplete() && !state.recruiterContext.skipped) {
+    if (elements.contextDialog && !contextComplete() && !state.recruiterContext.skipped) {
       window.requestAnimationFrame(() => {
         elements.contextDialog.showModal();
       });
