@@ -97,6 +97,11 @@ requireText(stateBridge, stateBridgePath, [
   "resetUsageForUtcDay",
   "analysisStale",
   "latestChatSources",
+  "data-recruiter-analysis-progress",
+  "startAnalysisLoader",
+  "Searching portfolio evidence",
+  "Building the sourced review",
+  "Review ready",
 ]);
 
 requireText(workflowDoc, workflowDocPath, [
