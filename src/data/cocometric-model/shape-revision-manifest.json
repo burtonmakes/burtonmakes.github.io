@@ -1,0 +1,20 @@
+{
+  "profile": "shape-revision-v1",
+  "geometryChanged": true,
+  "backupBranch": "backup/cocometric-glb-original-2026-07-12",
+  "original": {
+    "path": "public/models/cocometric-original-before-shape-revision.glb",
+    "bytes": 189480,
+    "sha256": "094e422ce632bd843b34f02612f50f4c5d1cb47ef390cff8a6ac3c326a9a6215"
+  },
+  "revised": {
+    "path": "public/models/cocometric-shape-revision.glb",
+    "bytes": 232176,
+    "sha256": "962fa56917cdeb724f674ca6349a2004fa7cecfcb13b16ddcf33408e092f12e2"
+  },
+  "changes": [
+    "Replaced oversized GPU discs with compact recessed fan assemblies and swept blades.",
+    "Replaced the abstract NIC card with a compact router/gateway appliance and three antennas.",
+    "Preserved all non-target geometry and the original material palette."
+  ]
+}
