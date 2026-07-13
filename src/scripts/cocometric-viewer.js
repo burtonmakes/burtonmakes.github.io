@@ -92,9 +92,6 @@ const authoredClearance = {
   "power-network": [0, 0, 0.036],
 };
 const meshClearance = {
-  // These panels overlap in the source GLB: the base extends into the
-  // vertical walls by roughly 0.075 model units. Separate the mating faces
-  // at the geometry level so the corner cannot z-fight.
   Exploded_Chassis_Base: [0, -0.075, 0],
   Exploded_Chassis_Left: [-0.075, 0, 0],
   Exploded_Chassis_Right: [0.075, 0, 0],
@@ -293,13 +290,13 @@ async function initializeViewer() {
 
   const mobile = isMobile();
   const lowPowerDevice = (navigator.hardwareConcurrency || 8) <= 4;
-  const enableShadows = !mobile && !lowPowerDevice;
+  const enableShadows = false;
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
-    antialias: !mobile && !lowPowerDevice,
+    antialias: !lowPowerDevice,
     alpha: true,
-    powerPreference: mobile ? "low-power" : "high-performance",
+    powerPreference: "high-performance",
     preserveDrawingBuffer: false,
   });
 
@@ -308,7 +305,6 @@ async function initializeViewer() {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.16;
   renderer.shadowMap.enabled = enableShadows;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x01050a, mobile ? 0.014 : 0.015);
@@ -321,12 +317,6 @@ async function initializeViewer() {
 
   const key = new THREE.DirectionalLight(0xffffff, 4.4);
   key.position.set(5, 8, 9);
-  key.castShadow = enableShadows;
-  key.shadow.mapSize.set(1024, 1024);
-  key.shadow.camera.near = 0.1;
-  key.shadow.camera.far = 24;
-  key.shadow.bias = -0.00035;
-  key.shadow.normalBias = 0.032;
   scene.add(key);
 
   const fill = new THREE.DirectionalLight(0x74cfff, 2.15);
@@ -347,7 +337,6 @@ async function initializeViewer() {
   );
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -2.24;
-  floor.receiveShadow = enableShadows;
   scene.add(floor);
 
   const modelRoot = new THREE.Group();
@@ -409,14 +398,10 @@ async function initializeViewer() {
     const materials = sourceMaterials.map((material) => materialForComponent(material, component));
     mesh.material = Array.isArray(mesh.material) ? materials : materials[0];
     if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
-    const radius = mesh.geometry.boundingSphere?.radius || 0;
     const clearance = meshClearance[mesh.name];
     if (clearance) mesh.position.add(new THREE.Vector3(...clearance));
-    mesh.castShadow = enableShadows && radius > 0.08;
-    // Thin chassis panels are close to one another by design. Letting them
-    // receive the main shadow map creates speckled self-shadowing at their
-    // seams even after the geometry has been given a small physical gap.
-    mesh.receiveShadow = enableShadows && component !== "chassis";
+    mesh.castShadow = false;
+    mesh.receiveShadow = false;
     mesh.renderOrder = component === "rack" ? 0 : component === "chassis" ? 1 : 2;
     componentGroups.get(component).attach(mesh);
   });
@@ -424,9 +409,6 @@ async function initializeViewer() {
   gltf.scene.removeFromParent();
   modelRoot.updateMatrixWorld(true);
 
-  // The supplied GLB is authored as a coherent exploded layout. Keep those
-  // authored positions intact; the scroll story changes emphasis and camera
-  // focus instead of repeatedly re-solving component placement at runtime.
   componentGroups.forEach((group, component) => {
     const [x, y, z] = authoredClearance[component] || [0, 0, 0];
     group.position.set(x, y, z);
@@ -448,7 +430,8 @@ async function initializeViewer() {
     renderWidth = width;
     renderHeight = height;
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1.2 : 1.35));
+    const dprCap = phone ? 1.55 : 1.4;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPowerDevice ? 1.2 : dprCap));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.fov = phone ? 38 : 34;
@@ -487,7 +470,7 @@ async function initializeViewer() {
 
     const delta = previousTime ? Math.min(50, time - previousTime) : 16.67;
     previousTime = time;
-    const motionBlend = reduceMotion ? 1 : 1 - Math.pow(0.001, delta / 1000);
+    const motionBlend = reduceMotion ? 1 : 1 - Math.pow(0.00008, delta / 1000);
 
     const value = stageFloat();
     const fromIndex = Math.floor(value);
@@ -497,9 +480,6 @@ async function initializeViewer() {
     const activeFocus = stages[lockedStage].focus;
     updateActiveStage();
 
-    // Keep the camera continuous along the scroll path. Scale its distance from
-    // the active target instead of scaling from the world origin so component
-    // framing remains stable across every stage and viewport aspect ratio.
     camA.fromArray(stages[fromIndex].camera);
     camB.fromArray(stages[toIndex].camera);
     targetA.fromArray(stages[fromIndex].target);
@@ -536,13 +516,10 @@ async function initializeViewer() {
         ? 1
         : Math.max(overviewWeight, selectedWeight, contextWeight * 0.48, 0.16);
       const targetOpacity = isHighlighted ? 1 : state.originalOpacity * visibility;
-
-      // The component named by the active stage must be solid. Context hardware
-      // may fade, but the highlighted part stays on the opaque render path with
-      // full depth writing on both mobile and desktop.
       const useTransparency = isHighlighted
         ? false
         : state.requiresTransparency || targetOpacity < 0.998;
+
       if (state.material.transparent !== useTransparency) {
         state.material.transparent = useTransparency;
         state.material.needsUpdate = true;
