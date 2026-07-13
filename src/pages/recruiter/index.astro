@@ -175,9 +175,9 @@ const recruiterAssistantApi =
               <div>
                 <span class="section-label section-label-numbered">
                   <span aria-hidden="true">01</span>
-                  Condensed role summary
+                  Role summary
                 </span>
-                <h2>From what I understand, you’re looking for</h2>
+                <h2>The role you’re trying to fill</h2>
               </div>
               <span class="analysis-stale" data-analysis-stale hidden>
                 Role text changed. Analyze again before using chat.
@@ -510,6 +510,7 @@ const recruiterAssistantApi =
 
   .portal-grid {
     display: block;
+    padding-right: 434px;
   }
 
   .portal-main,
@@ -519,12 +520,7 @@ const recruiterAssistantApi =
   }
 
   .analysis-shell {
-    grid-template-columns: minmax(0, 1.25fr) minmax(230px, 0.75fr);
-  }
-
-  .analysis-shell > .reasons-panel,
-  .analysis-shell > .evidence-panel {
-    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
   }
 
   .role-entry-panel,
@@ -720,7 +716,7 @@ const recruiterAssistantApi =
   }
 
   .reason-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .evidence-list-label {
@@ -742,20 +738,27 @@ const recruiterAssistantApi =
 
   .reason-card {
     position: relative;
-    padding-left: 20px;
-    border-color: color-mix(in srgb, var(--accent), var(--line-soft) 62%);
-    background: color-mix(in srgb, var(--accent), transparent 94%);
+    padding: 0 0 0 20px;
+    border: 0;
+    background: transparent;
   }
 
   .reason-card::before {
     position: absolute;
-    top: 17px;
-    bottom: 17px;
+    top: 0.55em;
     left: 0;
-    width: 3px;
+    width: 8px;
+    height: 8px;
     border-radius: 999px;
-    background: var(--accent);
+    background: var(--accent-2);
     content: "";
+  }
+
+  .reason-card .card-kicker,
+  .reason-card .card-support-label,
+  .reason-card .source-chip-row,
+  .reason-card p {
+    display: none;
   }
 
   .reason-card h3,
@@ -835,6 +838,7 @@ const recruiterAssistantApi =
     display: flex;
     justify-content: space-between;
     gap: 14px;
+    align-items: flex-start;
   }
 
   .evidence-type {
@@ -857,8 +861,8 @@ const recruiterAssistantApi =
     bottom: 24px;
     display: flex;
     flex-direction: column;
-    width: min(390px, calc(100vw - 48px));
-    height: min(470px, calc(100vh - 48px));
+    width: min(410px, calc(100vw - 32px));
+    height: min(560px, calc(100vh - 32px));
     min-height: 0;
     max-height: none;
     overflow: hidden;
@@ -907,8 +911,15 @@ const recruiterAssistantApi =
   }
 
   .chat-brand {
+    flex: 1 1 auto;
     min-width: 0;
     gap: 10px;
+  }
+
+  .chat-brand h2 {
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
+    line-height: 1.1;
+    white-space: nowrap;
   }
 
   .chat-avatar {
@@ -955,6 +966,7 @@ const recruiterAssistantApi =
     justify-content: space-between;
     gap: 12px;
     align-items: flex-start;
+    flex-wrap: wrap;
   }
 
   .chat-context {
@@ -1040,6 +1052,14 @@ const recruiterAssistantApi =
 
   .chat-form {
     margin-top: auto;
+  }
+
+  .chat-form-footer {
+    flex-wrap: wrap;
+  }
+
+  .chat-form-footer .button {
+    margin-left: auto;
   }
 
   .chat-form textarea {
@@ -1157,11 +1177,15 @@ const recruiterAssistantApi =
   }
 
   @media (max-width: 1080px) {
+    .portal-grid {
+      padding-right: 0;
+    }
+
     .portfolio-chat {
       right: 18px;
       bottom: 18px;
-      width: min(390px, calc(100vw - 36px));
-      height: min(470px, calc(100vh - 36px));
+      width: min(410px, calc(100vw - 36px));
+      height: min(560px, calc(100vh - 36px));
     }
 
     .analysis-shell {
@@ -1172,9 +1196,6 @@ const recruiterAssistantApi =
       grid-column: auto;
     }
 
-    .reason-list {
-      grid-template-columns: 1fr;
-    }
   }
 
   @media (max-width: 760px) {
@@ -1183,8 +1204,7 @@ const recruiterAssistantApi =
     .section-heading-inline,
     .evidence-heading-row,
     .chat-header {
-      flex-direction: column;
-      align-items: stretch;
+      align-items: center;
     }
 
     .context-actions {
@@ -1195,6 +1215,11 @@ const recruiterAssistantApi =
     .dialog-fields,
     .evidence-list {
       grid-template-columns: 1fr;
+    }
+
+    .evidence-card-header {
+      flex-direction: column;
+      gap: 6px;
     }
 
     .role-entry-footer {
@@ -1221,12 +1246,11 @@ const recruiterAssistantApi =
     }
 
     .portfolio-chat {
-      height: min(520px, calc(100vh - 24px));
+      height: min(600px, calc(100vh - 24px));
     }
 
-    .portfolio-chat[data-minimized="true"] .chat-header {
-      flex-direction: row;
-      align-items: center;
+    .portfolio-chat .chat-usage {
+      display: none;
     }
 
     .role-actions {
@@ -1527,18 +1551,19 @@ const recruiterAssistantApi =
         title.textContent = source.title;
         titleWrap.append(type, title);
 
-        const count = document.createElement("small");
+        const count = document.createElement("span");
+        count.className = "card-support-label";
         const requirementCount = item.requirementIds?.length || 0;
         count.textContent = `${requirementCount} ${
           requirementCount === 1 ? "requirement" : "requirements"
         } supported`;
 
-        header.append(titleWrap, count);
+        header.append(titleWrap);
 
         const copy = document.createElement("p");
         copy.textContent = item.whyRelevant;
 
-        article.append(header, copy);
+        article.append(header, copy, count);
         appendSourceButtons(article, [item.sourceId]);
         elements.evidenceList.append(article);
       });
