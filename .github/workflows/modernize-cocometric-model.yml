@@ -6,13 +6,13 @@ on:
     branches:
       - cocometric-modern-materials
     paths:
-      - scripts/modernize-cocometric-model.mjs
+      - scripts/modernize-cocometric-model-v2.mjs
       - .github/workflows/modernize-cocometric-model.yml
   pull_request:
     branches:
       - main
     paths:
-      - scripts/modernize-cocometric-model.mjs
+      - scripts/modernize-cocometric-model-v2.mjs
       - .github/workflows/modernize-cocometric-model.yml
 
 permissions:
@@ -48,7 +48,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          node scripts/modernize-cocometric-model.mjs 2>&1 | tee modernize-cocometric-model.log
+          node scripts/modernize-cocometric-model-v2.mjs 2>&1 | tee modernize-cocometric-model.log
 
       - name: Validate model structure
         if: steps.modernize.outcome == 'success'
