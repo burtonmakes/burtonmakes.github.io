@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { capabilityTaxonomy } from "../../data/capability-map";
-import { recruiterRoleProfiles, recruiterSkillTags } from "../../data/recruiter-normalizer";
 import { projects, workHistory } from "../../data/site";
 import "../../styles/global.css";
 
@@ -15,7 +14,9 @@ const slugify = (value: string) =>
 const sourceTagsByKey = new Map<string, string[]>();
 
 workHistory.forEach((role) => {
-  sourceTagsByKey.set(`work:${slugify(role.title)}:${slugify(role.company)}`, [...role.skills]);
+  sourceTagsByKey.set(`work:${slugify(role.title)}:${slugify(role.company)}`, [
+    ...role.skills,
+  ]);
 });
 
 projects.forEach((project) => {
@@ -28,1863 +29,1654 @@ projects.forEach((project) => {
   ]);
 });
 
-const matcherData = capabilityTaxonomy.flatMap((group) =>
-  group.nodes.map((node) => ({
-    group: group.label,
-    id: node.id,
-    label: node.label,
-    summary: node.summary,
-    yearsActive: node.yearsActive,
-    yearsScore: node.yearsScore,
-    skillTags: node.skillTags,
-    evidence: node.evidence.map((item) => ({
-      key: item.key,
-      kind: item.kind,
-      title: item.title,
-      href: item.href,
-      period: item.period,
-      summary: item.summary,
-      note: item.note,
-      highlights: item.highlights.slice(0, 2),
-      tags: sourceTagsByKey.get(item.key) ?? [],
-    })),
-  }))
-);
+const portfolioEvidence = new Map<
+  string,
+  {
+    id: string;
+    title: string;
+    kind: string;
+    href: string;
+    summary: string;
+    tags: string[];
+    highlights: readonly string[];
+    capabilities: string[];
+  }
+>();
 
-const portfolioEvidence = new Map<string, {
-  id: string;
-  title: string;
-  kind: string;
-  href: string;
-  summary: string;
-  tags: string[];
-  highlights: readonly string[];
-  capabilities: string[];
-}>();
-
-matcherData.forEach((node) => {
-  node.evidence.forEach((item) => {
-    const current = portfolioEvidence.get(item.key);
-    portfolioEvidence.set(item.key, {
-      id: item.key,
-      title: item.title,
-      kind: item.kind,
-      href: item.href,
-      summary: item.summary,
-      tags: [...new Set([...(current?.tags ?? []), ...item.tags, ...node.skillTags, node.label, node.group])].slice(0, 18),
-      highlights: item.highlights,
-      capabilities: [...new Set([...(current?.capabilities ?? []), node.label])],
+capabilityTaxonomy.forEach((group) => {
+  group.nodes.forEach((node) => {
+    node.evidence.forEach((item) => {
+      const current = portfolioEvidence.get(item.key);
+      portfolioEvidence.set(item.key, {
+        id: item.key,
+        title: item.title,
+        kind: item.kind,
+        href: item.href,
+        summary: item.summary,
+        tags: [
+          ...new Set([
+            ...(current?.tags ?? []),
+            ...(sourceTagsByKey.get(item.key) ?? []),
+            ...node.skillTags,
+            node.label,
+            group.label,
+          ]),
+        ].slice(0, 18),
+        highlights: item.highlights.slice(0, 3),
+        capabilities: [
+          ...new Set([...(current?.capabilities ?? []), node.label]),
+        ],
+      });
     });
   });
 });
 
-const matcherJson = JSON.stringify(matcherData);
 const portfolioJson = JSON.stringify([...portfolioEvidence.values()]);
-const normalizerJson = JSON.stringify(recruiterSkillTags);
-const roleProfilesJson = JSON.stringify(recruiterRoleProfiles);
-const recruiterMatchApi = import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
+const recruiterAssistantApi =
+  import.meta.env.PUBLIC_RECRUITER_MATCH_API || "";
 ---
 
 <BaseLayout
-  title="Recruiter Match"
-  description="Recruiter-facing role comparison for Alex Burton's engineering portfolio."
+  title="Recruiter Portfolio Review"
+  description="Compare an open role with Alex Burton's public work and project evidence."
 >
-  <section class="section recruiter-onepage" data-recruiter-onepage>
-    <div class="recruiter-shell reveal">
-      <div class="recruiter-hero-grid">
-        <div class="recruiter-hero-copy">
-          <p class="eyebrow">Recruiter fast path</p>
-          <h1>Compare your role with Alex Burton’s evidence.</h1>
-          <p>
-            Add hiring context, paste the role, and get a common-match score between the recruiter’s needs
-            and Alex’s mapped work history, projects, skills, and portfolio evidence.
-          </p>
-        </div>
-
-        <div class="match-flow-card" aria-label="Recruiter role context is compared with Alex Burton portfolio evidence.">
-          <div class="flow-node">
-            <span>Recruiter</span>
-            <small>Name · company · target role</small>
-          </div>
-          <div class="flow-common">
-            <small>Metric shown below</small>
-            <strong>Common match</strong>
-            <i></i>
-            <span>role requirements ↔ evidence</span>
-          </div>
-          <div class="flow-node">
-            <span>Alex Burton</span>
-            <small>Portfolio · projects · work history</small>
-          </div>
-        </div>
+  <section class="section recruiter-portal" data-recruiter-portal>
+    <div class="portal-header">
+      <div>
+        <p class="eyebrow">Recruiter portfolio review</p>
+        <h1>Review the role against documented experience.</h1>
+        <p class="portal-intro">
+          Paste the full role, review the condensed hiring need, and open the
+          strongest work and project evidence. Continue with source-grounded
+          questions in the portfolio chat.
+        </p>
       </div>
-
-      <div class="recruiter-workspace">
-        <main class="matcher-panel" aria-label="Role comparison tool">
-          <div class="matcher-heading-row">
-            <div class="panel-heading matcher-heading">
-              <span>Recruiter match</span>
-              <h2>Role comparison</h2>
-              <p>Paste a job description, requirements section, or recruiter skill list. The result is a screening aid, not a hiring decision.</p>
-            </div>
-            <button class="button button-secondary context-edit-button" type="button" data-edit-context>Recruiter info</button>
-          </div>
-
-          <div class="context-quality" data-context-quality>
-            <strong>Context improves accuracy</strong>
-            <p>Recruiter info has not been added yet.</p>
-          </div>
-
-          <label class="role-text-field" for="role-text">
-            <span>Job description, requirements, or keywords</span>
-            <textarea
-              id="role-text"
-              data-match-input
-              rows="9"
-              maxlength="20000"
-              placeholder="Paste the job description, responsibilities, requirements, or comma-separated skills."
-            ></textarea>
-          </label>
-          <span class="character-limit" data-character-limit>0 / 20,000 characters</span>
-
-          <div class="manual-skill-row">
-            <label for="manual-skill">
-              <span>Add or force a skill</span>
-              <input id="manual-skill" data-manual-skill type="text" placeholder="board bring-up, FPC layout, NPI" />
-            </label>
-            <button class="button button-secondary" type="button" data-add-manual-skill>Add</button>
-          </div>
-
-          <div class="action-row">
-            <button class="button button-primary" type="button" data-ai-run>AI Compare</button>
-            <button class="button button-secondary" type="button" data-fuzzy-run>Fuzzy Compare</button>
-            <button class="button button-secondary subtle" type="button" data-clear>Clear</button>
-            <p class="match-status" data-match-status>Ready.</p>
-          </div>
-
-          <div class="detected-strip">
-            <div class="detected-heading">
-              <span>Detected role skills</span>
-              <div class="detected-heading-actions">
-                <strong data-detected-count>0 tags</strong>
-                <button class="clear-tags-button" type="button" data-clear-detected-skills hidden>Clear all tags</button>
-              </div>
-            </div>
-            <div class="detected-list" data-detected-skills>
-              <p>Paste role text and run a comparison to review the normalized skills.</p>
-            </div>
-          </div>
-        </main>
-      </div>
-
-      <section class="results-grid" aria-live="polite">
-        <article class="score-card">
-          <span>Common match score</span>
-          <strong data-match-score>0%</strong>
-          <p data-match-summary>Paste a role and compare it against mapped portfolio evidence.</p>
-          <div class="metric-stack" data-match-metrics>
-            <div>
-              <small>Technical match</small>
-              <b>0%</b>
-              <i style="width:0%"></i>
-            </div>
-            <div>
-              <small>Execution readiness</small>
-              <b>0%</b>
-              <i style="width:0%"></i>
-            </div>
-            <div>
-              <small>Evidence strength</small>
-              <b>0%</b>
-              <i style="width:0%"></i>
-            </div>
-          </div>
-        </article>
-
-        <article class="role-read-card">
-          <span>Role read</span>
-          <strong data-role-profile>No role profile yet</strong>
-          <p data-role-profile-summary>Detected skill categories will appear after comparison.</p>
-          <div class="category-list" data-role-categories></div>
-        </article>
-
-        <article class="match-list-card">
-          <h2>What matches well</h2>
-          <ul data-match-list>
-            <li>Waiting for role text.</li>
-          </ul>
-        </article>
-
-        <article class="match-list-card">
-          <h2>Review manually</h2>
-          <ul data-gap-list>
-            <li>Nothing checked yet.</li>
-          </ul>
-        </article>
-      </section>
-
-      <section class="evidence-section">
-        <div class="section-heading compact">
-          <p class="eyebrow">Evidence</p>
-          <h2>Projects and work pulled forward by the match.</h2>
-        </div>
-        <div class="evidence-grid" data-evidence-list>
-          <article class="evidence-empty">
-            <strong>No evidence selected yet.</strong>
-            <p>Run AI Compare or Fuzzy Compare to pull forward the closest work history and project evidence.</p>
-          </article>
-        </div>
-      </section>
     </div>
 
-    <dialog class="context-entry-dialog" data-context-entry-dialog aria-labelledby="context-entry-title">
-      <form method="dialog" class="context-entry-modal" data-context-entry-form>
-        <div class="panel-heading">
-          <span>Recruiter info</span>
-          <h2 id="context-entry-title">Add role context first.</h2>
-          <p>These details help compare the pasted role against Alex’s mapped evidence. You can skip and still use the matcher.</p>
+    <section class="review-context" aria-labelledby="role-context-heading">
+      <div>
+        <span class="section-label">Role being reviewed</span>
+        <h2 id="role-context-heading" data-context-title>
+          Add recruiter information
+        </h2>
+        <p data-context-summary>
+          Add your name, company, and the role you are recruiting for.
+        </p>
+      </div>
+      <div class="context-actions">
+        <span class="context-warning" data-context-warning>
+          Missing recruiter information may lower accuracy.
+        </span>
+        <button
+          class="button button-secondary compact-button"
+          type="button"
+          data-edit-context
+        >
+          Edit recruiter information
+        </button>
+      </div>
+    </section>
+
+    <div class="portal-grid">
+      <main class="portal-main">
+        <section class="role-entry-panel" aria-labelledby="role-text-heading">
+          <div class="panel-heading-row">
+            <div>
+              <span class="section-label">Job description</span>
+              <h2 id="role-text-heading">Paste or edit the full role.</h2>
+              <p>
+                Responsibilities, requirements, qualifications, and recruiter
+                notes can all go in the same field.
+              </p>
+            </div>
+            <div class="usage-summary" aria-label="Daily usage limits">
+              <span data-analysis-remaining>10 role analyses left today</span>
+            </div>
+          </div>
+
+          <label class="role-text-label" for="recruiter-role-text">
+            <span class="sr-only">Job description or role information</span>
+            <textarea
+              id="recruiter-role-text"
+              data-role-text
+              rows="14"
+              maxlength="10000"
+              placeholder="Paste the complete job description, requirements, responsibilities, or recruiter notes here. You can edit the text before analyzing it."
+            ></textarea>
+          </label>
+
+          <div class="role-entry-footer">
+            <span class="character-count" data-character-count>
+              0 / 10,000 characters
+            </span>
+            <div class="role-actions">
+              <button
+                class="button button-secondary compact-button"
+                type="button"
+                data-clear-role
+              >
+                Clear role
+              </button>
+              <button
+                class="button button-primary"
+                type="button"
+                data-analyze-role
+              >
+                Analyze role
+              </button>
+            </div>
+          </div>
+          <p class="portal-status" data-portal-status role="status">
+            Ready for a role description.
+          </p>
+        </section>
+
+        <section class="analysis-shell" data-analysis-shell hidden>
+          <section class="role-summary-panel">
+            <div class="section-heading-inline">
+              <div>
+                <span class="section-label">Condensed role summary</span>
+                <h2 data-role-summary-title>Role summary</h2>
+              </div>
+              <span class="analysis-stale" data-analysis-stale hidden>
+                Role text changed. Analyze again before using chat.
+              </span>
+            </div>
+            <p data-role-summary-copy></p>
+            <div class="theme-list" data-role-themes></div>
+          </section>
+
+          <section class="coverage-panel" aria-labelledby="coverage-heading">
+            <div class="coverage-heading">
+              <span class="section-label">Evidence coverage</span>
+              <h2 id="coverage-heading">
+                Requirements supported by documented evidence.
+              </h2>
+            </div>
+            <div class="coverage-grid">
+              <article>
+                <span>Supported by work</span>
+                <strong data-work-coverage>0</strong>
+                <p>Requirements linked to professional work-history evidence.</p>
+              </article>
+              <article>
+                <span>Supported by projects</span>
+                <strong data-project-coverage>0</strong>
+                <p>
+                  Requirements linked to commercial, research, or technical
+                  project evidence.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section class="reasons-panel" aria-labelledby="reasons-heading">
+            <div class="section-heading-inline">
+              <div>
+                <span class="section-label">Reasons to interview</span>
+                <h2 id="reasons-heading">
+                  The strongest role-relevant evidence.
+                </h2>
+              </div>
+            </div>
+            <div class="reason-list" data-reason-list></div>
+          </section>
+
+          <section class="evidence-panel" aria-labelledby="evidence-heading">
+            <div class="section-heading-inline evidence-heading-row">
+              <div>
+                <span class="section-label">Relevant evidence</span>
+                <h2 id="evidence-heading">Work and projects pulled forward.</h2>
+              </div>
+              <div class="evidence-filters" role="group" aria-label="Evidence filters">
+                <button type="button" data-evidence-filter="all" data-active="true">
+                  All
+                </button>
+                <button type="button" data-evidence-filter="work">Work</button>
+                <button type="button" data-evidence-filter="project">
+                  Projects
+                </button>
+              </div>
+            </div>
+            <div class="evidence-list" data-evidence-list></div>
+          </section>
+        </section>
+      </main>
+
+      <aside class="portfolio-chat" aria-labelledby="chat-heading">
+        <div class="chat-header">
+          <div>
+            <span class="section-label">Portfolio chat</span>
+            <h2 id="chat-heading">Ask for more detail.</h2>
+          </div>
+          <span class="chat-usage" data-chat-remaining>
+            5 questions left today
+          </span>
         </div>
 
-        <div class="context-fields">
-          <label for="recruiter-name">
-            <span>Your name</span>
-            <input id="recruiter-name" data-recruiter-name type="text" autocomplete="name" placeholder="Jordan Lee" />
-          </label>
-
-          <label for="recruiter-company">
-            <span>Company</span>
-            <input id="recruiter-company" data-recruiter-company type="text" autocomplete="organization" placeholder="Company or team" />
-          </label>
-
-          <label for="recruiter-role">
-            <span>Role being filled</span>
-            <input id="recruiter-role" data-recruiter-role type="text" placeholder="Senior sensor hardware engineer" />
-          </label>
-        </div>
-
-        <p class="context-entry-error" data-context-entry-error role="alert" hidden>
-          Complete all three fields, or skip context.
+        <p class="chat-context">
+          Chat uses the current role and retrieves public portfolio evidence for
+          every question.
         </p>
 
-        <div class="context-entry-actions">
-          <button class="button button-primary" type="submit">Continue</button>
-          <button class="button button-secondary" type="button" data-skip-context>Skip context</button>
+        <div class="chat-messages" data-chat-messages aria-live="polite">
+          <article class="chat-message assistant">
+            <p>
+              Analyze the role first. Then ask about hardware ownership,
+              validation, manufacturing, sensing, research, or a specific
+              requirement.
+            </p>
+          </article>
+        </div>
+
+        <div class="suggested-questions" data-suggested-questions hidden>
+          <button type="button">What evidence supports hardware debugging?</button>
+          <button type="button">What manufacturing experience is documented?</button>
+          <button type="button">Show the strongest sensor integration example.</button>
+        </div>
+
+        <form class="chat-form" data-chat-form>
+          <label for="portfolio-chat-input" class="sr-only">
+            Ask a portfolio question
+          </label>
+          <textarea
+            id="portfolio-chat-input"
+            data-chat-input
+            rows="3"
+            maxlength="1200"
+            placeholder="Analyze a role before asking a question."
+            disabled
+          ></textarea>
+          <div class="chat-form-footer">
+            <span data-chat-count>0 / 1,200</span>
+            <button
+              class="button button-primary compact-button"
+              type="submit"
+              data-chat-submit
+              disabled
+            >
+              Send
+            </button>
+          </div>
+        </form>
+        <p class="chat-status" data-chat-status role="status"></p>
+      </aside>
+    </div>
+
+    <dialog class="recruiter-dialog" data-context-dialog>
+      <form method="dialog" class="dialog-panel" data-context-form>
+        <div class="dialog-heading">
+          <div>
+            <span class="section-label">Recruiter information</span>
+            <h2>Edit the role context.</h2>
+            <p>
+              These fields help the analysis understand who is reviewing the
+              portfolio and which role is being filled.
+            </p>
+          </div>
+          <button type="button" class="dialog-close" data-close-context aria-label="Close">
+            ×
+          </button>
+        </div>
+
+        <div class="dialog-fields">
+          <label>
+            <span>Your name</span>
+            <input
+              type="text"
+              data-recruiter-name
+              maxlength="120"
+              autocomplete="name"
+              placeholder="Jordan Lee"
+            />
+          </label>
+          <label>
+            <span>Company or team</span>
+            <input
+              type="text"
+              data-recruiter-company
+              maxlength="160"
+              autocomplete="organization"
+              placeholder="Company or team"
+            />
+          </label>
+          <label>
+            <span>Role being filled</span>
+            <input
+              type="text"
+              data-recruiter-role
+              maxlength="180"
+              placeholder="Senior sensor hardware engineer"
+            />
+          </label>
+        </div>
+
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-skip-context
+          >
+            Continue with missing information
+          </button>
+          <button class="button button-primary" type="submit">
+            Save recruiter information
+          </button>
         </div>
       </form>
     </dialog>
 
+    <dialog class="source-dialog" data-source-dialog>
+      <article class="source-dialog-panel">
+        <div class="dialog-heading">
+          <div>
+            <span class="section-label" data-source-type>Portfolio source</span>
+            <h2 data-source-title>Evidence source</h2>
+          </div>
+          <button type="button" class="dialog-close" data-close-source aria-label="Close">
+            ×
+          </button>
+        </div>
+        <p class="source-excerpt" data-source-excerpt></p>
+        <div class="source-dialog-actions">
+          <a class="button button-primary" data-source-link href="/">
+            Open full portfolio page
+          </a>
+        </div>
+      </article>
+    </dialog>
   </section>
 </BaseLayout>
 
 <style>
-  .recruiter-onepage {
-    align-content: start;
-    padding-top: clamp(4.6rem, 7vh, 6rem);
+  .recruiter-portal {
+    display: block;
+    min-height: auto;
+    padding-top: clamp(6rem, 9vh, 8rem);
+    padding-bottom: clamp(4rem, 8vh, 7rem);
   }
 
-  .recruiter-shell {
-    display: grid;
-    gap: clamp(18px, 3vw, 30px);
+  .portal-header {
+    max-width: 980px;
+    margin-bottom: 28px;
   }
 
-  .recruiter-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(360px, 0.8fr);
-    gap: clamp(18px, 3vw, 30px);
-    align-items: end;
+  .portal-header h1 {
+    max-width: 17ch;
+    margin-bottom: 16px;
+    font-size: clamp(2.6rem, 4.8vw, 5rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
   }
 
-  .recruiter-hero-copy h1 {
-    max-width: 15ch;
-    margin-bottom: 12px;
-    font-size: clamp(2.35rem, 4.8vw, 5.1rem);
-    line-height: 0.94;
-  }
-
-  .recruiter-hero-copy p {
-    max-width: 66ch;
+  .portal-intro {
+    max-width: 74ch;
     margin: 0;
     color: var(--muted-2);
-    font-size: 1rem;
-    line-height: 1.48;
   }
 
-  .match-flow-card,
-  .matcher-panel,
-  .score-card,
-  .role-read-card,
-  .match-list-card,
-  .evidence-empty,
-  .evidence-card {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--panel);
-    box-shadow: inset 0 1px rgba(255, 255, 255, 0.05), var(--shadow-soft);
-  }
-
-  .match-flow-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .flow-node,
-  .flow-common {
-    border: 1px solid var(--line);
-    border-radius: 11px;
-    background: rgba(255, 255, 255, 0.018);
-    padding: 13px;
-  }
-
-  .flow-node {
-    display: grid;
-    gap: 4px;
-  }
-
-  .flow-node span,
-  .flow-common strong {
-    color: var(--text);
-    font-size: 1.02rem;
-    font-weight: 900;
-    line-height: 1.12;
-  }
-
-  .flow-node small,
-  .flow-common small,
-  .flow-common span {
-    color: var(--muted);
-    font-size: 0.68rem;
-    font-weight: 850;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-  }
-
-  .flow-common {
-    display: grid;
-    gap: 8px;
-    background: linear-gradient(180deg, rgba(111, 211, 255, 0.07), rgba(255, 255, 255, 0.014));
-  }
-
-  .flow-common i {
+  .section-label {
     display: block;
-    height: 7px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
-  }
-
-  .recruiter-workspace {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
-  }
-
-  .matcher-panel {
-    display: grid;
-    gap: 14px;
-    padding: clamp(16px, 2vw, 22px);
-  }
-
-  .matcher-heading-row {
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    gap: 14px;
-  }
-
-  .context-edit-button {
-    flex: 0 0 auto;
-    min-height: 38px;
-    border-radius: 8px;
-  }
-
-  .panel-heading {
-    display: grid;
-    gap: 6px;
-  }
-
-  .panel-heading span,
-  .role-text-field span,
-  .manual-skill-row label span,
-  .score-card span,
-  .role-read-card span,
-  .detected-heading span,
-  .evidence-card span {
+    margin-bottom: 7px;
     color: var(--accent-2);
     font-size: 0.72rem;
-    font-weight: 880;
+    font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
-  .panel-heading h2,
-  .match-list-card h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: clamp(1.25rem, 1.8vw, 1.7rem);
-    line-height: 1.1;
-  }
-
-  .panel-heading p {
-    margin: 0;
-    color: var(--muted-2);
-    font-size: 0.84rem;
-    line-height: 1.42;
-  }
-
-  .context-fields,
-  .role-text-field,
-  .manual-skill-row label {
-    display: grid;
-    gap: 8px;
-  }
-
-  .context-fields {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .context-fields label {
-    display: grid;
-    gap: 7px;
-  }
-
-  .context-fields label span {
-    color: var(--accent-2);
-    font-size: 0.7rem;
-    font-weight: 850;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-  }
-
-  .context-fields input,
-  .manual-skill-row input,
-  .matcher-panel textarea {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.018);
-    color: var(--text);
-    outline: none;
-  }
-
-  .context-fields input,
-  .manual-skill-row input {
-    min-height: 42px;
-    padding: 0 12px;
-  }
-
-  .matcher-panel textarea {
-    min-height: 210px;
-    padding: 13px;
-    font-size: 0.93rem;
-    font-weight: 560;
-    line-height: 1.42;
-    resize: vertical;
-  }
-
-  .context-fields input:focus,
-  .manual-skill-row input:focus,
-  .matcher-panel textarea:focus {
-    border-color: color-mix(in srgb, var(--accent-2), white 8%);
-    box-shadow: 0 0 0 4px rgba(111, 211, 255, 0.08);
-  }
-
-  .context-skip {
-    justify-self: start;
-    min-height: 34px;
-    padding: 0 11px;
-    border: 1px solid rgba(232, 111, 78, 0.34);
-    border-radius: 9px;
-    background: rgba(232, 111, 78, 0.05);
-    color: #ffb39f;
-    font-size: 0.72rem;
-    font-weight: 900;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .context-skip[data-skipped="true"] {
-    background: rgba(232, 111, 78, 0.12);
-  }
-
-  .context-quality,
-  .detected-strip {
-    padding: 13px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.014);
-  }
-
-  .context-quality[data-state="complete"] {
-    border-color: rgba(111, 211, 255, 0.28);
-    background: rgba(111, 211, 255, 0.045);
-  }
-
-  .context-quality[data-state="skipped"] {
-    border-color: rgba(232, 111, 78, 0.3);
-    background: rgba(232, 111, 78, 0.055);
-  }
-
-  .context-quality strong {
-    display: block;
-    margin-bottom: 5px;
-    color: var(--text);
-    font-size: 0.92rem;
-    line-height: 1.2;
-  }
-
-  .context-quality p {
-    margin: 0;
-    color: var(--muted-2);
-    font-size: 0.8rem;
-    line-height: 1.4;
-  }
-
-  .character-limit {
-    justify-self: end;
-    margin-top: -8px;
-    color: var(--muted);
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-
-  .character-limit[data-state="warning"] {
-    color: var(--cta-1);
-  }
-
-  .character-limit[data-state="full"] {
-    color: var(--cta-2);
-  }
-
-  .manual-skill-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px;
-    align-items: end;
-  }
-
-  .action-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .action-row .button,
-  .manual-skill-row .button {
-    min-height: 40px;
-    border-radius: 9px;
-  }
-
-  .button.subtle {
-    opacity: 0.82;
-  }
-
-  .match-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    min-height: 40px;
-    margin: 0;
-    padding: 0 11px;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    background: rgba(255, 255, 255, 0.014);
-    color: var(--muted);
-    font-size: 0.78rem;
-    line-height: 1.2;
-  }
-
-  .match-status::before {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: currentColor;
-    content: "";
-  }
-
-  .match-status[data-state="ready"] {
-    color: var(--accent-2);
-  }
-
-  .match-status[data-state="loading"] {
-    color: var(--cta-1);
-  }
-
-  .match-status[data-state="error"] {
-    color: #ffc4b4;
-  }
-
-  .detected-strip {
-    display: grid;
-    gap: 10px;
-  }
-
-  .detected-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .detected-heading strong {
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-
-  .detected-heading-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .clear-tags-button {
-    min-height: 28px;
-    padding: 0 10px;
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    background: transparent;
-    color: var(--muted-2);
-    font-size: 0.72rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .clear-tags-button:hover,
-  .clear-tags-button:focus-visible {
-    border-color: color-mix(in srgb, var(--accent-2), white 8%);
-    color: var(--text);
-  }
-
-  .detected-list {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 7px;
-    min-height: 54px;
-    max-height: 156px;
-    overflow-y: auto;
-  }
-
-  .detected-list p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.84rem;
-  }
-
-  :global(.skill-chip) {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    max-width: 100%;
-    min-height: 25px;
-    padding: 3px 7px 3px 10px;
-    border: 1px solid rgba(111, 211, 255, 0.26);
-    border-radius: 999px;
-    background: rgba(111, 211, 255, 0.06);
-    color: #e9f7ff;
-    font-size: 0.74rem;
-    font-weight: 780;
-    line-height: 1.1;
-  }
-
-  :global(.skill-chip[data-source="typed"]) {
-    border-color: rgba(232, 111, 78, 0.38);
-    background: rgba(232, 111, 78, 0.08);
-    color: #fff0ea;
-  }
-
-  :global(.skill-chip button) {
-    display: inline-grid;
-    place-items: center;
-    width: 14px;
-    height: 14px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--cta-2);
-    font-size: 0.72rem;
-    font-weight: 900;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .results-grid {
-    display: grid;
-    grid-template-columns: minmax(240px, 0.36fr) minmax(260px, 0.42fr) repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .score-card,
-  .role-read-card,
-  .match-list-card {
-    min-width: 0;
-    padding: clamp(16px, 2vw, 22px);
-  }
-
-  .score-card strong {
-    display: block;
-    margin: 10px 0 10px;
-    color: var(--text);
-    font-size: clamp(3.2rem, 6vw, 5.2rem);
-    line-height: 0.88;
-  }
-
-  .score-card p,
-  .role-read-card p {
-    margin: 0;
-    color: var(--muted-2);
-    font-size: 0.84rem;
-    line-height: 1.38;
-  }
-
-  .metric-stack {
-    display: grid;
-    gap: 8px;
-    margin-top: 14px;
-  }
-
-  .metric-stack div {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-    align-items: center;
-    padding: 8px 9px;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    background: rgba(255, 255, 255, 0.018);
-  }
-
-  .metric-stack small {
-    color: var(--muted);
-    font-size: 0.62rem;
-    font-weight: 850;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .metric-stack b {
-    color: var(--text);
-    font-size: 0.9rem;
-  }
-
-  .metric-stack i {
-    grid-column: 1 / -1;
-    display: block;
-    height: 6px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
-  }
-
-  .role-read-card {
-    display: grid;
-    align-content: start;
-    gap: 7px;
-  }
-
-  .role-read-card strong {
-    color: var(--text);
-    font-size: clamp(1.05rem, 1.4vw, 1.35rem);
-    line-height: 1.16;
-  }
-
-  .category-list {
-    display: grid;
-    gap: 6px;
-    margin-top: 4px;
-  }
-
-  :global(.category-row) {
-    display: grid;
-    grid-template-columns: minmax(92px, 0.38fr) minmax(0, 1fr) 42px;
-    gap: 8px;
-    align-items: center;
-    color: var(--muted);
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  :global(.category-bar) {
-    height: 6px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.07);
-  }
-
-  :global(.category-bar i) {
-    display: block;
-    height: 100%;
-    border-radius: inherit;
-    background: linear-gradient(90deg, var(--graph-amber), var(--graph-coral));
-  }
-
-  .match-list-card ul {
-    margin: 14px 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .match-list-card :global(li) {
-    color: var(--muted-2);
-    font-size: 0.84rem;
-    line-height: 1.38;
-  }
-
-  .match-list-card :global(li + li) {
-    margin-top: 10px;
-  }
-
-  .evidence-section {
-    display: grid;
-    gap: 16px;
-  }
-
-  .section-heading.compact h2 {
-    max-width: 760px;
-  }
-
-  .evidence-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .evidence-empty,
-  .evidence-card {
-    padding: 20px;
-  }
-
-  .evidence-empty {
-    grid-column: 1 / -1;
-  }
-
-  .evidence-empty strong,
-  .evidence-card strong {
-    display: block;
-    color: var(--text);
-    font-size: 1.04rem;
-    line-height: 1.25;
-  }
-
-  .evidence-empty p,
-  .evidence-card p {
-    margin: 8px 0 0;
-    color: var(--muted-2);
-    font-size: 0.88rem;
-    line-height: 1.45;
-  }
-
-  .evidence-card {
-    display: flex;
-    flex-direction: column;
-    gap: 11px;
-    min-height: 260px;
-  }
-
-  .evidence-card ul {
-    margin: 0;
-    padding-left: 18px;
-    color: var(--muted-2);
-    font-size: 0.84rem;
-    line-height: 1.38;
-  }
-
-  .evidence-card .tag-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: auto;
-  }
-
-  .evidence-card .text-link {
-    align-self: flex-start;
-  }
-
-  .context-entry-dialog {
-    width: min(900px, calc(100% - 32px));
-    padding: 0;
+  .review-context,
+  .role-entry-panel,
+  .role-summary-panel,
+  .coverage-panel,
+  .reasons-panel,
+  .evidence-panel,
+  .portfolio-chat {
     border: 1px solid var(--line);
     border-radius: 14px;
-    background: rgba(1, 5, 10, 0.98);
-    color: var(--text);
-    box-shadow: 0 24px 90px rgba(0, 0, 0, 0.65);
+    background: color-mix(in srgb, var(--bg-2), transparent 18%);
+    box-shadow: var(--shadow-soft);
   }
 
-  .context-entry-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.76);
-    backdrop-filter: blur(5px);
+  .review-context {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: center;
+    padding: 18px 20px;
+    margin-bottom: 18px;
   }
 
-  .context-entry-modal {
-    display: grid;
-    gap: 16px;
-    padding: clamp(22px, 4vw, 32px);
+  .review-context h2,
+  .role-entry-panel h2,
+  .role-summary-panel h2,
+  .coverage-panel h2,
+  .reasons-panel h2,
+  .evidence-panel h2,
+  .portfolio-chat h2,
+  .dialog-panel h2,
+  .source-dialog-panel h2 {
+    max-width: none;
+    margin: 0;
+    font-size: clamp(1.25rem, 2vw, 1.7rem);
+    line-height: 1.15;
   }
 
-  .context-entry-modal .panel-heading h2 {
-    font-size: clamp(1.65rem, 3vw, 2.45rem);
+  .review-context p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
   }
 
-  .context-entry-error {
-    margin: -4px 0 0;
-    color: #ffb39f;
-    font-size: 0.8rem;
-    font-weight: 760;
-  }
-
-  .context-entry-actions {
+  .context-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    justify-content: flex-end;
+    gap: 9px 14px;
+    align-items: center;
   }
 
-  .context-entry-actions .button {
-    min-height: 42px;
+  .context-warning,
+  .analysis-stale {
+    color: var(--cta-1);
+    font-size: 0.76rem;
+    font-weight: 700;
+  }
+
+  .portal-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 430px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .portal-main,
+  .analysis-shell {
+    display: grid;
+    gap: 18px;
+  }
+
+  .role-entry-panel,
+  .role-summary-panel,
+  .coverage-panel,
+  .reasons-panel,
+  .evidence-panel {
+    padding: clamp(18px, 2.4vw, 28px);
+  }
+
+  .panel-heading-row,
+  .section-heading-inline,
+  .evidence-heading-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .panel-heading-row p {
+    max-width: 66ch;
+    margin: 7px 0 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+  }
+
+  .usage-summary,
+  .chat-usage {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 0.74rem;
+    font-weight: 700;
+  }
+
+  .role-text-label {
+    display: block;
+    margin-top: 18px;
+  }
+
+  .role-text-label textarea,
+  .chat-form textarea,
+  .dialog-fields input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.018);
+    color: var(--text);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  .role-text-label textarea {
+    min-height: 310px;
+    resize: vertical;
+    padding: 15px 16px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .role-text-label textarea:focus,
+  .chat-form textarea:focus,
+  .dialog-fields input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(76, 141, 255, 0.13);
+  }
+
+  .role-entry-footer,
+  .chat-form-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+    margin-top: 11px;
+  }
+
+  .character-count,
+  .chat-form-footer span {
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+
+  .role-actions {
+    display: flex;
+    gap: 9px;
+  }
+
+  .compact-button {
+    min-height: 40px;
+    padding: 0 15px;
     border-radius: 8px;
   }
 
-  @media (max-width: 1240px) {
-    .results-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .portal-status,
+  .chat-status {
+    min-height: 1.2em;
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
   }
 
-  @media (max-width: 1040px) {
-    .recruiter-hero-grid,
-    .recruiter-workspace,
-    .context-fields,
-    .evidence-grid {
+  .portal-status[data-state="error"],
+  .chat-status[data-state="error"] {
+    color: #ffab9c;
+  }
+
+  .portal-status[data-state="loading"],
+  .chat-status[data-state="loading"] {
+    color: var(--accent-2);
+  }
+
+  .role-summary-panel > p {
+    max-width: 78ch;
+    margin: 14px 0 0;
+    color: var(--muted-2);
+  }
+
+  .theme-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 16px;
+  }
+
+  .theme-list span,
+  .source-chip {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--muted-2);
+    font-size: 0.72rem;
+  }
+
+  .theme-list span {
+    padding: 6px 9px;
+  }
+
+  .coverage-heading {
+    margin-bottom: 16px;
+  }
+
+  .coverage-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .coverage-grid article {
+    padding: 18px;
+    border: 1px solid var(--line-soft);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.018);
+  }
+
+  .coverage-grid span {
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .coverage-grid strong {
+    display: block;
+    margin: 6px 0;
+    color: var(--text);
+    font-size: clamp(2.3rem, 4vw, 3.7rem);
+    line-height: 1;
+  }
+
+  .coverage-grid p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  .reason-list,
+  .evidence-list {
+    display: grid;
+    gap: 11px;
+    margin-top: 16px;
+  }
+
+  .reason-card,
+  .evidence-card {
+    padding: 17px;
+    border: 1px solid var(--line-soft);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.016);
+  }
+
+  .reason-card h3,
+  .evidence-card h3 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .reason-card p,
+  .evidence-card p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .source-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+  }
+
+  .source-chip {
+    padding: 5px 8px;
+    cursor: pointer;
+  }
+
+  .source-chip:hover,
+  .source-chip:focus-visible {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .evidence-filters {
+    display: flex;
+    gap: 5px;
+    padding: 3px;
+    border: 1px solid var(--line-soft);
+    border-radius: 9px;
+  }
+
+  .evidence-filters button {
+    padding: 6px 9px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+
+  .evidence-filters button[data-active="true"] {
+    background: rgba(76, 141, 255, 0.14);
+    color: var(--text);
+  }
+
+  .evidence-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .evidence-type {
+    color: var(--accent-2);
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .evidence-card small {
+    color: var(--muted);
+    font-size: 0.7rem;
+  }
+
+  .portfolio-chat {
+    position: sticky;
+    top: 88px;
+    display: flex;
+    flex-direction: column;
+    min-height: 690px;
+    max-height: calc(100vh - 108px);
+    padding: 18px;
+  }
+
+  .chat-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .chat-context {
+    margin: 8px 0 14px;
+    color: var(--muted);
+    font-size: 0.76rem;
+  }
+
+  .chat-messages {
+    flex: 1;
+    min-height: 260px;
+    overflow-y: auto;
+    padding: 12px 3px 12px 0;
+  }
+
+  .chat-message {
+    width: fit-content;
+    max-width: 92%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 9px;
+  }
+
+  .chat-message p {
+    margin: 0;
+    white-space: pre-wrap;
+    font-size: 0.82rem;
+    line-height: 1.48;
+  }
+
+  .chat-message.assistant {
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.024);
+  }
+
+  .chat-message.user {
+    margin-left: auto;
+    background: rgba(76, 141, 255, 0.14);
+  }
+
+  .chat-message .source-chip-row {
+    margin-top: 9px;
+  }
+
+  .suggested-questions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 10px;
+  }
+
+  .suggested-questions button {
+    padding: 6px 8px;
+    border: 1px solid var(--line-soft);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.68rem;
+    cursor: pointer;
+  }
+
+  .suggested-questions button:hover {
+    border-color: var(--line-strong);
+    color: var(--text);
+  }
+
+  .chat-form {
+    margin-top: auto;
+  }
+
+  .chat-form textarea {
+    min-height: 82px;
+    resize: vertical;
+    padding: 11px 12px;
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  .chat-form textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .recruiter-dialog,
+  .source-dialog {
+    width: min(780px, calc(100% - 28px));
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #06101c;
+    color: var(--text);
+    box-shadow: 0 28px 100px rgba(0, 0, 0, 0.7);
+  }
+
+  .recruiter-dialog::backdrop,
+  .source-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(4px);
+  }
+
+  .dialog-panel,
+  .source-dialog-panel {
+    padding: clamp(20px, 3vw, 30px);
+  }
+
+  .dialog-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .dialog-heading p {
+    max-width: 62ch;
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .dialog-close {
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .dialog-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .dialog-fields label {
+    display: grid;
+    gap: 6px;
+  }
+
+  .dialog-fields label > span {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 750;
+  }
+
+  .dialog-fields input {
+    min-height: 44px;
+    padding: 0 11px;
+  }
+
+  .dialog-actions,
+  .source-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+  }
+
+  .source-excerpt {
+    margin: 20px 0;
+    padding: 16px;
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.018);
+    white-space: pre-wrap;
+    color: var(--muted-2);
+    font-size: 0.86rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 1080px) {
+    .portal-grid {
       grid-template-columns: 1fr;
     }
 
-    .recruiter-hero-copy h1 {
-      max-width: none;
+    .portfolio-chat {
+      position: static;
+      min-height: 580px;
+      max-height: none;
     }
   }
 
-  @media (max-width: 720px) {
-    .results-grid,
-    .manual-skill-row {
-      grid-template-columns: 1fr;
-    }
-
-    .matcher-heading-row {
-      flex-direction: column;
-    }
-
-    .context-edit-button {
-      width: 100%;
-    }
-
-    .action-row,
-    .context-entry-actions {
+  @media (max-width: 760px) {
+    .review-context,
+    .panel-heading-row,
+    .section-heading-inline,
+    .evidence-heading-row,
+    .chat-header {
       flex-direction: column;
       align-items: stretch;
     }
 
-    .match-status {
-      justify-content: center;
+    .context-actions {
+      justify-content: flex-start;
+    }
+
+    .coverage-grid,
+    .dialog-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .role-entry-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .role-actions,
+    .role-actions .button {
+      width: 100%;
+    }
+
+    .role-actions {
+      flex-direction: column-reverse;
+    }
+
+    .evidence-filters {
+      align-self: flex-start;
+    }
+
+    .dialog-actions {
+      flex-direction: column-reverse;
     }
   }
 </style>
 
-<script define:vars={{ matcherJson, portfolioJson, normalizerJson, roleProfilesJson, recruiterMatchApi }}>
-  const matcherData = JSON.parse(matcherJson);
+<script
+  define:vars={{
+    portfolioJson,
+    recruiterAssistantApi,
+  }}
+>
   const portfolioIndex = JSON.parse(portfolioJson);
-  const normalizerTags = JSON.parse(normalizerJson);
-  const roleProfiles = JSON.parse(roleProfilesJson);
-  const aiMatchEndpoint = recruiterMatchApi;
-  const maxJobTextCharacters = 20000;
-  const maxLlmSubmissions = 10;
-  const sessionStorageKey = "burton-recruiter-onepage-session-v2";
-  const submissionStorageKey = "burton-recruiter-match-submissions-v1";
-  const contextPromptStorageKey = "burton-recruiter-context-prompt-v1";
+  const apiEndpoint = recruiterAssistantApi;
+  const storageKey = "burton-recruiter-onepage-session-v3";
+  const legacyStorageKey = "burton-recruiter-onepage-session-v2";
+  const maxRoleCharacters = 10000;
+  const maxChatCharacters = 1200;
 
-  const normalize = (value) =>
-    String(value || "")
-      .toLowerCase()
-      .replace(/&/g, " and ")
-      .replace(/[^a-z0-9+#.]+/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
+  const page = document.querySelector("[data-recruiter-portal]");
 
-  const tokenize = (value) => normalize(value).split(" ").filter((token) => token.length > 1);
-  const escapeRegExp = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const titleCase = (value) =>
-    normalize(value)
-      .split(" ")
-      .map((part) => {
-        if (["ble", "nfc", "fpc", "pcb", "npi", "cm", "jdm", "dsp", "ml", "ai", "ecg", "hrv", "sql", "ocr"].includes(part)) return part.toUpperCase();
-        return part.charAt(0).toUpperCase() + part.slice(1);
-      })
-      .join(" ")
-      .replace(/\bAnd\b/g, "and");
-
-  const scorePhrase = (source, target) => {
-    const a = normalize(source);
-    const b = normalize(target);
-    if (!a || !b) return 0;
-    if (a === b) return 1;
-    if (a.includes(b) || b.includes(a)) return Math.min(0.96, 0.72 + Math.min(a.length, b.length) / 220);
-    const aTokens = tokenize(a);
-    const bTokens = tokenize(b);
-    if (!aTokens.length || !bTokens.length) return 0;
-    const overlap = aTokens.filter((token) => bTokens.includes(token)).length;
-    const recall = overlap / Math.max(1, aTokens.length);
-    const precision = overlap / Math.max(1, bTokens.length);
-    return Math.min(0.94, recall * 0.62 + precision * 0.38);
-  };
-
-  const getGrade = (score) => {
-    if (score >= 86) return "Very strong match";
-    if (score >= 72) return "Strong match";
-    if (score >= 58) return "Moderate match";
-    if (score >= 40) return "Partial match";
-    return "Needs manual review";
-  };
-
-  const renderList = (element, rows, emptyText) => {
-    element.innerHTML = "";
-    const content = rows.length ? rows : [emptyText];
-    content.forEach((item) => {
-      const li = document.createElement("li");
-      li.textContent = item;
-      element.append(li);
-    });
-  };
-
-  const getSubmissionCount = () => {
-    const value = Number(window.localStorage.getItem(submissionStorageKey));
-    return Number.isFinite(value) ? Math.max(0, value) : 0;
-  };
-
-  const setSubmissionCount = (value) => {
-    try {
-      window.localStorage.setItem(submissionStorageKey, String(Math.max(0, value)));
-    } catch {
-      // Browser storage is optional; the Worker still has server-side limits.
-    }
-  };
-
-  const getRemainingSubmissions = () => Math.max(0, maxLlmSubmissions - getSubmissionCount());
-
-  const readJson = (key, fallback) => {
-    try {
-      const value = window.localStorage.getItem(key);
-      return value ? JSON.parse(value) : fallback;
-    } catch {
-      return fallback;
-    }
-  };
-
-  const writeJson = (key, value) => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      // Ignore storage failures.
-    }
-  };
-
-  const setupRecruiterPage = () => {
-    const page = document.querySelector("[data-recruiter-onepage]");
-    if (!page || page.dataset.ready === "true") return;
+  if (page && page.dataset.ready !== "true") {
     page.dataset.ready = "true";
 
-    const nameInput = page.querySelector("[data-recruiter-name]");
-    const companyInput = page.querySelector("[data-recruiter-company]");
-    const roleInput = page.querySelector("[data-recruiter-role]");
-    const contextEntryDialog = page.querySelector("[data-context-entry-dialog]");
-    const contextEntryForm = page.querySelector("[data-context-entry-form]");
-    const contextEntryError = page.querySelector("[data-context-entry-error]");
-    const contextQuality = page.querySelector("[data-context-quality]");
-    const skipContextButton = page.querySelector("[data-skip-context]");
-    const editContextButton = page.querySelector("[data-edit-context]");
-    const input = page.querySelector("[data-match-input]");
-    const characterLimitElement = page.querySelector("[data-character-limit]");
-    const manualSkillInput = page.querySelector("[data-manual-skill]");
-    const addManualSkillButton = page.querySelector("[data-add-manual-skill]");
-    const aiButton = page.querySelector("[data-ai-run]");
-    const fuzzyButton = page.querySelector("[data-fuzzy-run]");
-    const clearButton = page.querySelector("[data-clear]");
-    const statusElement = page.querySelector("[data-match-status]");
-    const detectedSkillsElement = page.querySelector("[data-detected-skills]");
-    const detectedCountElement = page.querySelector("[data-detected-count]");
-    const clearDetectedSkillsButton = page.querySelector("[data-clear-detected-skills]");
-    const scoreElement = page.querySelector("[data-match-score]");
-    const summaryElement = page.querySelector("[data-match-summary]");
-    const metricGridElement = page.querySelector("[data-match-metrics]");
-    const roleProfileElement = page.querySelector("[data-role-profile]");
-    const roleProfileSummaryElement = page.querySelector("[data-role-profile-summary]");
-    const roleCategoriesElement = page.querySelector("[data-role-categories]");
-    const matchList = page.querySelector("[data-match-list]");
-    const gapList = page.querySelector("[data-gap-list]");
-    const evidenceList = page.querySelector("[data-evidence-list]");
-
-    let detectedSkills = [];
-    let skippedRecruiterContext = false;
-    let pendingAction = null;
-    let lastRenderedResult = null;
-    let restoring = false;
-
-    const setStatus = (message, state = "") => {
-      statusElement.textContent = message;
-      if (state) {
-        statusElement.dataset.state = state;
-      } else {
-        delete statusElement.dataset.state;
-      }
+    const elements = {
+      contextTitle: page.querySelector("[data-context-title]"),
+      contextSummary: page.querySelector("[data-context-summary]"),
+      contextWarning: page.querySelector("[data-context-warning]"),
+      editContext: page.querySelector("[data-edit-context]"),
+      contextDialog: page.querySelector("[data-context-dialog]"),
+      contextForm: page.querySelector("[data-context-form]"),
+      closeContext: page.querySelector("[data-close-context]"),
+      skipContext: page.querySelector("[data-skip-context]"),
+      recruiterName: page.querySelector("[data-recruiter-name]"),
+      recruiterCompany: page.querySelector("[data-recruiter-company]"),
+      recruiterRole: page.querySelector("[data-recruiter-role]"),
+      roleText: page.querySelector("[data-role-text]"),
+      characterCount: page.querySelector("[data-character-count]"),
+      clearRole: page.querySelector("[data-clear-role]"),
+      analyzeRole: page.querySelector("[data-analyze-role]"),
+      portalStatus: page.querySelector("[data-portal-status]"),
+      analysisRemaining: page.querySelector("[data-analysis-remaining]"),
+      analysisShell: page.querySelector("[data-analysis-shell]"),
+      analysisStale: page.querySelector("[data-analysis-stale]"),
+      roleSummaryTitle: page.querySelector("[data-role-summary-title]"),
+      roleSummaryCopy: page.querySelector("[data-role-summary-copy]"),
+      roleThemes: page.querySelector("[data-role-themes]"),
+      workCoverage: page.querySelector("[data-work-coverage]"),
+      projectCoverage: page.querySelector("[data-project-coverage]"),
+      reasonList: page.querySelector("[data-reason-list]"),
+      evidenceList: page.querySelector("[data-evidence-list]"),
+      evidenceFilters: [...page.querySelectorAll("[data-evidence-filter]")],
+      chatRemaining: page.querySelector("[data-chat-remaining]"),
+      chatMessages: page.querySelector("[data-chat-messages]"),
+      suggestedQuestions: page.querySelector("[data-suggested-questions]"),
+      chatForm: page.querySelector("[data-chat-form]"),
+      chatInput: page.querySelector("[data-chat-input]"),
+      chatSubmit: page.querySelector("[data-chat-submit]"),
+      chatCount: page.querySelector("[data-chat-count]"),
+      chatStatus: page.querySelector("[data-chat-status]"),
+      sourceDialog: page.querySelector("[data-source-dialog]"),
+      sourceType: page.querySelector("[data-source-type]"),
+      sourceTitle: page.querySelector("[data-source-title]"),
+      sourceExcerpt: page.querySelector("[data-source-excerpt]"),
+      sourceLink: page.querySelector("[data-source-link]"),
+      closeSource: page.querySelector("[data-close-source]"),
     };
 
-    const markContextPromptHandled = () => {
+    const defaultState = {
+      recruiterContext: {
+        name: "",
+        company: "",
+        hiringFor: "",
+        skipped: false,
+      },
+      jobText: "",
+      analysis: null,
+      conversation: [],
+      analysisRemaining: 10,
+      chatRemaining: 5,
+      activeEvidenceFilter: "all",
+      analysisStale: false,
+    };
+
+    const readStoredState = () => {
       try {
-        window.localStorage.setItem(contextPromptStorageKey, "true");
-      } catch {
-        // Browser storage is optional.
-      }
+        const current = window.localStorage.getItem(storageKey);
+        if (current) return { ...defaultState, ...JSON.parse(current) };
+
+        const legacy = window.localStorage.getItem(legacyStorageKey);
+        if (legacy) {
+          const parsed = JSON.parse(legacy);
+          return {
+            ...defaultState,
+            recruiterContext:
+              parsed.recruiterContext || defaultState.recruiterContext,
+            jobText: parsed.jobText || "",
+          };
+        }
+      } catch {}
+      return { ...defaultState };
     };
 
-    const hasHandledContextPrompt = () => {
+    let state = readStoredState();
+    let sourceMap = new Map();
+    let analyzing = false;
+    let chatting = false;
+
+    const writeState = () => {
       try {
-        return window.localStorage.getItem(contextPromptStorageKey) === "true";
-      } catch {
-        return false;
-      }
+        window.localStorage.setItem(storageKey, JSON.stringify(state));
+      } catch {}
     };
 
-    const getRecruiterContext = () => ({
-      name: nameInput.value.trim(),
-      company: companyInput.value.trim(),
-      hiringFor: roleInput.value.trim(),
-      skipped: skippedRecruiterContext,
-    });
-
-    const hasCompleteContext = () => {
-      const context = getRecruiterContext();
-      return Boolean(context.name && context.company && context.hiringFor);
+    const setStatus = (element, message, mode = "") => {
+      element.textContent = message;
+      if (mode) element.dataset.state = mode;
+      else delete element.dataset.state;
     };
 
-    const updateContextQuality = () => {
-      const complete = hasCompleteContext();
-      contextQuality.dataset.state = complete ? "complete" : skippedRecruiterContext ? "skipped" : "limited";
-      const title = contextQuality.querySelector("strong");
-      const copy = contextQuality.querySelector("p");
+    const contextComplete = () => {
+      const context = state.recruiterContext;
+      return Boolean(
+        context.name?.trim() &&
+          context.company?.trim() &&
+          context.hiringFor?.trim(),
+      );
+    };
+
+    const renderContext = () => {
+      const context = state.recruiterContext;
+      const complete = contextComplete();
+
       if (complete) {
-        title.textContent = `${roleInput.value.trim()} at ${companyInput.value.trim()}`;
-        copy.textContent = `Recruiter context saved for ${nameInput.value.trim()}.`;
-      } else if (skippedRecruiterContext) {
-        title.textContent = "Context skipped";
-        copy.textContent = "The matcher will run with less signal, so review the result manually before using the score.";
+        elements.contextTitle.textContent = context.hiringFor;
+        elements.contextSummary.textContent = `${context.name} · ${context.company}`;
+        elements.contextWarning.hidden = true;
       } else {
-        title.textContent = "Context improves accuracy";
-        copy.textContent = "Add recruiter name, company, and role context before comparing, or skip to continue.";
+        elements.contextTitle.textContent =
+          context.hiringFor || "Recruiter information incomplete";
+        const parts = [context.name, context.company].filter(Boolean);
+        elements.contextSummary.textContent = parts.length
+          ? parts.join(" · ")
+          : "Add your name, company, and the role you are recruiting for.";
+        elements.contextWarning.hidden = false;
       }
+
+      elements.recruiterName.value = context.name || "";
+      elements.recruiterCompany.value = context.company || "";
+      elements.recruiterRole.value = context.hiringFor || "";
     };
 
-    const openContextEntry = () => {
-      contextEntryError.hidden = true;
-      [nameInput, companyInput, roleInput].forEach((field) => field.removeAttribute("aria-invalid"));
-      if (contextEntryDialog?.showModal) {
-        contextEntryDialog.showModal();
-      } else {
-        nameInput.focus();
-      }
+    const renderUsage = () => {
+      const analyses = Math.max(0, Number(state.analysisRemaining ?? 10));
+      const chats = Math.max(0, Number(state.chatRemaining ?? 5));
+      elements.analysisRemaining.textContent = `${analyses} role ${
+        analyses === 1 ? "analysis" : "analyses"
+      } left today`;
+      elements.chatRemaining.textContent = `${chats} ${
+        chats === 1 ? "question" : "questions"
+      } left today`;
+      elements.analyzeRole.disabled = analyzing || analyses <= 0;
+      elements.chatSubmit.disabled =
+        chatting ||
+        chats <= 0 ||
+        !state.analysis ||
+        state.analysisStale ||
+        !elements.chatInput.value.trim();
     };
 
-    const closeContextEntry = () => {
-      if (contextEntryDialog?.open) contextEntryDialog.close();
+    const updateCharacterCounts = () => {
+      const roleCount = elements.roleText.value.length;
+      elements.characterCount.textContent = `${roleCount.toLocaleString()} / ${maxRoleCharacters.toLocaleString()} characters`;
+      const chatCount = elements.chatInput.value.length;
+      elements.chatCount.textContent = `${chatCount.toLocaleString()} / ${maxChatCharacters.toLocaleString()}`;
     };
 
-    const runPendingAction = () => {
-      const action = pendingAction;
-      pendingAction = null;
-      window.setTimeout(() => {
-        if (action === "ai") runAiCompare(false);
-        if (action === "fuzzy") runFuzzyCompare(false);
-      }, 0);
+    const clearElement = (element) => {
+      while (element.firstChild) element.firstChild.remove();
     };
 
-    const getReadyStatus = () => {
-      const remaining = getRemainingSubmissions();
-      if (!aiMatchEndpoint) return "Ready. AI endpoint not configured; Fuzzy Compare is available.";
-      if (remaining <= 0) return "AI Compare limit reached in this browser. Fuzzy Compare is available.";
-      return `Ready. ${remaining} AI submission${remaining === 1 ? "" : "s"} left.`;
+    const appendSourceButtons = (container, sourceIds) => {
+      const row = document.createElement("div");
+      row.className = "source-chip-row";
+
+      sourceIds.forEach((sourceId) => {
+        const source = sourceMap.get(sourceId);
+        if (!source) return;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "source-chip";
+        button.textContent = source.title;
+        button.addEventListener("click", () => openSource(sourceId));
+        row.append(button);
+      });
+
+      if (row.childElementCount) container.append(row);
     };
 
-    const saveSession = () => {
-      if (restoring) return;
-      writeJson(sessionStorageKey, {
-        recruiterContext: getRecruiterContext(),
-        jobText: input.value,
-        detectedSkills,
-        lastRenderedResult,
+    const openSource = (sourceId) => {
+      const source = sourceMap.get(sourceId);
+      if (!source) return;
+      elements.sourceType.textContent =
+        source.type === "work" ? "Work evidence" : "Project evidence";
+      elements.sourceTitle.textContent = source.title;
+      elements.sourceExcerpt.textContent =
+        source.excerpt || "Open the full portfolio page for more detail.";
+      elements.sourceLink.href = source.href;
+      elements.sourceDialog.showModal();
+    };
+
+    const rebuildSourceMap = (sources = []) => {
+      sources.forEach((source) => {
+        if (source?.id) sourceMap.set(source.id, source);
       });
     };
 
-    const updateCharacterLimit = () => {
-      const count = input.value.length;
-      characterLimitElement.textContent = `${count.toLocaleString()} / ${maxJobTextCharacters.toLocaleString()} characters`;
-      if (count >= maxJobTextCharacters) {
-        characterLimitElement.dataset.state = "full";
-      } else if (count >= maxJobTextCharacters * 0.9) {
-        characterLimitElement.dataset.state = "warning";
-      } else {
-        delete characterLimitElement.dataset.state;
-      }
-    };
+    const renderReasons = () => {
+      clearElement(elements.reasonList);
+      const reasons = state.analysis?.reasons || [];
 
-    const requireContextOrConfirm = (action) => {
-      if (hasCompleteContext() || skippedRecruiterContext) return true;
-      pendingAction = action;
-      openContextEntry();
-      return false;
-    };
-
-    const addDetectedSkill = (skills, label, source, score = 0.72, alias = "") => {
-      const normalized = normalize(label);
-      if (!normalized || normalized.length < 2) return;
-      const existing = skills.get(normalized);
-      if (!existing || score > existing.score) {
-        skills.set(normalized, { label, normalized, source, score, alias });
-      }
-    };
-
-    const parseManualSkills = (value) => [...new Set(String(value).split(/[,;\n|]+/).map((item) => item.trim()).filter(Boolean))];
-
-    const extractRoleSkills = (value) => {
-      const text = String(value || "");
-      const normalizedText = ` ${normalize(text)} `;
-      const skills = new Map();
-
-      normalizerTags.forEach((tag) => {
-        const aliases = [tag.label, ...(tag.aliases || [])];
-        let bestAlias = "";
-        let bestScore = 0;
-        aliases.forEach((alias) => {
-          const normalizedAlias = normalize(alias);
-          if (!normalizedAlias) return;
-          const pattern = new RegExp(`(^|\\s)${escapeRegExp(normalizedAlias)}(\\s|$)`);
-          if (pattern.test(normalizedText)) {
-            const aliasScore = Math.min(1, 0.72 + Number(tag.priority || 0) / 400 + Math.min(0.08, normalizedAlias.length / 240));
-            if (aliasScore > bestScore) {
-              bestScore = aliasScore;
-              bestAlias = alias;
-            }
-          }
-        });
-        if (bestScore > 0) addDetectedSkill(skills, tag.label, "normalized", bestScore, bestAlias);
-      });
-
-      if (text.length < 900 || /[,;|\n]/.test(text)) {
-        parseManualSkills(text).forEach((keyword) => {
-          const cleaned = normalize(keyword);
-          if (cleaned.length < 3 || cleaned.length > 72 || cleaned.split(" ").length > 7) return;
-          const bestTag = normalizerTags
-            .map((tag) => ({
-              tag,
-              score: Math.max(scorePhrase(cleaned, tag.label), ...(tag.aliases || []).map((alias) => scorePhrase(cleaned, alias))),
-            }))
-            .sort((a, b) => b.score - a.score)[0];
-          if (bestTag?.score >= 0.72) {
-            addDetectedSkill(skills, bestTag.tag.label, "normalized", bestTag.score, keyword);
-          } else if (text.includes(",") || text.includes(";") || text.includes("|")) {
-            addDetectedSkill(skills, titleCase(keyword), "typed", 0.58, keyword);
-          }
-        });
-      }
-
-      return [...skills.values()].sort((a, b) => b.score - a.score || a.label.localeCompare(b.label)).slice(0, 36);
-    };
-
-    const getSkillMetadata = (label) => normalizerTags.find((tag) => normalize(tag.label) === normalize(label));
-
-    const getRoleProfile = (skills) => {
-      if (!skills.length) return null;
-      const labels = skills.map((skill) => skill.label);
-      return roleProfiles
-        .map((profile) => {
-          const score = profile.terms.reduce((total, term) => {
-            const best = Math.max(...labels.map((skill) => scorePhrase(term, skill)));
-            return total + (best >= 0.86 ? 1 : best >= 0.68 ? 0.55 : 0);
-          }, 0);
-          return { ...profile, score: score / Math.max(1, profile.terms.length) };
-        })
-        .sort((a, b) => b.score - a.score)[0];
-    };
-
-    const getCategoryCoverage = (skills) => {
-      const labels = {
-        hardware: "Hardware",
-        sensors: "Sensors",
-        validation: "Validation",
-        manufacturing: "Manufacturing",
-        "software-data": "Software/data",
-        leadership: "Leadership",
-        domain: "Domain",
-      };
-      const counts = new Map();
-      skills.forEach((skill) => {
-        const category = getSkillMetadata(skill.label)?.category || "domain";
-        counts.set(category, (counts.get(category) || 0) + 1);
-      });
-      const total = Math.max(1, skills.length);
-      return [...counts.entries()]
-        .map(([category, count]) => ({
-          label: labels[category] || titleCase(category),
-          count,
-          percent: Math.round((count / total) * 100),
-          width: Math.max(12, Math.round((count / total) * 100)),
-        }))
-        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-    };
-
-    const renderRoleInsights = (skills, overrideTitle = "", overrideSummary = "") => {
-      const profile = getRoleProfile(skills);
-      if (overrideTitle) {
-        roleProfileElement.textContent = overrideTitle;
-        roleProfileSummaryElement.textContent = overrideSummary || "Role requirements were extracted and compared against mapped evidence.";
-      } else if (profile && profile.score > 0) {
-        roleProfileElement.textContent = profile.label;
-        roleProfileSummaryElement.textContent = profile.summary;
-      } else {
-        roleProfileElement.textContent = "No role profile yet";
-        roleProfileSummaryElement.textContent = "Detected skill categories will appear after comparison.";
-      }
-
-      roleCategoriesElement.innerHTML = "";
-      getCategoryCoverage(skills).slice(0, 5).forEach((item) => {
-        const row = document.createElement("div");
-        row.className = "category-row";
-        const label = document.createElement("span");
-        label.textContent = item.label;
-        const bar = document.createElement("div");
-        bar.className = "category-bar";
-        const fill = document.createElement("i");
-        fill.style.width = `${item.width}%`;
-        bar.append(fill);
-        const value = document.createElement("strong");
-        value.textContent = `${item.percent}%`;
-        row.append(label, bar, value);
-        roleCategoriesElement.append(row);
-      });
-    };
-
-    const renderDetectedSkills = () => {
-      detectedSkillsElement.innerHTML = "";
-      detectedCountElement.textContent = `${detectedSkills.length} tag${detectedSkills.length === 1 ? "" : "s"}`;
-      clearDetectedSkillsButton.hidden = detectedSkills.length === 0;
-      if (!detectedSkills.length) {
+      if (!reasons.length) {
         const empty = document.createElement("p");
-        empty.textContent = "Paste role text and run a comparison to review the normalized skills.";
-        detectedSkillsElement.append(empty);
+        empty.textContent =
+          "No source-backed interview reasons were returned for this role.";
+        elements.reasonList.append(empty);
         return;
       }
 
-      detectedSkills.forEach((skill) => {
+      reasons.forEach((reason) => {
+        const article = document.createElement("article");
+        article.className = "reason-card";
+        const title = document.createElement("h3");
+        title.textContent = reason.statement;
+        const copy = document.createElement("p");
+        copy.textContent = reason.relevance;
+        article.append(title, copy);
+        appendSourceButtons(article, reason.sourceIds || []);
+        elements.reasonList.append(article);
+      });
+    };
+
+    const visibleEvidence = () => {
+      const evidence = state.analysis?.evidence || [];
+      const filter = state.activeEvidenceFilter || "all";
+      if (filter === "all") return evidence;
+      return evidence.filter((item) => {
+        const source = sourceMap.get(item.sourceId);
+        return source?.type === filter;
+      });
+    };
+
+    const renderEvidence = () => {
+      clearElement(elements.evidenceList);
+      const evidence = visibleEvidence();
+
+      if (!evidence.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "No evidence is available for this filter.";
+        elements.evidenceList.append(empty);
+        return;
+      }
+
+      evidence.forEach((item) => {
+        const source = sourceMap.get(item.sourceId);
+        if (!source) return;
+
+        const article = document.createElement("article");
+        article.className = "evidence-card";
+
+        const header = document.createElement("div");
+        header.className = "evidence-card-header";
+
+        const titleWrap = document.createElement("div");
+        const type = document.createElement("span");
+        type.className = "evidence-type";
+        type.textContent =
+          source.type === "work" ? "Work evidence" : "Project evidence";
+        const title = document.createElement("h3");
+        title.textContent = source.title;
+        titleWrap.append(type, title);
+
+        const count = document.createElement("small");
+        const requirementCount = item.requirementIds?.length || 0;
+        count.textContent = `${requirementCount} ${
+          requirementCount === 1 ? "requirement" : "requirements"
+        } supported`;
+
+        header.append(titleWrap, count);
+
+        const copy = document.createElement("p");
+        copy.textContent = item.whyRelevant;
+
+        article.append(header, copy);
+        appendSourceButtons(article, [item.sourceId]);
+        elements.evidenceList.append(article);
+      });
+    };
+
+    const renderAnalysis = () => {
+      if (!state.analysis) {
+        elements.analysisShell.hidden = true;
+        elements.chatInput.disabled = true;
+        elements.chatInput.placeholder =
+          "Analyze a role before asking a question.";
+        elements.suggestedQuestions.hidden = true;
+        return;
+      }
+
+      rebuildSourceMap(state.analysis.sources || []);
+      elements.analysisShell.hidden = false;
+      elements.roleSummaryTitle.textContent =
+        state.analysis.roleSummary?.title || "Role summary";
+      elements.roleSummaryCopy.textContent =
+        state.analysis.roleSummary?.summary || "";
+      clearElement(elements.roleThemes);
+      (state.analysis.roleSummary?.themes || []).forEach((theme) => {
         const chip = document.createElement("span");
-        chip.className = "skill-chip";
-        chip.dataset.source = skill.source;
-        chip.title = skill.alias ? `Detected from: ${skill.alias}` : skill.label;
-        const label = document.createElement("span");
-        label.textContent = skill.label;
-        const remove = document.createElement("button");
-        remove.type = "button";
-        remove.setAttribute("aria-label", `Remove ${skill.label}`);
-        remove.textContent = "×";
-        remove.addEventListener("click", () => {
-          setDetectedSkills(detectedSkills.filter((item) => item.normalized !== skill.normalized));
-          if (detectedSkills.length) runFuzzyCompare(false);
-          else resetResults();
-        });
-        chip.append(label, remove);
-        detectedSkillsElement.append(chip);
-      });
-    };
-
-    const setDetectedSkills = (skills) => {
-      const unique = new Map();
-      skills.forEach((skill) => {
-        const key = skill.normalized || normalize(skill.label);
-        if (!key) return;
-        const existing = unique.get(key);
-        if (!existing || Number(skill.score || 0) > Number(existing.score || 0)) unique.set(key, { ...skill, normalized: key });
-      });
-      detectedSkills = [...unique.values()].sort((a, b) => Number(b.score || 0) - Number(a.score || 0) || a.label.localeCompare(b.label));
-      renderDetectedSkills();
-      renderRoleInsights(detectedSkills);
-      saveSession();
-    };
-
-    const bestNodeMatch = (keyword, node) => {
-      const candidates = [
-        node.label,
-        node.group,
-        node.summary,
-        ...(node.skillTags || []),
-        ...node.evidence.flatMap((item) => [item.title, item.summary, ...(item.tags || []), ...(item.highlights || [])]),
-      ];
-      const score = Math.max(...candidates.map((candidate) => scorePhrase(keyword, candidate)));
-      return { score };
-    };
-
-    const renderMetrics = (metrics) => {
-      const items = [
-        ["Technical match", metrics.technical],
-        ["Execution readiness", metrics.execution],
-        ["Evidence strength", metrics.evidence],
-      ];
-      metricGridElement.innerHTML = "";
-      items.forEach(([label, raw]) => {
-        const percent = Math.max(0, Math.min(100, Math.round(Number(raw) || 0)));
-        const tile = document.createElement("div");
-        const small = document.createElement("small");
-        small.textContent = label;
-        const number = document.createElement("b");
-        number.textContent = `${percent}%`;
-        const bar = document.createElement("i");
-        bar.style.width = `${percent}%`;
-        tile.append(small, number, bar);
-        metricGridElement.append(tile);
-      });
-    };
-
-    const portfolioById = new Map(portfolioIndex.map((item) => [item.id, item]));
-
-    const clearEvidence = (title, copy) => {
-      evidenceList.innerHTML = "";
-      const empty = document.createElement("article");
-      empty.className = "evidence-empty";
-      const strong = document.createElement("strong");
-      strong.textContent = title;
-      const p = document.createElement("p");
-      p.textContent = copy;
-      empty.append(strong, p);
-      evidenceList.append(empty);
-    };
-
-    const renderEvidenceCards = (items) => {
-      evidenceList.innerHTML = "";
-      if (!items.length) {
-        clearEvidence("No evidence selected yet.", "Run AI Compare or Fuzzy Compare to pull forward the closest portfolio evidence.");
-        return;
-      }
-
-      items.slice(0, 6).forEach((item) => {
-        const card = document.createElement("article");
-        card.className = "evidence-card";
-        const eyebrow = document.createElement("span");
-        eyebrow.textContent = `${item.kind || "Evidence"} · ${Math.round(Number(item.score || 0) * 100)}% evidence confidence`;
-        const title = document.createElement("strong");
-        title.textContent = item.title;
-        const summary = document.createElement("p");
-        summary.textContent = item.summary;
-        const highlights = document.createElement("ul");
-        (item.highlights || []).slice(0, 2).forEach((highlight) => {
-          const li = document.createElement("li");
-          li.textContent = highlight;
-          highlights.append(li);
-        });
-        const tags = document.createElement("div");
-        tags.className = "tag-row";
-        [...new Set([...(item.capabilities || []), ...(item.tags || []), ...(item.requirements || [])])].slice(0, 4).forEach((tag) => {
-          const chip = document.createElement("span");
-          chip.className = "tag";
-          chip.textContent = tag;
-          tags.append(chip);
-        });
-        const link = document.createElement("a");
-        link.className = "text-link";
-        link.href = item.href;
-        link.textContent = "View evidence";
-        card.append(eyebrow, title, summary, highlights, tags, link);
-        evidenceList.append(card);
-      });
-    };
-
-    const renderFuzzyEvidence = (matches) => {
-      const evidenceMap = new Map();
-      matches.forEach((match) => {
-        match.node.evidence.forEach((item) => {
-          const current = evidenceMap.get(item.key);
-          evidenceMap.set(item.key, {
-            id: item.key,
-            title: item.title,
-            kind: item.kind,
-            href: item.href,
-            summary: item.summary,
-            highlights: item.highlights,
-            tags: [...new Set([...(current?.tags || []), ...(item.tags || [])])],
-            capabilities: [...new Set([...(current?.capabilities || []), match.node.label])],
-            score: Math.max(match.score, current?.score || 0),
-          });
-        });
-      });
-      renderEvidenceCards([...evidenceMap.values()].sort((a, b) => b.score - a.score));
-    };
-
-    const renderAiEvidence = (matches) => {
-      const evidenceMap = new Map();
-      matches.forEach((match) => {
-        (Array.isArray(match.evidenceIds) ? match.evidenceIds : []).forEach((id) => {
-          const item = portfolioById.get(id);
-          if (!item) return;
-          const current = evidenceMap.get(id);
-          evidenceMap.set(id, {
-            ...item,
-            score: Math.max(Number(match.confidence) || 0, current?.score || 0),
-            requirements: [...new Set([...(current?.requirements || []), match.requirement].filter(Boolean))],
-          });
-        });
-      });
-      renderEvidenceCards([...evidenceMap.values()].sort((a, b) => b.score - a.score));
-    };
-
-    const resetResults = () => {
-      lastRenderedResult = null;
-      scoreElement.textContent = "0%";
-      summaryElement.textContent = "Paste a role and compare it against mapped portfolio evidence.";
-      renderMetrics({ technical: 0, execution: 0, evidence: 0 });
-      renderList(matchList, [], "Waiting for role text.");
-      renderList(gapList, [], "Nothing checked yet.");
-      renderRoleInsights(detectedSkills);
-      clearEvidence("No evidence selected yet.", "Run AI Compare or Fuzzy Compare to pull forward the closest work history and project evidence.");
-      saveSession();
-    };
-
-    const addManualSkills = () => {
-      const skills = parseManualSkills(manualSkillInput.value).map((item) => ({
-        label: titleCase(item),
-        normalized: normalize(item),
-        source: "typed",
-        score: 0.66,
-        alias: item,
-      })).filter((skill) => skill.label);
-      if (!skills.length) return;
-      setDetectedSkills([...detectedSkills, ...skills]);
-      manualSkillInput.value = "";
-      runFuzzyCompare(false);
-    };
-
-    const runFuzzyCompare = (shouldConfirmContext = true) => {
-      if (shouldConfirmContext && !requireContextOrConfirm("fuzzy")) return;
-      const keywords = detectedSkills.length ? detectedSkills.map((skill) => skill.label) : extractRoleSkills(input.value).map((skill) => skill.label);
-      if (!keywords.length) {
-        setStatus("Paste a role description or add skills before comparing.", "error");
-        input.focus();
-        return;
-      }
-
-      if (!detectedSkills.length) {
-        setDetectedSkills(extractRoleSkills(input.value));
-      }
-
-      const keywordResults = keywords.map((keyword) => {
-        const matches = matcherData
-          .map((node) => ({ keyword, node, ...bestNodeMatch(keyword, node) }))
-          .filter((match) => match.score >= 0.78)
-          .sort((a, b) => b.score - a.score);
-        return { keyword, best: matches[0], matches };
+        chip.textContent = theme;
+        elements.roleThemes.append(chip);
       });
 
-      const matched = keywordResults.filter((item) => item.best);
-      const gaps = keywordResults.filter((item) => !item.best);
-      const weightedScore = Math.round((keywordResults.reduce((total, item) => total + Math.min(1, item.best?.score || 0), 0) / keywords.length) * 100);
-      const allMatches = matched.flatMap((item) => item.matches.slice(0, 2));
-      const executionKeywords = keywords.filter((keyword) => /npi|manufacturing|factory|vendor|cross|prototype|validation|test|quality|reliability|production/i.test(keyword));
-
-      scoreElement.textContent = `${weightedScore}%`;
-      summaryElement.textContent = `${getGrade(weightedScore)} based on ${matched.length} of ${keywords.length} role signal${keywords.length === 1 ? "" : "s"} mapping to portfolio evidence.`;
-      renderMetrics({
-        technical: weightedScore,
-        execution: Math.round((matched.filter((item) => /npi|manufacturing|factory|vendor|cross|prototype|validation|test|quality|reliability|production/i.test(item.keyword)).length / Math.max(1, executionKeywords.length || keywords.length)) * 100),
-        evidence: Math.round((allMatches.length / Math.max(1, keywords.length)) * 100),
-      });
-      renderList(matchList, matched.map((item) => `${item.keyword} → ${item.best.node.label} (${Math.round(item.best.score * 100)}% keyword overlap)`), "No mapped matches.");
-      renderList(gapList, gaps.map((item) => `Review ${item.keyword}: mapped evidence alone is not enough for a firm match.`), "Nothing needs manual review from the entered list.");
-      renderRoleInsights(detectedSkills);
-      renderFuzzyEvidence(allMatches);
-      lastRenderedResult = { type: "fuzzy" };
-      setStatus("Fuzzy Compare complete.", "ready");
-      saveSession();
-    };
-
-    const classificationLabel = (value) => {
-      const key = normalize(value);
-      if (["direct", "partial", "adjacent"].includes(key)) return key;
-      return "gap";
-    };
-
-    const normalizeAiSkill = (item) => {
-      const label = item?.label || item?.requirement || item?.skill || "";
-      return {
-        label: titleCase(label),
-        normalized: normalize(label),
-        source: "ai",
-        score: item?.importance === "high" ? 0.9 : item?.importance === "low" ? 0.64 : 0.76,
-        alias: item?.sourceText || item?.reason || "",
-      };
-    };
-
-    const scoreRequirementGroup = (requirements, matches, gaps, predicate, fallbackScore) => {
-      const selected = requirements.filter((requirement) => predicate(normalize(requirement.label || requirement.requirement || "")));
-      const scoped = selected.length ? selected : requirements;
-      if (!scoped.length) return fallbackScore;
-      const matchByRequirement = new Map(matches.map((match) => [normalize(match.requirement), match]));
-      const gapSet = new Set(gaps.map((gap) => normalize(gap.requirement)));
-      const values = { direct: 1, partial: 0.58, adjacent: 0.28, gap: 0 };
-      const total = scoped.reduce((sum, requirement) => {
-        const key = normalize(requirement.label || requirement.requirement || "");
-        const match = matchByRequirement.get(key);
-        const classification = gapSet.has(key) && !match ? "gap" : classificationLabel(match?.classification);
-        return sum + values[classification];
-      }, 0);
-      return Math.round((total / scoped.length) * 100);
-    };
-
-    const getAiMetrics = (result, score) => {
-      const requirements = Array.isArray(result.extractedRequirements) ? result.extractedRequirements : [];
-      const matches = Array.isArray(result.matches) ? result.matches : [];
-      const gaps = Array.isArray(result.gaps) ? result.gaps : [];
-      const allRequirements = requirements.length ? requirements : [...matches.map((match) => ({ label: match.requirement })), ...gaps.map((gap) => ({ label: gap.requirement }))];
-      const technicalTerms = ["sensor", "circuit", "analog", "board", "pcb", "fpc", "embedded", "opto", "electrical", "hardware", "schematic", "validation", "verification", "debug"];
-      const executionTerms = ["npi", "manufacturing", "production", "factory", "vendor", "cm", "jdm", "cross functional", "prototype", "reliability", "quality", "test", "lead"];
-      return {
-        technical: scoreRequirementGroup(allRequirements, matches, gaps, (label) => technicalTerms.some((term) => label.includes(term)), score),
-        execution: scoreRequirementGroup(allRequirements, matches, gaps, (label) => executionTerms.some((term) => label.includes(term)), score),
-        evidence: allRequirements.length ? Math.round((matches.filter((match) => Array.isArray(match.evidenceIds) && match.evidenceIds.length > 0).length / allRequirements.length) * 100) : 0,
-      };
-    };
-
-    const renderAiMatch = (result) => {
-      const extracted = Array.isArray(result.extractedRequirements) ? result.extractedRequirements : [];
-      const matches = Array.isArray(result.matches) ? result.matches : [];
-      const gaps = Array.isArray(result.gaps) ? result.gaps : [];
-      const skills = extracted.map(normalizeAiSkill).filter((skill) => skill.normalized);
-      const score = Math.max(0, Math.min(100, Math.round(Number(result.fitScore) || 0)));
-      setDetectedSkills(skills);
-      scoreElement.textContent = `${score}%`;
-      summaryElement.textContent = result.fitSummary || `${getGrade(score)} based on extracted requirements and deterministic fit scoring.`;
-      renderMetrics(getAiMetrics(result, score));
-      renderRoleInsights(skills, result.roleTitleGuess || result.roleCategory || "AI role read", result.roleCategory ? `Classified role family: ${result.roleCategory}.` : "Role requirements were extracted and compared against mapped portfolio evidence.");
-      renderList(
-        matchList,
-        matches.map((item) => {
-          const classification = classificationLabel(item.classification);
-          const confidence = Math.round(Math.max(0, Math.min(1, Number(item.confidence) || 0)) * 100);
-          const portfolioSkill = item.matchedPortfolioSkill || item.matchedCapability || "portfolio evidence";
-          return `${item.requirement} → ${portfolioSkill} (${classification}, ${confidence}%)`;
-        }),
-        "No direct, partial, or adjacent matches returned.",
+      elements.workCoverage.textContent = String(
+        state.analysis.coverage?.work || 0,
       );
-      renderList(
-        gapList,
-        gaps.map((item) => `Review ${item.requirement}: ${item.reason || "mapped evidence alone is not enough for a firm match."}`),
-        "Nothing needs manual review.",
+      elements.projectCoverage.textContent = String(
+        state.analysis.coverage?.projects || 0,
       );
-      renderAiEvidence(matches);
-      lastRenderedResult = { type: "llm", result };
-      saveSession();
+      elements.analysisStale.hidden = !state.analysisStale;
+
+      elements.evidenceFilters.forEach((button) => {
+        button.dataset.active = String(
+          button.dataset.evidenceFilter === state.activeEvidenceFilter,
+        );
+      });
+
+      renderReasons();
+      renderEvidence();
+
+      const chatReady = !state.analysisStale;
+      elements.chatInput.disabled = !chatReady;
+      elements.chatInput.placeholder = chatReady
+        ? "Ask a question about the role or Alex's documented experience."
+        : "Analyze the edited role before continuing the chat.";
+      elements.suggestedQuestions.hidden = !chatReady;
+      renderUsage();
     };
 
-    const runAiCompare = async (shouldConfirmContext = true) => {
-      if (shouldConfirmContext && !requireContextOrConfirm("ai")) return;
-      updateCharacterLimit();
-      const jobText = input.value.trim();
-      if (jobText.length < 20 && detectedSkills.length === 0) {
-        setStatus("Paste a role description or add skills before running AI Compare.", "error");
-        input.focus();
-        return;
-      }
-      if (input.value.length > maxJobTextCharacters) {
-        setStatus("The pasted role is over the character limit. Trim it before running AI Compare.", "error");
-        input.focus();
-        return;
-      }
-      if (!aiMatchEndpoint) {
-        setStatus("No Cloudflare Worker URL is configured. Running Fuzzy Compare instead.", "error");
-        runFuzzyCompare(false);
-        return;
-      }
-      const remaining = getRemainingSubmissions();
-      if (remaining <= 0) {
-        window.alert("The AI Compare limit was reached for this browser. Fuzzy Compare will run now.");
-        runFuzzyCompare(false);
+    const renderConversation = () => {
+      clearElement(elements.chatMessages);
+
+      if (!state.conversation.length) {
+        const article = document.createElement("article");
+        article.className = "chat-message assistant";
+        const copy = document.createElement("p");
+        copy.textContent = state.analysis
+          ? "The role is ready. Ask about a requirement, project, work example, or area of ownership."
+          : "Analyze the role first. Then ask about hardware ownership, validation, manufacturing, sensing, research, or a specific requirement.";
+        article.append(copy);
+        elements.chatMessages.append(article);
         return;
       }
 
-      setSubmissionCount(getSubmissionCount() + 1);
-      aiButton.disabled = true;
-      fuzzyButton.disabled = true;
-      setStatus("Generating requirements and comparing evidence...", "loading");
+      state.conversation.forEach((message) => {
+        const article = document.createElement("article");
+        article.className = `chat-message ${message.role}`;
+        const copy = document.createElement("p");
+        copy.textContent = message.content;
+        article.append(copy);
+
+        if (message.role === "assistant" && message.sourceIds?.length) {
+          appendSourceButtons(article, message.sourceIds);
+        }
+
+        elements.chatMessages.append(article);
+      });
+
+      elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+    };
+
+    const saveContextFromFields = (skipped = false) => {
+      state.recruiterContext = {
+        name: elements.recruiterName.value.trim(),
+        company: elements.recruiterCompany.value.trim(),
+        hiringFor: elements.recruiterRole.value.trim(),
+        skipped,
+      };
+      writeState();
+      renderContext();
+    };
+
+    const runAnalysis = async () => {
+      if (analyzing) return;
+      const jobText = elements.roleText.value.trim();
+
+      if (jobText.length < 40) {
+        setStatus(
+          elements.portalStatus,
+          "Paste at least 40 characters of role information before analyzing.",
+          "error",
+        );
+        elements.roleText.focus();
+        return;
+      }
+
+      if (!apiEndpoint) {
+        setStatus(
+          elements.portalStatus,
+          "The recruiter assistant endpoint is not configured for this build.",
+          "error",
+        );
+        return;
+      }
+
+      analyzing = true;
+      state.jobText = elements.roleText.value;
+      state.analysisStale = false;
+      renderUsage();
+      setStatus(
+        elements.portalStatus,
+        "Retrieving portfolio evidence and analyzing the role...",
+        "loading",
+      );
 
       try {
-        const response = await fetch(aiMatchEndpoint, {
+        const response = await fetch(apiEndpoint, {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
-            jobText,
-            recruiterContext: getRecruiterContext(),
-            manualSkills: detectedSkills.map((skill) => skill.label),
+            action: "analyze",
+            recruiterContext: state.recruiterContext,
+            jobText: state.jobText,
             portfolioIndex,
-            normalizerTags,
-            roleProfiles,
           }),
         });
         const result = await response.json().catch(() => null);
+
         if (!response.ok) {
-          if (response.status === 429 && /daily_limit/.test(result?.code || "")) {
-            window.alert("The daily AI Compare limit has been reached. Fuzzy Compare will run now.");
-            runFuzzyCompare(false);
-            return;
+          if (result?.usage?.analysisRemaining !== undefined) {
+            state.analysisRemaining = result.usage.analysisRemaining;
+            writeState();
           }
-          throw new Error(result?.error || `Matcher request failed with ${response.status}`);
+          throw new Error(
+            result?.error || `Role analysis failed with ${response.status}.`,
+          );
         }
-        renderAiMatch(result);
-        setStatus(`AI Compare complete. ${getRemainingSubmissions()} submission${getRemainingSubmissions() === 1 ? "" : "s"} left.`, "ready");
+
+        state.analysis = {
+          roleSummary: result.roleSummary,
+          requirements: result.requirements,
+          coverage: result.coverage,
+          reasons: result.reasons,
+          evidence: result.evidence,
+          sources: result.sources,
+        };
+        state.conversation = [];
+        state.analysisRemaining =
+          result.usage?.analysisRemaining ?? state.analysisRemaining;
+        state.analysisStale = false;
+        sourceMap = new Map();
+        writeState();
+        renderAnalysis();
+        renderConversation();
+        setStatus(
+          elements.portalStatus,
+          "Role analysis complete. Review the summary and open any source for more detail.",
+        );
+        elements.analysisShell.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       } catch (error) {
-        setStatus(`${error.message || "AI Compare failed"}. Fuzzy Compare is still available.`, "error");
+        setStatus(
+          elements.portalStatus,
+          error?.message || "Role analysis failed.",
+          "error",
+        );
       } finally {
-        aiButton.disabled = false;
-        fuzzyButton.disabled = false;
+        analyzing = false;
+        renderUsage();
       }
     };
 
-    const clearAll = () => {
-      nameInput.value = "";
-      companyInput.value = "";
-      roleInput.value = "";
-      input.value = "";
-      manualSkillInput.value = "";
-      skippedRecruiterContext = false;
-      setDetectedSkills([]);
-      updateContextQuality();
-      updateCharacterLimit();
-      resetResults();
-      try {
-        window.localStorage.removeItem(sessionStorageKey);
-      } catch {
-        // Ignore storage failures.
-      }
-      setStatus(getReadyStatus(), "ready");
-      input.focus();
-    };
-
-    [nameInput, companyInput, roleInput].forEach((field) => {
-      field.addEventListener("input", () => {
-        if (hasCompleteContext()) skippedRecruiterContext = false;
-        field.removeAttribute("aria-invalid");
-        if (hasCompleteContext()) contextEntryError.hidden = true;
-        updateContextQuality();
-        saveSession();
-      });
-    });
-
-    input.addEventListener("input", () => {
-      updateCharacterLimit();
-      saveSession();
-      if (input.value.trim()) setStatus(getReadyStatus(), "ready");
-    });
-
-    contextEntryForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const fields = [nameInput, companyInput, roleInput];
-      const emptyFields = fields.filter((field) => !field.value.trim());
-      fields.forEach((field) => field.toggleAttribute("aria-invalid", emptyFields.includes(field)));
-      if (emptyFields.length) {
-        contextEntryError.hidden = false;
-        emptyFields[0].focus();
+    const submitChat = async (question) => {
+      if (chatting || !state.analysis || state.analysisStale) return;
+      const trimmed = question.trim();
+      if (!trimmed) return;
+      if (!apiEndpoint) {
+        setStatus(
+          elements.chatStatus,
+          "The recruiter assistant endpoint is not configured.",
+          "error",
+        );
         return;
       }
 
-      skippedRecruiterContext = false;
-      contextEntryError.hidden = true;
-      updateContextQuality();
-      saveSession();
-      markContextPromptHandled();
-      closeContextEntry();
-      runPendingAction();
-      input.focus();
+      state.conversation.push({ role: "user", content: trimmed });
+      elements.chatInput.value = "";
+      updateCharacterCounts();
+      renderConversation();
+
+      chatting = true;
+      renderUsage();
+      setStatus(elements.chatStatus, "Searching portfolio evidence...", "loading");
+
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            action: "chat",
+            recruiterContext: state.recruiterContext,
+            jobText: state.jobText,
+            analysisContext: {
+              roleSummary: state.analysis.roleSummary,
+              requirements: state.analysis.requirements,
+            },
+            conversation: state.conversation.slice(0, -1).slice(-6),
+            question: trimmed,
+            portfolioIndex,
+          }),
+        });
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok) {
+          if (result?.usage?.chatRemaining !== undefined) {
+            state.chatRemaining = result.usage.chatRemaining;
+            writeState();
+          }
+          throw new Error(
+            result?.error || `Portfolio chat failed with ${response.status}.`,
+          );
+        }
+
+        rebuildSourceMap(result.sources || []);
+        state.conversation.push({
+          role: "assistant",
+          content: result.answer,
+          sourceIds: result.sourceIds || [],
+        });
+        state.chatRemaining =
+          result.usage?.chatRemaining ?? state.chatRemaining;
+        writeState();
+        renderConversation();
+        setStatus(elements.chatStatus, "");
+      } catch (error) {
+        state.conversation.push({
+          role: "assistant",
+          content:
+            error?.message ||
+            "The portfolio chat could not complete that request.",
+        });
+        writeState();
+        renderConversation();
+        setStatus(
+          elements.chatStatus,
+          error?.message || "Portfolio chat failed.",
+          "error",
+        );
+      } finally {
+        chatting = false;
+        renderUsage();
+      }
+    };
+
+    elements.editContext.addEventListener("click", () => {
+      renderContext();
+      elements.contextDialog.showModal();
     });
 
-    skipContextButton.addEventListener("click", () => {
-      nameInput.value = "";
-      companyInput.value = "";
-      roleInput.value = "";
-      skippedRecruiterContext = true;
-      contextEntryError.hidden = true;
-      [nameInput, companyInput, roleInput].forEach((field) => field.removeAttribute("aria-invalid"));
-      updateContextQuality();
-      saveSession();
-      markContextPromptHandled();
-      closeContextEntry();
-      runPendingAction();
-      input.focus();
+    elements.closeContext.addEventListener("click", () => {
+      elements.contextDialog.close();
     });
 
-    editContextButton.addEventListener("click", () => {
-      pendingAction = null;
-      openContextEntry();
+    elements.contextForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      saveContextFromFields(false);
+      elements.contextDialog.close();
     });
 
-    aiButton.addEventListener("click", () => runAiCompare(true));
-    fuzzyButton.addEventListener("click", () => runFuzzyCompare(true));
-    clearButton.addEventListener("click", clearAll);
-    clearDetectedSkillsButton.addEventListener("click", () => {
-      setDetectedSkills([]);
-      resetResults();
-      input.focus();
+    elements.skipContext.addEventListener("click", () => {
+      saveContextFromFields(true);
+      elements.contextDialog.close();
     });
-    addManualSkillButton.addEventListener("click", addManualSkills);
-    manualSkillInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
+
+    elements.roleText.addEventListener("input", () => {
+      state.jobText = elements.roleText.value;
+      if (state.analysis) state.analysisStale = true;
+      writeState();
+      updateCharacterCounts();
+      renderAnalysis();
+      if (state.analysisStale) {
+        setStatus(
+          elements.portalStatus,
+          "Role text changed. Analyze again to refresh the evidence and chat context.",
+        );
+      }
+    });
+
+    elements.clearRole.addEventListener("click", () => {
+      elements.roleText.value = "";
+      state.jobText = "";
+      state.analysis = null;
+      state.conversation = [];
+      state.analysisStale = false;
+      sourceMap = new Map();
+      writeState();
+      updateCharacterCounts();
+      renderAnalysis();
+      renderConversation();
+      setStatus(elements.portalStatus, "Role description cleared.");
+      elements.roleText.focus();
+    });
+
+    elements.analyzeRole.addEventListener("click", runAnalysis);
+
+    elements.evidenceFilters.forEach((button) => {
+      button.addEventListener("click", () => {
+        state.activeEvidenceFilter = button.dataset.evidenceFilter || "all";
+        writeState();
+        renderAnalysis();
+      });
+    });
+
+    elements.chatInput.addEventListener("input", () => {
+      updateCharacterCounts();
+      renderUsage();
+    });
+
+    elements.chatInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
-        addManualSkills();
+        if (!elements.chatSubmit.disabled) {
+          submitChat(elements.chatInput.value);
+        }
       }
     });
 
-    const savedSession = readJson(sessionStorageKey, null);
-    if (savedSession) {
-      restoring = true;
-      nameInput.value = String(savedSession.recruiterContext?.name || "");
-      companyInput.value = String(savedSession.recruiterContext?.company || "");
-      roleInput.value = String(savedSession.recruiterContext?.hiringFor || "");
-      skippedRecruiterContext = Boolean(savedSession.recruiterContext?.skipped);
-      input.value = String(savedSession.jobText || "").slice(0, maxJobTextCharacters);
-      detectedSkills = Array.isArray(savedSession.detectedSkills) ? savedSession.detectedSkills : [];
-      lastRenderedResult = savedSession.lastRenderedResult || null;
-      restoring = false;
-      renderDetectedSkills();
-      updateContextQuality();
-      updateCharacterLimit();
-      if (lastRenderedResult?.type === "llm" && lastRenderedResult.result) {
-        renderAiMatch(lastRenderedResult.result);
-        setStatus(`Restored saved AI Compare result. ${getRemainingSubmissions()} submission${getRemainingSubmissions() === 1 ? "" : "s"} left.`, "ready");
-      } else if (lastRenderedResult?.type === "fuzzy") {
-        runFuzzyCompare(false);
-      } else {
-        renderRoleInsights(detectedSkills);
-        resetResults();
-        setStatus(getReadyStatus(), "ready");
-      }
-    } else {
-      updateContextQuality();
-      updateCharacterLimit();
-      setDetectedSkills([]);
-      resetResults();
-      setStatus(getReadyStatus(), "ready");
-    }
+    elements.chatForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitChat(elements.chatInput.value);
+    });
 
-    if (!hasCompleteContext() && (!skippedRecruiterContext || !hasHandledContextPrompt())) {
-      window.requestAnimationFrame(openContextEntry);
-    }
-  };
+    elements.suggestedQuestions
+      .querySelectorAll("button")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          elements.chatInput.value = button.textContent.trim();
+          updateCharacterCounts();
+          renderUsage();
+          elements.chatInput.focus();
+        });
+      });
 
-  document.addEventListener("astro:page-load", setupRecruiterPage);
-  setupRecruiterPage();
+    elements.closeSource.addEventListener("click", () => {
+      elements.sourceDialog.close();
+    });
+
+    elements.roleText.value = String(state.jobText || "").slice(
+      0,
+      maxRoleCharacters,
+    );
+    renderContext();
+    renderAnalysis();
+    renderConversation();
+    renderUsage();
+    updateCharacterCounts();
+
+    if (!contextComplete() && !state.recruiterContext.skipped) {
+      window.requestAnimationFrame(() => {
+        elements.contextDialog.showModal();
+      });
+    }
+  }
 </script>
