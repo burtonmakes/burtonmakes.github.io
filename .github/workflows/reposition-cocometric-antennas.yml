@@ -8,12 +8,18 @@ on:
     paths:
       - scripts/reposition-cocometric-antennas.py
       - .github/workflows/reposition-cocometric-antennas.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/reposition-cocometric-antennas.py
+      - .github/workflows/reposition-cocometric-antennas.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: reposition-cocometric-antennas
+  group: reposition-cocometric-antennas-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -27,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: cocometric-rear-orange-antennas
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -75,6 +81,4 @@ jobs:
           fi
 
           git commit -m "Move Cocometric antennas to rear and apply palette orange"
-          git push origin HEAD:cocometric-rear-orange-antennas
-
-      # This workflow is removed after the generated model is reviewed and merged.
+          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
