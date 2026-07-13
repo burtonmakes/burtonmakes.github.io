@@ -2,6 +2,8 @@
 
 Cloudflare Worker used by the recruiter-facing portfolio review.
 
+The complete end-to-end workflow, Mermaid diagrams, exact button actions, source files, and GitHub validation process are documented in [`docs/RECRUITER_ASSISTANT_WORKFLOW.md`](../../docs/RECRUITER_ASSISTANT_WORKFLOW.md).
+
 ## Production workflow
 
 The site sends one of two actions to the same Worker endpoint:
