@@ -1,106 +1,102 @@
-# Recruiter Match Worker
+# Recruiter Portfolio Assistant
 
-Cloudflare Worker API for the recruiter skill matcher. The Worker uses Workers AI model `@cf/qwen/qwen3-30b-a3b-fp8` to extract and classify role requirements, then calculates the fit score with deterministic math.
+Cloudflare Worker used by the recruiter-facing portfolio review.
 
-## What the model does
+The complete end-to-end workflow, Mermaid diagrams, exact button actions, source files, and GitHub validation process are documented in [`docs/RECRUITER_ASSISTANT_WORKFLOW.md`](../../docs/RECRUITER_ASSISTANT_WORKFLOW.md).
 
-- Extracts important requirements from pasted job text.
-- Classifies each requirement as `direct`, `partial`, `adjacent`, or `gap` against the supplied public portfolio index.
-- Returns evidence IDs from the supplied index only.
+## Production workflow
 
-## What the model does not do
+The site sends one of two actions to the same Worker endpoint:
 
-- It does not decide the final percentage.
-- It does not have private resume data unless that data is already in the site bundle.
-- It should not invent projects, companies, or evidence.
+- `analyze`: retrieve public portfolio evidence, summarize the submitted role, and return source-backed work/project evidence.
+- `chat`: retrieve fresh evidence for a follow-up recruiter question and return a cited answer.
 
-## Anti-abuse limits
+The recruiter page does not expose a fuzzy score or hiring percentage.
 
-The site uses two layers of AI Compare limits:
+## Models and retrieval
 
-- browser-local limit: the recruiter page tracks 10 AI submissions in `localStorage`
-- Worker-side limit: Cloudflare Durable Objects track daily counts before any model call runs
+- Generation: `@cf/google/gemma-4-26b-a4b-it`
+- Temperature: `0.05`
+- Seed: `1701`
+- Retrieval: Cloudflare AI Search hybrid retrieval
+- Reranker: `@cf/baai/bge-reranker-base`
+- AI Search instance: `burton-portfolio`
 
-Worker defaults are configured in `wrangler.toml`:
+The Worker uses the AI Search instance when available. During local setup or before the instance is populated, it falls back to ranking the compact public portfolio index supplied by the static site. This fallback only retrieves evidence; the recruiter does not see a separate fuzzy-analysis mode.
 
-```toml
-PER_CLIENT_DAILY_LIMIT = "10"
-GLOBAL_DAILY_LIMIT = "75"
+## Daily limits
+
+Limits reset at 00:00 UTC.
+
+| Limit | Per connection | Site-wide |
+| --- | ---: | ---: |
+| Role analyses | 10/day | 100/day |
+| Portfolio chat questions | 5/day | 50/day |
+
+A Durable Object hashes the connecting IP and stores only daily counters. It does not store recruiter names, job descriptions, or chat text.
+
+The limits are intentionally conservative so approximately ten recruiters can each use the full role-analysis and chat allowance while remaining below the Workers AI free-neuron allocation under expected prompt/output sizes.
+
+## Request shape
+
+### Analyze
+
+```json
+{
+  "action": "analyze",
+  "recruiterContext": {
+    "name": "Jordan Lee",
+    "company": "Example",
+    "hiringFor": "Senior Sensor Hardware Engineer",
+    "skipped": false
+  },
+  "jobText": "Full role text...",
+  "portfolioIndex": []
+}
 ```
 
-The Worker hashes the connecting IP before counting it for the daily per-client limit. It does not expose the raw IP in the response. These limits reset by UTC day.
+### Chat
 
-If the Worker-side limit is reached, the API returns `429` and the site falls back to Fuzzy Compare.
-
-## Scoring formula
-
-The Worker applies fixed weights:
-
-- Requirement importance: `high = 1.25`, `medium = 1`, `low = 0.75`
-- Match classification: `direct = 1`, `partial = 0.58`, `adjacent = 0.28`, `gap = 0`
-
-Final score:
-
-```text
-round(100 * sum(importanceWeight * classificationValue) / sum(importanceWeight))
+```json
+{
+  "action": "chat",
+  "recruiterContext": {},
+  "jobText": "Full role text...",
+  "analysisContext": {
+    "roleSummary": {},
+    "requirements": []
+  },
+  "conversation": [],
+  "question": "What evidence supports hardware debugging?",
+  "portfolioIndex": []
+}
 ```
 
 ## Deploy
 
-1. Install or use Wrangler through `npx`.
-2. Log in:
-
-```bash
-npx wrangler login
-```
-
-3. Deploy:
+1. Create and sync an AI Search website instance named `burton-portfolio`.
+2. Ensure the instance indexes public portfolio paths:
+   - `/work/`
+   - `/projects/**`
+3. Exclude recruiter, contact, navigation, and footer content from indexing.
+4. Deploy:
 
 ```bash
 npx wrangler deploy --config workers/recruiter-match/wrangler.toml
 ```
 
-4. Copy the deployed Worker URL and add `/match` if you want a readable path. The Worker currently accepts any path, so both of these work:
+5. Add the deployed endpoint as the GitHub Actions repository variable:
 
 ```text
-https://burton-recruiter-match.<your-subdomain>.workers.dev
-https://burton-recruiter-match.<your-subdomain>.workers.dev/match
+PUBLIC_RECRUITER_MATCH_API=https://<worker>.workers.dev
 ```
 
-5. In GitHub, add an Actions repository variable:
+6. Re-run the GitHub Pages deployment.
 
-```text
-PUBLIC_RECRUITER_MATCH_API=https://burton-recruiter-match.<your-subdomain>.workers.dev/match
-```
-
-6. Re-run the GitHub Pages deploy workflow.
-
-## Local testing
-
-Run the site:
-
-```bash
-npm run dev
-```
-
-Run the Worker:
+## Local development
 
 ```bash
 npm run worker:dev
 ```
 
-For local site builds, create a local environment variable before building:
-
-```bash
-PUBLIC_RECRUITER_MATCH_API=http://localhost:8787/match npm run build
-```
-
-## CORS
-
-Allowed origins are configured in `wrangler.toml`:
-
-```toml
-ALLOWED_ORIGINS = "https://burtonmakes.github.io,http://localhost:4321,http://127.0.0.1:4321"
-```
-
-Add your custom domain here if the site moves off GitHub Pages.
+The static site can be built without a Worker endpoint. In that case, the recruiter page renders but clearly reports that the endpoint is not configured.

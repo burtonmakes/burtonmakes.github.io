@@ -1,4 +1,5 @@
 [![Deploy to GitHub Pages](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml)
+[![Validate recruiter assistant](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate-recruiter-assistant.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate-recruiter-assistant.yml)
 
 # Alex Burton / Burton Makes
 
@@ -150,6 +151,8 @@ Build for production:
 npm run build
 ```
 
+The build validates both the Cocometric model and the recruiter assistant contract before Astro compiles the site.
+
 ## Analytics
 
 This site uses optional [Plausible](https://plausible.io/) analytics for privacy-friendly, aggregate tracking.
@@ -163,19 +166,25 @@ How it works:
 
 You do not need Plausible to run or deploy the site. The repo includes `.env.example` with the non-secret settings needed to enable it if you want analytics on your own deployment.
 
-## Recruiter AI matcher
+## Recruiter portfolio assistant
 
-This site includes an optional Cloudflare Worker for the recruiter matching page at `/recruiter/`.
+The recruiter-facing workflow lives at `/recruiter/start/` and `/recruiter/`.
 
-How it works:
+The complete architecture, exact button actions, Mermaid diagrams, source files, retrieval flow, quota behavior, and deployment dependencies are documented here:
 
-- the static site stays hosted normally through GitHub Pages
-- the recruiter page sends pasted role text to a Cloudflare Worker only when someone clicks `Analyze with AI`
-- the Worker uses Cloudflare Workers AI model `@cf/qwen/qwen3-30b-a3b-fp8` to extract role requirements and classify portfolio evidence
-- the final fit percentage is calculated with a fixed math formula in the Worker, not guessed by the model
-- the recruiter page falls back to a local keyword matcher if no Worker URL is configured
+- [`docs/RECRUITER_ASSISTANT_WORKFLOW.md`](docs/RECRUITER_ASSISTANT_WORKFLOW.md)
 
-Wrangler was added only as an `npx` command in `package.json` scripts. It is not required for normal site builds.
+High-level behavior:
+
+- the recruiter enters a name, company or team, and target role
+- the recruiter pastes or edits the complete job description
+- clicking `Analyze role` sends the role text to the Cloudflare Worker
+- Cloudflare AI Search retrieves public work and project evidence
+- Gemma creates a concise role summary and source-backed reasons to interview
+- the Worker validates every returned source ID before the page displays it
+- evidence coverage is shown as requirements supported by work and requirements supported by projects
+- the right-side Portfolio chat runs a new retrieval for every follow-up question
+- the page does not show a fuzzy score or hiring percentage
 
 Worker commands:
 
@@ -184,14 +193,26 @@ npm run worker:dev
 npm run worker:deploy
 ```
 
-The Worker source lives in:
+Primary implementation files:
 
-- `workers/recruiter-match/`
+- `src/pages/recruiter/start.astro`
+- `src/pages/recruiter/index.astro`
+- `public/recruiter-state-bridge.js`
+- `workers/recruiter-match/src/index-v2.ts`
+- `workers/recruiter-match/wrangler.toml`
 
-After deploying the Worker with Wrangler, set this GitHub Actions repository variable so the static site knows where to send recruiter match requests:
+Repository validation:
 
-```text
-PUBLIC_RECRUITER_MATCH_API=https://burton-recruiter-match.burtonmakes.workers.dev/match
+```bash
+npm run validate:recruiter
 ```
 
-You do not need the Worker to run the portfolio locally or deploy the static site. Without `PUBLIC_RECRUITER_MATCH_API`, the recruiter page shows the local fallback state.
+GitHub Actions also runs `.github/workflows/validate-recruiter-assistant.yml`, which validates the UI contract, compiles the Worker with a Wrangler dry run, builds the production site, and verifies the generated recruiter pages.
+
+After deploying the Worker, set this GitHub Actions repository variable so the static site knows where to send recruiter requests:
+
+```text
+PUBLIC_RECRUITER_MATCH_API=https://burton-recruiter-match.burtonmakes.workers.dev
+```
+
+Without `PUBLIC_RECRUITER_MATCH_API`, the recruiter pages still render but analysis and chat report that the endpoint is not configured.
