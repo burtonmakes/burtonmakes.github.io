@@ -76,3 +76,5 @@ jobs:
 
           git commit -m "Move Cocometric antennas to rear and apply palette orange"
           git push origin HEAD:cocometric-rear-orange-antennas
+
+      # This workflow is removed after the generated model is reviewed and merged.
