@@ -15,21 +15,13 @@ ROOT = Path(__file__).resolve().parents[1]
 MODEL_DIR = ROOT / "src/data/cocometric-model"
 PUBLIC_DIR = ROOT / "public/models"
 SOURCE_GLB = PUBLIC_DIR / "cocometric-shape-revision.glb"
-BACKUP_GLB = PUBLIC_DIR / "cocometric-before-antenna-axis-fix.glb"
+BACKUP_GLB = PUBLIC_DIR / "cocometric-before-router-cleanup.glb"
 OUTPUT_GLB = PUBLIC_DIR / "cocometric-shape-revision.glb"
 MANIFEST = MODEL_DIR / "shape-revision-manifest.json"
 PART_COUNT = 6
 ANTENNA_ORANGE = [232, 131, 74, 255]
-
-# The Cocometric GLB uses Y as vertical and Z as front/back.
-ROUTER_CENTER_X = 2.40
-ROUTER_CENTER_Y = -1.78
-ROUTER_CENTER_Z = 0.84
-ROUTER_WIDTH = 1.16
-ROUTER_HEIGHT = 0.30
-ROUTER_DEPTH = 0.58
-ROUTER_TOP_Y = ROUTER_CENTER_Y + ROUTER_HEIGHT / 2
-ROUTER_REAR_Z = ROUTER_CENTER_Z - ROUTER_DEPTH / 2
+ROUTER_REAR_Y = -1.90
+ROUTER_TOP_Z = 1.13
 
 
 def sha256(data: bytes) -> str:
@@ -64,43 +56,39 @@ def apply_material(mesh: trimesh.Trimesh, material: object) -> trimesh.Trimesh:
     return mesh
 
 
-def y_axis_cylinder(
-    radius: float,
-    height: float,
-    x_position: float,
-    y_start: float,
-    z_position: float,
-    material: object,
-    *,
-    tilt: float = 0.0,
-    sections: int = 28,
-) -> trimesh.Trimesh:
-    mesh = trimesh.creation.cylinder(radius=radius, height=height, sections=sections)
-
-    # Start with the cylinder anchored at Z=0, then rotate its axis from +Z
-    # into +Y. The previous model left the cylinder on Z, which made it point
-    # horizontally toward the camera.
-    mesh.apply_translation([0.0, 0.0, height / 2])
-    mesh.apply_transform(
-        trimesh.transformations.rotation_matrix(-math.pi / 2, [1.0, 0.0, 0.0])
-    )
-
-    # Fan the outer antennas slightly left and right while keeping them in the
-    # rear plane of the router.
-    if tilt:
-        mesh.apply_transform(
-            trimesh.transformations.rotation_matrix(tilt, [0.0, 0.0, 1.0])
-        )
-
-    mesh.apply_translation([x_position, y_start, z_position])
+def vertical_base(x_position: float, material: object) -> trimesh.Trimesh:
+    height = 0.12
+    mesh = trimesh.creation.cylinder(radius=0.052, height=height, sections=28)
+    mesh.apply_translation([x_position, ROUTER_REAR_Y, ROUTER_TOP_Z + 0.01])
     return apply_material(mesh, material)
 
 
-def rebuild_router_antennas(scene: trimesh.Scene) -> None:
+def vertical_antenna(
+    x_position: float,
+    tilt: float,
+    material: object,
+) -> trimesh.Trimesh:
+    height = 0.52
+    mesh = trimesh.creation.cylinder(radius=0.027, height=height, sections=28)
+
+    # Build from the attachment point upward, then tilt around that attachment
+    # point. This keeps each antenna physically connected to the rear edge.
+    mesh.apply_translation([0.0, 0.0, height / 2])
+    if tilt:
+        mesh.apply_transform(trimesh.transformations.rotation_matrix(tilt, [0.0, 1.0, 0.0]))
+    mesh.apply_translation([x_position, ROUTER_REAR_Y, ROUTER_TOP_Z + 0.06])
+    return apply_material(mesh, material)
+
+
+def rebuild_router_hardware(scene: trimesh.Scene) -> None:
     names = set(scene.geometry)
     if "NIC_Router_Body" not in names:
         raise RuntimeError("Router body is missing from the Cocometric model")
 
+    # The old NIC_Router_Top was authored as a thin vertical slab, which read
+    # as a detached back wall. The old antennas ran along the depth axis, so
+    # the camera saw their circular ends as three floating dots. Remove all of
+    # those pieces and rebuild only attached vertical rear antennas.
     removable = {"NIC_Router_Top"}
     removable.update(f"NIC_Antenna_Base_{index}" for index in range(3))
     removable.update(f"NIC_Antenna_{index}" for index in range(3))
@@ -111,51 +99,29 @@ def rebuild_router_antennas(scene: trimesh.Scene) -> None:
     orange_material = trimesh.visual.material.PBRMaterial(
         name="Cocometric_Antenna_Orange",
         baseColorFactor=ANTENNA_ORANGE,
-        metallicFactor=0.24,
-        roughnessFactor=0.38,
+        metallicFactor=0.28,
+        roughnessFactor=0.34,
     )
 
-    # Mount the antennas just inside the router's rear edge. From the stage-07
-    # camera, the enclosure hides the connection points while the rods rise
-    # cleanly above the box.
-    rear_z = ROUTER_REAR_Z + 0.035
-    root_y = ROUTER_TOP_Y - 0.025
     antenna_layout = [
-        (2.06, 0.10),
+        (2.02, -0.14),
         (2.40, 0.0),
-        (2.74, -0.10),
+        (2.78, 0.14),
     ]
-
     for index, (x_position, tilt) in enumerate(antenna_layout):
         add_geometry(
             scene,
             f"NIC_Antenna_Base_{index}",
-            y_axis_cylinder(
-                0.038,
-                0.10,
-                x_position,
-                root_y,
-                rear_z,
-                orange_material,
-                tilt=tilt,
-            ),
+            vertical_base(x_position, orange_material),
         )
         add_geometry(
             scene,
             f"NIC_Antenna_{index}",
-            y_axis_cylinder(
-                0.022,
-                0.48,
-                x_position,
-                root_y + 0.055,
-                rear_z,
-                orange_material,
-                tilt=tilt,
-            ),
+            vertical_antenna(x_position, tilt, orange_material),
         )
 
 
-def validate_router_antennas(scene: trimesh.Scene) -> None:
+def validate_router_hardware(scene: trimesh.Scene) -> None:
     names = set(scene.geometry)
     required = {
         "NIC_Router_Body",
@@ -166,23 +132,17 @@ def validate_router_antennas(scene: trimesh.Scene) -> None:
     if missing:
         raise RuntimeError(f"Revised GLB is missing router geometry: {missing}")
     if "NIC_Router_Top" in names:
-        raise RuntimeError("Detached router panel was not removed")
+        raise RuntimeError("Detached router wall geometry was not removed")
 
     for index in range(3):
         base = scene.geometry[f"NIC_Antenna_Base_{index}"]
         rod = scene.geometry[f"NIC_Antenna_{index}"]
-        rod_extent = rod.bounds[1] - rod.bounds[0]
-
-        if rod_extent[1] < 0.42:
-            raise RuntimeError(f"Antenna {index} is not vertical along the Y axis")
-        if rod_extent[2] > 0.08:
-            raise RuntimeError(f"Antenna {index} still projects along the Z depth axis")
-        if rod.bounds[0][1] > ROUTER_TOP_Y + 0.08:
-            raise RuntimeError(f"Antenna {index} is detached above the router")
-        if base.bounds[1][2] > ROUTER_CENTER_Z:
-            raise RuntimeError(f"Antenna base {index} is on the visible front half")
-        if rod.bounds[1][1] < ROUTER_TOP_Y + 0.40:
-            raise RuntimeError(f"Antenna {index} is not visibly above the router")
+        if base.bounds[0][2] < 1.0 or rod.bounds[0][2] < 1.0:
+            raise RuntimeError(f"Antenna {index} is detached below the router")
+        if rod.bounds[1][2] < 1.55:
+            raise RuntimeError(f"Antenna {index} is not vertically visible")
+        if base.bounds[1][1] > -1.82 or rod.bounds[1][1] > -1.82:
+            raise RuntimeError(f"Antenna {index} is not mounted on the router rear edge")
 
 
 def main() -> None:
@@ -193,28 +153,28 @@ def main() -> None:
         shutil.copyfile(SOURCE_GLB, BACKUP_GLB)
 
     scene = load_scene(SOURCE_GLB)
-    rebuild_router_antennas(scene)
-    validate_router_antennas(scene)
+    rebuild_router_hardware(scene)
+    validate_router_hardware(scene)
 
     revised = scene.export(file_type="glb")
     OUTPUT_GLB.write_bytes(revised)
     write_parts(revised)
 
-    check_path = PUBLIC_DIR / ".cocometric-antenna-axis-check.glb"
+    check_path = PUBLIC_DIR / ".cocometric-router-cleanup-check.glb"
     check_path.write_bytes(revised)
     check = load_scene(check_path)
     check_path.unlink(missing_ok=True)
-    validate_router_antennas(check)
+    validate_router_hardware(check)
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8")) if MANIFEST.exists() else {}
     manifest.update(
         {
-            "profile": "shape-revision-v4-rear-y-axis-antennas",
+            "profile": "shape-revision-v3-attached-rear-antennas",
             "geometryChanged": True,
-            "antennaPlacement": "rear-mounted-y-axis",
+            "antennaPlacement": "rear-mounted-vertical",
             "antennaColor": "#E8834A",
             "routerWallRemoved": True,
-            "antennaAxisFixBackup": {
+            "routerCleanupBackup": {
                 "path": str(BACKUP_GLB.relative_to(ROOT)),
                 "bytes": BACKUP_GLB.stat().st_size,
                 "sha256": sha256(BACKUP_GLB.read_bytes()),
@@ -233,15 +193,16 @@ def main() -> None:
     ]
     changes.extend(
         [
-            "Removed the detached router panel and the forward-facing antenna rods.",
-            "Rebuilt three coral-orange antennas on the GLB Y axis so they rise vertically.",
-            "Mounted the antenna roots inside the rear edge of the router so the connections are hidden.",
+            "Removed the detached vertical router slab that appeared as a strange back wall.",
+            "Removed the depth-facing antenna parts that appeared as three floating dots.",
+            "Added three attached vertical antennas along the rear edge of the router box.",
+            "Kept the antennas in the Cocometric coral-orange palette color #E8834A.",
         ]
     )
     manifest["changes"] = changes
     MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
-    print(f"Corrected antenna GLB: {len(revised):,} bytes ({sha256(revised)})")
+    print(f"Clean router GLB: {len(revised):,} bytes ({sha256(revised)})")
 
 
 if __name__ == "__main__":
