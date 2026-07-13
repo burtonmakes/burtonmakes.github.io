@@ -249,7 +249,6 @@ const recruiterAssistantApi =
             </div>
           </div>
           <div class="chat-header-actions">
-            <span class="chat-usage" data-chat-remaining>5 questions left today</span>
             <button
               class="chat-minimize"
               type="button"
@@ -264,6 +263,7 @@ const recruiterAssistantApi =
         </div>
 
         <div class="chat-body" id="portfolio-chat-body">
+          <span class="chat-usage" data-chat-remaining>5 questions left today</span>
           <p class="chat-context">Ask Coco about the role, evidence, or fit.</p>
 
           <div class="chat-messages" data-chat-messages aria-live="polite">
@@ -513,6 +513,10 @@ const recruiterAssistantApi =
     padding-right: 434px;
   }
 
+  .portal-grid:has(.portfolio-chat[data-minimized="true"]) {
+    padding-right: 0;
+  }
+
   .portal-main,
   .analysis-shell {
     display: grid;
@@ -520,7 +524,11 @@ const recruiterAssistantApi =
   }
 
   .analysis-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1.25fr) minmax(230px, 0.75fr);
+  }
+
+  .analysis-shell > .evidence-panel {
+    grid-column: 1 / -1;
   }
 
   .role-entry-panel,
@@ -914,6 +922,7 @@ const recruiterAssistantApi =
     flex: 1 1 auto;
     min-width: 0;
     gap: 10px;
+    padding-right: 42px;
   }
 
   .chat-brand h2 {
@@ -932,7 +941,9 @@ const recruiterAssistantApi =
   }
 
   .chat-header-actions {
-    gap: 8px;
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 
   .chat-minimize {
@@ -962,11 +973,15 @@ const recruiterAssistantApi =
   }
 
   .chat-header {
+    position: relative;
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
+    width: 100%;
     align-items: flex-start;
-    flex-wrap: wrap;
+  }
+
+  .chat-body > .chat-usage {
+    display: block;
+    margin: 10px 0 0;
   }
 
   .chat-context {

@@ -74,6 +74,11 @@ requireText(workerCore, workerCorePath, [
   "searchAiIndex",
   "fallbackPortfolioSearch",
   "validateSourceIds",
+  "isRecruiterQuestion",
+  "looksLikeRoleText",
+  "question_out_of_scope",
+  "role_text_out_of_scope",
+  "scopeGuardAnswer",
   "class RateLimiter",
   "@cf/qwen/qwen3-30b-a3b-fp8",
 ]);

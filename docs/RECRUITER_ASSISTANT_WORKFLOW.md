@@ -147,6 +147,10 @@ Gemma performs the evidence reasoning and writing. If its response is not valid 
 5. Evidence entries without a valid source and requirement ID are removed.
 6. Chat answers may state that the public portfolio does not clearly document an answer.
 7. JSON repair may correct structure but cannot bypass source-ID validation.
+8. Analysis rejects inputs that do not look like a job description or role requirement set.
+9. Chat rejects prompt-injection attempts and unrelated requests before they reach the model.
+10. Chat is limited to role requirements, public portfolio evidence, fit, strengths, gaps, and documented ownership.
+11. Recruiter context, role text, conversation history, and questions are treated as untrusted data, never as instructions.
 
 ## Daily limits
 
