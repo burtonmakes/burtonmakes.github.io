@@ -1,0 +1,64 @@
+name: Revise Cocometric GPU shape
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cocometric-shape-revision
+    paths:
+      - scripts/remove-cocometric-gpu-fans.mjs
+      - .github/workflows/revise-cocometric-gpu-shape.yml
+
+permissions:
+  contents: write
+
+jobs:
+  revise:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out shape revision branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: cocometric-shape-revision
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Remove circular GPU geometry
+        run: node scripts/remove-cocometric-gpu-fans.mjs
+
+      - name: Validate model structure
+        run: npm run validate:cocometric
+
+      - name: Validate production build
+        run: npm run build
+
+      - name: Commit revised GLB
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/data/cocometric-model/part-0.js \
+            src/data/cocometric-model/part-1.js \
+            src/data/cocometric-model/part-2.js \
+            src/data/cocometric-model/part-3.js \
+            src/data/cocometric-model/part-4.js \
+            src/data/cocometric-model/part-5.js \
+            public/models/cocometric-gpu-circles-removed.glb
+
+          if git diff --cached --quiet; then
+            echo "GPU shape revision is already current."
+            exit 0
+          fi
+
+          git commit -m "Remove circular GPU fan geometry from stage 05"
+          git push origin HEAD:cocometric-shape-revision
