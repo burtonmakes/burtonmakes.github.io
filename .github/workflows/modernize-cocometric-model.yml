@@ -44,15 +44,30 @@ jobs:
         run: npm install
 
       - name: Preserve and modernize GLB
-        run: node scripts/modernize-cocometric-model.mjs
+        id: modernize
+        continue-on-error: true
+        run: node scripts/modernize-cocometric-model.mjs 2>&1 | tee modernize-cocometric-model.log
+
+      - name: Commit failure log
+        if: steps.modernize.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add modernize-cocometric-model.log
+          git commit -m "Capture Cocometric GLB generation failure"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
+          exit 1
 
       - name: Validate model structure
+        if: steps.modernize.outcome == 'success'
         run: npm run validate:cocometric
 
       - name: Validate production build
+        if: steps.modernize.outcome == 'success'
         run: npm run build
 
       - name: Commit generated model and backup
+        if: steps.modernize.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
