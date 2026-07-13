@@ -1,0 +1,71 @@
+name: Modernize Cocometric GLB
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/modernize-cocometric-model.mjs
+      - .github/workflows/modernize-cocometric-model.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: modernize-cocometric-model
+  cancel-in-progress: false
+
+jobs:
+  modernize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Preserve and modernize GLB
+        run: node scripts/modernize-cocometric-model.mjs
+
+      - name: Validate model structure
+        run: npm run validate:cocometric
+
+      - name: Validate production build
+        run: npm run build
+
+      - name: Commit generated model and backup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/data/cocometric-model/part-0.js \
+            src/data/cocometric-model/part-1.js \
+            src/data/cocometric-model/part-2.js \
+            src/data/cocometric-model/part-3.js \
+            src/data/cocometric-model/part-4.js \
+            src/data/cocometric-model/part-5.js \
+            src/data/cocometric-model/manifest.json \
+            src/data/cocometric-model-backup/original-2026-07-12 \
+            public/models/cocometric-original-2026-07-12.glb \
+            public/models/cocometric-modern.glb
+
+          if git diff --cached --quiet; then
+            echo "Generated Cocometric model is already current."
+            exit 0
+          fi
+
+          git commit -m "Modernize Cocometric GLB materials with original backup"
+          git push origin HEAD:main
