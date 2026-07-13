@@ -1,5 +1,5 @@
 {
-  "profile": "shape-revision-v1",
+  "profile": "shape-revision-v2-rear-orange-antennas",
   "geometryChanged": true,
   "backupBranch": "backup/cocometric-glb-original-2026-07-12",
   "original": {
@@ -9,12 +9,20 @@
   },
   "revised": {
     "path": "public/models/cocometric-shape-revision.glb",
-    "bytes": 232176,
-    "sha256": "962fa56917cdeb724f674ca6349a2004fa7cecfcb13b16ddcf33408e092f12e2"
+    "bytes": 233248,
+    "sha256": "ee18fe627f380028e8ee3932685337e4d2165eceee3ebbcea15a025ce224f6d4"
   },
   "changes": [
     "Replaced oversized GPU discs with compact recessed fan assemblies and swept blades.",
-    "Replaced the abstract NIC card with a compact router/gateway appliance and three antennas.",
-    "Preserved all non-target geometry and the original material palette."
-  ]
+    "Preserved all non-target geometry and the original material palette.",
+    "Moved all three router antennas to the rear face so the mounting connections are concealed.",
+    "Applied the Cocometric coral-orange palette color #E8834A to the antenna bases and rods."
+  ],
+  "antennaPlacement": "rear-mounted",
+  "antennaColor": "#E8834A",
+  "antennaBackup": {
+    "path": "public/models/cocometric-before-rear-antennas.glb",
+    "bytes": 232176,
+    "sha256": "962fa56917cdeb724f674ca6349a2004fa7cecfcb13b16ddcf33408e092f12e2"
+  }
 }
