@@ -335,7 +335,13 @@ const createGuardedAi = (binding: AiBinding, env: Env): AiBinding => ({
     const details = requestDetails(input);
     if (!JSON_MODE_MODELS.has(model)) delete details.input.response_format;
 
-    const primaryResponse = await binding.run(model, details.input);
+    let primaryResponse: unknown;
+    try {
+      primaryResponse = await binding.run(model, details.input);
+    } catch {
+      return { response: JSON.stringify(deterministicFallback(details)) };
+    }
+
     const validPrimary = normalizedJson(extractResponseText(primaryResponse));
     if (validPrimary) return { response: validPrimary };
 
