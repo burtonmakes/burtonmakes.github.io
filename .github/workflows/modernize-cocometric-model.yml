@@ -16,7 +16,7 @@ on:
       - .github/workflows/modernize-cocometric-model.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: modernize-cocometric-model-${{ github.event.pull_request.number || github.ref_name }}
@@ -24,7 +24,6 @@ concurrency:
 
 jobs:
   modernize:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -44,49 +43,28 @@ jobs:
         run: npm install
 
       - name: Preserve and modernize GLB
-        id: modernize
-        continue-on-error: true
-        run: node scripts/modernize-cocometric-model.mjs 2>&1 | tee modernize-cocometric-model.log
-
-      - name: Commit failure log
-        if: steps.modernize.outcome == 'failure'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add modernize-cocometric-model.log
-          git commit -m "Capture Cocometric GLB generation failure"
-          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
-          exit 1
+        run: node scripts/modernize-cocometric-model.mjs
 
       - name: Validate model structure
-        if: steps.modernize.outcome == 'success'
         run: npm run validate:cocometric
 
       - name: Validate production build
-        if: steps.modernize.outcome == 'success'
         run: npm run build
 
-      - name: Commit generated model and backup
-        if: steps.modernize.outcome == 'success'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            src/data/cocometric-model/part-0.js \
-            src/data/cocometric-model/part-1.js \
-            src/data/cocometric-model/part-2.js \
-            src/data/cocometric-model/part-3.js \
-            src/data/cocometric-model/part-4.js \
-            src/data/cocometric-model/part-5.js \
-            src/data/cocometric-model/manifest.json \
-            src/data/cocometric-model-backup/original-2026-07-12 \
-            public/models/cocometric-original-2026-07-12.glb \
+      - name: Upload generated GLB and backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: cocometric-modern-model
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            src/data/cocometric-model/part-0.js
+            src/data/cocometric-model/part-1.js
+            src/data/cocometric-model/part-2.js
+            src/data/cocometric-model/part-3.js
+            src/data/cocometric-model/part-4.js
+            src/data/cocometric-model/part-5.js
+            src/data/cocometric-model/manifest.json
+            src/data/cocometric-model-backup/original-2026-07-12
+            public/models/cocometric-original-2026-07-12.glb
             public/models/cocometric-modern.glb
-
-          if git diff --cached --quiet; then
-            echo "Generated Cocometric model is already current."
-            exit 0
-          fi
-
-          git commit -m "Modernize Cocometric GLB materials with original backup"
-          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
