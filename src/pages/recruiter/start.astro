@@ -33,7 +33,6 @@ import "../../styles/global.css";
               maxlength="120"
               autocomplete="name"
               placeholder="Jordan Lee"
-              required
             />
           </label>
 
@@ -46,7 +45,6 @@ import "../../styles/global.css";
               maxlength="160"
               autocomplete="organization"
               placeholder="Company or team"
-              required
             />
           </label>
 
@@ -59,7 +57,6 @@ import "../../styles/global.css";
               maxlength="180"
               autocomplete="off"
               placeholder="Senior sensor hardware engineer"
-              required
             />
           </label>
         </div>
@@ -251,6 +248,19 @@ import "../../styles/global.css";
   @media (max-width: 820px) {
     .entry-fields {
       grid-template-columns: 1fr;
+    }
+
+    .entry-intro h1 {
+      font-size: clamp(2rem, 9vw, 3rem);
+    }
+
+    .entry-note {
+      padding: 12px 13px;
+    }
+
+    .entry-note p {
+      font-size: 0.76rem;
+      line-height: 1.45;
     }
 
     .entry-actions {
