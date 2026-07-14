@@ -87,7 +87,7 @@ const recruiterAssistantApi =
 
 <BaseLayout
   title="Portfolio Chat"
-  description="Ask the portfolio assistant about Alex Burton's work and project evidence."
+  description="Ask the recruiter match agent about Alex Burton's work and project evidence."
 >
   <section class="section recruiter-portal" data-recruiter-portal>
     <div class="portal-header">
@@ -241,13 +241,17 @@ const recruiterAssistantApi =
         </section>
       </main>
 
-      <aside class="portfolio-chat" aria-labelledby="chat-heading">
+      <aside
+        class="portfolio-chat"
+        data-minimized="true"
+        aria-labelledby="chat-heading"
+      >
         <div class="chat-header">
           <div class="chat-brand">
             <img src="/logo.svg" alt="Coco the husky" class="chat-avatar" />
             <div>
-              <span class="section-label">Portfolio assistant</span>
-              <h2 id="chat-heading">Chat with Coco</h2>
+              <span class="section-label">AI evidence retrieval</span>
+              <h2 id="chat-heading">Recruiter Match Agent</h2>
             </div>
           </div>
           <div class="chat-header-actions">
@@ -256,10 +260,10 @@ const recruiterAssistantApi =
               type="button"
               data-chat-toggle
               aria-controls="portfolio-chat-body"
-              aria-expanded="true"
-              aria-label="Minimize Chat with Coco"
+              aria-expanded="false"
+              aria-label="Open Recruiter Match Agent"
             >
-              <span aria-hidden="true">−</span>
+              <span aria-hidden="true">+</span>
             </button>
           </div>
         </div>
@@ -269,7 +273,7 @@ const recruiterAssistantApi =
 
           <div class="chat-messages" data-chat-messages aria-live="polite">
             <article class="chat-message assistant">
-              <span class="chat-speaker">Portfolio assistant</span>
+              <span class="chat-speaker">Recruiter match agent</span>
               <p>
                 Analyze the role first. Then ask about a requirement, work example, or project.
               </p>
@@ -277,21 +281,21 @@ const recruiterAssistantApi =
           </div>
 
           <div class="suggested-questions" data-suggested-questions hidden>
-            <button type="button">What optical sensor experience is documented?</button>
-            <button type="button">What manufacturing experience is documented?</button>
-            <button type="button">Show the strongest sensor integration example.</button>
+            <button type="button">Which AI/data workflows are documented?</button>
+            <button type="button">What AI integration experience is documented?</button>
+            <button type="button">Show hardware design and documentation evidence.</button>
           </div>
 
           <form class="chat-form" data-chat-form>
             <label for="portfolio-chat-input" class="sr-only">
-              Ask a portfolio question
+              Ask the recruiter match agent
             </label>
             <textarea
               id="portfolio-chat-input"
               data-chat-input
               rows="3"
               maxlength="1200"
-              placeholder="Ask a portfolio question"
+              placeholder="Ask the recruiter match agent"
               disabled
             ></textarea>
             <div class="chat-form-footer">
@@ -724,7 +728,7 @@ const recruiterAssistantApi =
         elements.chatInput.placeholder =
           "Analyze a role before asking a question.";
         elements.suggestedQuestions.hidden = true;
-        setStatus(elements.chatStatus, "Analyze the role above to unlock Coco.");
+        setStatus(elements.chatStatus, "Analyze the role above to unlock the recruiter match agent.");
         return;
       }
 
@@ -761,12 +765,12 @@ const recruiterAssistantApi =
       const chatReady = !state.analysisStale;
       elements.chatInput.disabled = !chatReady;
       elements.chatInput.placeholder = chatReady
-        ? "Ask a question about the role or Alex's documented experience."
+        ? "Ask the recruiter match agent about the role or Alex's documented experience."
         : "Analyze the edited role before continuing the chat.";
       elements.suggestedQuestions.hidden = !chatReady;
       setStatus(
         elements.chatStatus,
-        chatReady ? "" : "Re-analyze the role to continue chatting with Coco.",
+        chatReady ? "" : "Re-analyze the role to continue chatting with the recruiter match agent.",
       );
       renderUsage();
     };
@@ -794,7 +798,7 @@ const recruiterAssistantApi =
         article.className = `chat-message ${message.role}`;
         const speaker = document.createElement("span");
         speaker.className = "chat-speaker";
-        speaker.textContent = message.role === "user" ? "You" : "Assistant";
+        speaker.textContent = message.role === "user" ? "You" : "Recruiter match agent";
         const copy = document.createElement("p");
         copy.textContent = message.content;
         article.append(speaker, copy);
@@ -1068,16 +1072,18 @@ const recruiterAssistantApi =
       }
     });
 
-    elements.chatToggle.addEventListener("click", () => {
-      if (window.matchMedia("(min-width: 1081px)").matches) return;
-      const minimized = elements.chatPanel.dataset.minimized === "true";
-      elements.chatPanel.dataset.minimized = minimized ? "false" : "true";
-      elements.chatToggle.setAttribute("aria-expanded", String(minimized));
+    const setChatMinimized = (minimized) => {
+      elements.chatPanel.dataset.minimized = String(minimized);
+      elements.chatToggle.setAttribute("aria-expanded", String(!minimized));
       elements.chatToggle.setAttribute(
         "aria-label",
-        minimized ? "Minimize Chat with Coco" : "Expand Chat with Coco",
+        minimized ? "Open Recruiter Match Agent" : "Minimize Recruiter Match Agent",
       );
-      elements.chatToggle.querySelector("span").textContent = minimized ? "−" : "+";
+      elements.chatToggle.querySelector("span").textContent = minimized ? "+" : "−";
+    };
+
+    elements.chatToggle.addEventListener("click", () => {
+      setChatMinimized(elements.chatPanel.dataset.minimized !== "true");
     });
 
     elements.chatForm.addEventListener("submit", (event) => {
@@ -1104,13 +1110,7 @@ const recruiterAssistantApi =
       0,
       maxRoleCharacters,
     );
-    const desktopChat = window.matchMedia("(min-width: 1081px)").matches;
-    if (desktopChat) {
-      elements.chatPanel.dataset.minimized = "false";
-      elements.chatToggle.hidden = true;
-    } else {
-      elements.chatToggle.hidden = false;
-    }
+    setChatMinimized(true);
     renderContext();
     renderAnalysis();
     renderConversation();
