@@ -34,6 +34,7 @@ const stateBridgePath = "public/recruiter-state-bridge.js";
 const responseGuardPath = "public/recruiter-response-guard.js";
 const baseLayoutPath = "src/layouts/BaseLayout.astro";
 const workflowDocPath = "docs/RECRUITER_ASSISTANT_WORKFLOW.md";
+const workerDeployScriptPath = "scripts/deploy-recruiter-worker.mjs";
 
 const recruiterPage = read(recruiterPagePath);
 const recruiterStart = read(recruiterStartPath);
@@ -44,6 +45,7 @@ const stateBridge = read(stateBridgePath);
 const responseGuard = read(responseGuardPath);
 const baseLayout = read(baseLayoutPath);
 const workflowDoc = read(workflowDocPath);
+const workerDeployScript = read(workerDeployScriptPath);
 
 requireText(recruiterStart, recruiterStartPath, [
   "data-entry-name",
@@ -149,6 +151,12 @@ requireText(workflowDoc, workflowDocPath, [
   "Analyze role",
   "Portfolio chat",
   "workers/recruiter-match/src/index.ts",
+]);
+
+requireText(workerDeployScript, workerDeployScriptPath, [
+  "QUOTA_NAMESPACE",
+  "Date.now()",
+  "wrangler",
 ]);
 
 [

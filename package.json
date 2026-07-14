@@ -10,7 +10,7 @@
     "build": "npm run validate:cocometric && npm run validate:recruiter && astro build",
     "preview": "astro preview",
     "worker:dev": "npx wrangler dev --config workers/recruiter-match/wrangler.toml",
-    "worker:deploy": "npx wrangler deploy --config workers/recruiter-match/wrangler.toml"
+    "worker:deploy": "node scripts/deploy-recruiter-worker.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.7",

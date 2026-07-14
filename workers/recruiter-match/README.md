@@ -31,10 +31,9 @@ The Worker uses the AI Search instance when available. During local setup or bef
 
 Limits reset at 00:00 UTC.
 
-The Worker also uses `QUOTA_NAMESPACE` when naming its daily Durable Object
-counter. Change that value for a deliberate deployment reset, then deploy the
-Worker and rebuild the site so the browser receives the matching fresh session
-key.
+The `npm run worker:deploy` command generates a fresh `QUOTA_NAMESPACE` for
+each deployment and passes it to Wrangler. Every Worker deployment therefore
+starts new Durable Object counters without a manual config edit.
 
 | Limit | Per connection | Site-wide |
 | --- | ---: | ---: |
@@ -90,7 +89,7 @@ The limits are intentionally conservative so approximately ten recruiters can ea
 4. Deploy:
 
 ```bash
-npx wrangler deploy --config workers/recruiter-match/wrangler.toml
+npm run worker:deploy
 ```
 
 5. Add the deployed endpoint as the GitHub Actions repository variable:
