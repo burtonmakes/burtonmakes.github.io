@@ -67,12 +67,6 @@ Layout rules:
 - Blue/cyan are the main technical accents.
 - Amber/coral are for CTAs, selected states, and highlighted data only.
 
-Design reference files:
-
-- `DESIGN_SYSTEM.md`
-- `DESIGN_SYSTEM_DETAILS.md`
-- `DESIGN_SYSTEM_VISUAL.html`
-
 ## Where to edit content
 
 Primary structured content lives in:
