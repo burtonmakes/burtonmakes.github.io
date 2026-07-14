@@ -219,7 +219,7 @@ const recruiterAssistantApi =
             <div class="evidence-list" data-evidence-list></div>
 
             <template data-card-template="evidence">
-              <a class="recruiter-card evidence-card" href="/" data-card-link>
+              <button class="recruiter-card evidence-card" type="button" data-card-open>
                 <header class="evidence-card-header">
                   <div>
                     <span class="evidence-type" data-card-type></span>
@@ -232,7 +232,7 @@ const recruiterAssistantApi =
                 </header>
                 <p class="evidence-summary" data-card-summary></p>
                 <div class="card-tag-row" data-card-requirements></div>
-              </a>
+              </button>
             </template>
           </section>
         </section>
@@ -394,6 +394,33 @@ const recruiterAssistantApi =
         </div>
       </article>
     </dialog>
+
+    <dialog class="source-dialog evidence-dialog" data-evidence-dialog>
+      <article class="source-dialog-panel">
+        <div class="dialog-heading">
+          <div>
+            <span class="section-label" data-evidence-type>Portfolio evidence</span>
+            <h2 data-evidence-title>Evidence detail</h2>
+          </div>
+          <button type="button" class="dialog-close" data-close-evidence aria-label="Close">
+            ×
+          </button>
+        </div>
+        <p class="source-excerpt" data-evidence-excerpt></p>
+        <div class="source-chip-row" data-evidence-requirements></div>
+        <div class="source-dialog-actions">
+          <button class="button button-secondary" type="button" data-evidence-back>
+            Go back
+          </button>
+          <button class="button button-secondary" type="button" data-evidence-yes>
+            Yes, this fits
+          </button>
+          <a class="button button-primary" data-evidence-link href="/">
+            Open detail
+          </a>
+        </div>
+      </article>
+    </dialog>
   </section>
 </BaseLayout>
 
@@ -456,6 +483,15 @@ const recruiterAssistantApi =
       sourceExcerpt: page.querySelector("[data-source-excerpt]"),
       sourceLink: page.querySelector("[data-source-link]"),
       closeSource: page.querySelector("[data-close-source]"),
+      evidenceDialog: page.querySelector("[data-evidence-dialog]"),
+      evidenceType: page.querySelector("[data-evidence-type]"),
+      evidenceTitle: page.querySelector("[data-evidence-title]"),
+      evidenceExcerpt: page.querySelector("[data-evidence-excerpt]"),
+      evidenceRequirements: page.querySelector("[data-evidence-requirements]"),
+      evidenceLink: page.querySelector("[data-evidence-link]"),
+      closeEvidence: page.querySelector("[data-close-evidence]"),
+      evidenceBack: page.querySelector("[data-evidence-back]"),
+      evidenceYes: page.querySelector("[data-evidence-yes]"),
     };
 
     const defaultState = {
@@ -555,6 +591,12 @@ const recruiterAssistantApi =
       while (element.firstChild) element.firstChild.remove();
     };
 
+    const closeEvidenceDialog = () => {
+      if (elements.evidenceDialog?.open) {
+        elements.evidenceDialog.close();
+      }
+    };
+
     const appendSourceButtons = (container, sourceIds) => {
       const row = document.createElement("div");
       row.className = "source-chip-row";
@@ -586,6 +628,41 @@ const recruiterAssistantApi =
       }
       if (!elements.sourceDialog.open) {
         elements.sourceDialog.showModal();
+      }
+    };
+
+    const openEvidence = (source, sourceIndexItem, requirementIds = []) => {
+      if (!source || !elements.evidenceDialog || !elements.evidenceType || !elements.evidenceTitle) return;
+
+      elements.evidenceType.textContent =
+        source.type === "work" ? "Work evidence" : "Project evidence";
+      elements.evidenceTitle.textContent = source.title;
+      if (elements.evidenceExcerpt) {
+        elements.evidenceExcerpt.textContent =
+          source.summary || source.excerpt || sourceIndexItem?.summary || "Documented public portfolio evidence.";
+      }
+      if (elements.evidenceLink && source.href) {
+        elements.evidenceLink.href = source.href;
+      }
+
+      if (elements.evidenceRequirements) {
+        clearElement(elements.evidenceRequirements);
+        const requirements = new Map(
+          (state.analysis?.requirements || []).map((requirement) => [
+            requirement.id,
+            requirement.label,
+          ]),
+        );
+        [...new Set((requirementIds || []).map((id) => requirements.get(id)).filter(Boolean))].slice(0, 4).forEach((label) => {
+          const chip = document.createElement("span");
+          chip.className = "source-chip evidence-match-label";
+          chip.textContent = label;
+          elements.evidenceRequirements.append(chip);
+        });
+      }
+
+      if (!elements.evidenceDialog.open) {
+        elements.evidenceDialog.showModal();
       }
     };
 
@@ -652,20 +729,10 @@ const recruiterAssistantApi =
         const periodElement = article.querySelector("[data-card-period]");
         const count = article.querySelector("[data-card-support]");
         const requirements = article.querySelector("[data-card-requirements]");
-        const link = article.matches("[data-card-link]")
-          ? article
-          : article.querySelector("[data-card-link]");
 
         type.textContent = source.type === "work" ? "Work" : "Project";
         title.textContent = source.title;
         summary.textContent = source.summary;
-        if (link && source.href) {
-          link.href = source.href;
-          link.setAttribute("aria-label", `Open ${source.title}`);
-        } else if (link) {
-          link.removeAttribute("href");
-          link.setAttribute("aria-hidden", "true");
-        }
         const requirementCount = item.requirementIds?.length || 0;
         count.textContent = `Supports ${requirementCount} ${
           requirementCount === 1 ? "requirement" : "requirements"
@@ -687,6 +754,15 @@ const recruiterAssistantApi =
           sourceIndexItem?.summary ||
           source.excerpt ||
           "Documented public portfolio evidence.";
+        article.addEventListener("click", () => {
+          openEvidence(source, sourceIndexItem, item.requirementIds);
+        });
+        article.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openEvidence(source, sourceIndexItem, item.requirementIds);
+          }
+        });
         elements.evidenceList?.append(article);
       });
     };
@@ -969,7 +1045,7 @@ const recruiterAssistantApi =
       }
     };
 
-      if (elements.closeContext && elements.contextDialog) {
+    if (elements.closeContext && elements.contextDialog) {
       elements.closeContext.addEventListener("click", () => {
         elements.contextDialog.close();
       });
@@ -1078,6 +1154,10 @@ const recruiterAssistantApi =
     elements.closeSource?.addEventListener("click", () => {
       elements.sourceDialog.close();
     });
+
+    elements.closeEvidence?.addEventListener("click", closeEvidenceDialog);
+    elements.evidenceBack?.addEventListener("click", closeEvidenceDialog);
+    elements.evidenceYes?.addEventListener("click", closeEvidenceDialog);
 
     elements.roleText.value = String(state.jobText || "").slice(
       0,
