@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { projectFacts } from "../../data/publicFacts";
-import { projects } from "../../data/site";
+import { projects, workHistory } from "../../data/site";
 import "../../styles/global.css";
 
 export function getStaticPaths() {
@@ -17,7 +16,8 @@ if (!project) {
   return Astro.redirect("/projects/");
 }
 const relatedProjects = projects.filter((item) => item.slug !== project.slug).slice(0, 3);
-const selectedFacts = projectFacts[project.slug as keyof typeof projectFacts] ?? [];
+const selectedFacts = project.facts;
+const parentRole = workHistory.find((role) => role.id === project.parentExperienceId);
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
@@ -26,6 +26,11 @@ const selectedFacts = projectFacts[project.slug as keyof typeof projectFacts] ??
       <p class="eyebrow">{project.section}</p>
       <h1>{project.title}</h1>
       <p class="hero-subtitle">{project.summary}</p>
+      {parentRole && (
+        <p class="project-parent-role">
+          Part of {parentRole.title} · {parentRole.company} · {parentRole.dates}
+        </p>
+      )}
 
       <div class="tag-row">
         <span class="tag tag-strong">{project.status}</span>

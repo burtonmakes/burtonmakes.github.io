@@ -1,13 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { projectFacts } from "../../data/publicFacts";
 import { projects } from "../../data/site";
 import "../../styles/global.css";
 
 const featuredProjects = projects;
 const projectDomains = [...new Set(featuredProjects.map((project) => project.section))];
-const getProjectProof = (slug: string) =>
-  (projectFacts[slug as keyof typeof projectFacts] ?? []).slice(0, 2);
+const getProjectProof = (project: (typeof projects)[number]) => project.facts.slice(0, 2);
 ---
 
 <BaseLayout
@@ -62,7 +60,7 @@ const getProjectProof = (slug: string) =>
 
     <div class="card-grid project-evidence-grid">
       {featuredProjects.map((project) => {
-        const proof = getProjectProof(project.slug);
+        const proof = getProjectProof(project);
         return (
           <a
             class="story-card tilt-card reveal project-evidence-card"

@@ -50,6 +50,44 @@ const portfolioEvidence = new Map<
   }
 >();
 
+workHistory.forEach((role) => {
+  const key = `work:${slugify(role.title)}:${slugify(role.company)}`;
+  portfolioEvidence.set(key, {
+    id: key,
+    title: `${role.title} · ${role.company}`,
+    kind: "work",
+    href: "/work/",
+    summary: role.summary,
+    period: role.dates,
+    tags: [...role.skills].slice(0, 18),
+    highlights: [...role.accomplishments].slice(0, 3),
+    capabilities: [],
+  });
+});
+
+projects.forEach((project) => {
+  const key = `project:${project.slug}`;
+  portfolioEvidence.set(key, {
+    id: key,
+    title: project.title,
+    kind: "project",
+    href: `/projects/${project.slug}/`,
+    summary: project.summary,
+    period: project.timeline,
+    tags: [
+      ...new Set([
+        ...project.skills,
+        ...project.labels,
+        ...project.stack,
+        project.section,
+        project.type,
+      ]),
+    ].slice(0, 18),
+    highlights: project.facts.slice(0, 3),
+    capabilities: [],
+  });
+});
+
 capabilityTaxonomy.forEach((group) => {
   group.nodes.forEach((node) => {
     node.evidence.forEach((item) => {
