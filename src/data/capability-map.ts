@@ -80,6 +80,7 @@ const projectSource = (slug: string): CapabilitySource => {
 };
 
 const sources = {
+  dataInfrastructure: workSource("Data Infrastructure & Local AI Project", "Independent"),
   rhaeos: workSource("Senior R&D Engineer", "Rhaeos, Inc."),
   gutruf: workSource("Graduate Research Assistant", "Gutruf Lab, University of Arizona"),
   eunil: workSource("Research Technician", "EUNIL / University of Arizona"),
@@ -333,7 +334,10 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
         yearsActive: "1+ years",
         yearsScore: 18,
         skillTags: ["AI systems", "Automation", "Developer tools", "Agents", "AI", "Local infrastructure"],
-        evidence: [evidence(sources.openClaw, "Canonical project evidence for local AI-agent workflow systems.")],
+        evidence: [
+          evidence(sources.dataInfrastructure, "Canonical independent-work evidence for private AI, retrieval, and automation workflows."),
+          evidence(sources.openClaw, "Canonical project evidence for local AI-agent workflow systems."),
+        ],
       },
       {
         id: "infrastructure-self-hosting",
@@ -343,6 +347,7 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
         yearsScore: 28,
         skillTags: ["Local infrastructure", "Linux", "Networking", "Storage", "Self-hosting", "Infrastructure", "Proxmox", "Tailscale"],
         evidence: [
+          evidence(sources.dataInfrastructure, "Canonical independent-work evidence for local-first infrastructure, file services, and backup/recovery."),
           evidence(sources.homeServer, "Canonical project evidence for storage, media, AI services, networking, and remote access."),
           evidence(sources.openClaw, "Canonical project evidence for local infrastructure and integration hooks."),
         ],
