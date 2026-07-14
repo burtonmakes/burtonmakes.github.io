@@ -698,7 +698,7 @@ Every sourceId must exactly match a supplied source ID.
 
 Schema:
 {
-    "answer": "concise answer in plain text, normally 2 to 5 short paragraphs",
+    "answer": "concise answer in plain text, 1 to 3 short sentences and under 450 characters when possible",
     "sourceIds": ["supplied-source-id"]
 }`;
 
@@ -1122,9 +1122,11 @@ const handleChat = async (
     )
     .trim()
     .replace(/^the closest/i, "The closest");
-  const answer =
+  const answer = cleanMultiline(
     answerWithoutNegativeLead ||
-    `The closest relevant documented evidence is:\n\n${closestEvidence}`;
+      `The closest relevant documented evidence is:\n\n${closestEvidence}`,
+    900,
+  );
 
   return json(request, env, {
     action: "chat",

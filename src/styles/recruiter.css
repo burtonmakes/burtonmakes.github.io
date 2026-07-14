@@ -510,6 +510,22 @@
   transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
 }
 
+.chat-reset {
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted-2);
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.chat-reset:hover,
+.chat-reset:focus-visible {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
 .chat-minimize:hover,
 .chat-minimize:focus-visible {
   filter: brightness(1.08);
@@ -580,6 +596,10 @@
   margin: 8px 0 10px;
   max-height: 94px;
   overflow-y: auto;
+}
+
+.suggested-questions[hidden] {
+  display: none;
 }
 
 .suggested-questions button {

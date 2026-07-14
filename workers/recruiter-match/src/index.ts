@@ -303,7 +303,8 @@ const deterministicChatFallback = (payload: Record<string, unknown>) => {
       const excerpt = clean(source.excerpt, 420);
       return excerpt ? `${title}: ${excerpt}` : title;
     })
-    .join("\n\n");
+    .join("\n\n")
+    .slice(0, 700);
 
   return {
     answer: `${question ? `The strongest relevant evidence for “${question}” is:\n\n` : "The closest relevant documented evidence is:\n\n"}${summaries}`,

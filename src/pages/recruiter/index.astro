@@ -253,6 +253,14 @@ const recruiterAssistantApi =
           </div>
           <div class="chat-header-actions">
             <button
+              class="chat-reset"
+              type="button"
+              data-chat-reset
+              aria-label="Start a new chat"
+            >
+              New chat
+            </button>
+            <button
               class="chat-minimize"
               type="button"
               data-chat-toggle
@@ -272,7 +280,7 @@ const recruiterAssistantApi =
             <article class="chat-message assistant">
               <span class="chat-speaker">Recruiter match agent</span>
               <p>
-                Ask about Alex's portfolio, a work example, or a project. Add a role description when you want a match review.
+                Ask about Alex's work, projects, or role fit.
               </p>
             </article>
           </div>
@@ -491,6 +499,7 @@ const recruiterAssistantApi =
       chatRemaining: page.querySelector("[data-chat-remaining]"),
       chatPanel: page.querySelector(".portfolio-chat"),
       chatToggle: page.querySelector("[data-chat-toggle]"),
+      chatReset: page.querySelector("[data-chat-reset]"),
       chatMessages: page.querySelector("[data-chat-messages]"),
       suggestedQuestions: page.querySelector("[data-suggested-questions]"),
       chatForm: page.querySelector("[data-chat-form]"),
@@ -882,7 +891,7 @@ const recruiterAssistantApi =
         const copy = document.createElement("p");
         copy.textContent = state.analysis
           ? "Ask about a requirement, work example, or project."
-          : "Ask about Alex's portfolio, a work example, or a project. Add role information when you want a match review.";
+          : "Ask about Alex's work, projects, or role fit.";
         article.append(speaker, copy);
         elements.chatMessages?.append(article);
         return;
@@ -1198,6 +1207,17 @@ const recruiterAssistantApi =
 
     elements.chatToggle?.addEventListener("click", () => {
       setChatMinimized(elements.chatPanel.dataset.minimized !== "true");
+    });
+
+    elements.chatReset?.addEventListener("click", () => {
+      state.conversation = [];
+      elements.chatInput.value = "";
+      writeState();
+      renderConversation();
+      updateCharacterCounts();
+      renderUsage();
+      setStatus(elements.chatStatus, "New chat started.");
+      elements.chatInput.focus();
     });
 
     elements.chatForm?.addEventListener("submit", (event) => {
