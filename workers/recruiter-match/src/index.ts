@@ -105,8 +105,21 @@ const chatSchema: JsonSchema = {
   properties: {
     answer: { type: "string" },
     sourceIds: stringArraySchema(4),
+    evidence: {
+      type: "array",
+      maxItems: 3,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          sourceId: { type: "string" },
+          point: { type: "string" },
+        },
+        required: ["sourceId", "point"],
+      },
+    },
   },
-  required: ["answer", "sourceIds"],
+  required: ["answer", "sourceIds", "evidence"],
 };
 
 const clean = (value: unknown, max = 1_000) =>
@@ -293,22 +306,21 @@ const deterministicChatFallback = (payload: Record<string, unknown>) => {
       answer:
         "I could not retrieve public portfolio evidence for that question. Please try again, or ask about a specific documented work example or project.",
       sourceIds: [],
+      evidence: [],
     };
   }
 
-  const summaries = sources
-    .slice(0, 3)
-    .map((source) => {
-      const title = clean(source.title, 160) || "Portfolio evidence";
-      const excerpt = clean(source.excerpt, 420);
-      return excerpt ? `${title}: ${excerpt}` : title;
-    })
-    .join("\n\n")
-    .slice(0, 700);
+  const evidence = sources.slice(0, 3).map((source) => ({
+    sourceId: clean(source.id, 160),
+    point: clean(source.excerpt, 260) || "Relevant documented portfolio evidence.",
+  }));
 
   return {
-    answer: `${question ? `The strongest relevant evidence for “${question}” is:\n\n` : "The closest relevant documented evidence is:\n\n"}${summaries}`,
+    answer: question
+      ? `The strongest relevant evidence for “${question}” is listed below.`
+      : "The closest relevant documented evidence is listed below.",
     sourceIds: sources.map((source) => clean(source.id, 160)),
+    evidence,
   };
 };
 

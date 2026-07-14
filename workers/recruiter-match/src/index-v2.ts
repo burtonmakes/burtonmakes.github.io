@@ -100,6 +100,10 @@ type AnalyzeModelResult = {
 type ChatModelResult = {
   answer?: string;
   sourceIds?: string[];
+  evidence?: Array<{
+    sourceId?: string;
+    point?: string;
+  }>;
 };
 
 type QuotaAction = "analyze" | "chat";
@@ -695,11 +699,15 @@ Return one valid JSON object only. Do not include markdown or text outside JSON.
 Do not invent experience, metrics, ownership, projects, employers, or source IDs.
 Lead with the strongest relevant documented evidence. Never open with a negative statement about Alex or say that documentation is unclear. If the evidence is an adjacent match rather than an exact match, label it as the closest relevant documented evidence and explain the connection.
 Every sourceId must exactly match a supplied source ID.
+Keep the answer to one short summary sentence. Put project names, metrics, and supporting details only in the separate evidence items. Return two or three evidence items when the supplied sources support them.
 
 Schema:
 {
-    "answer": "concise answer in plain text, 1 to 3 short sentences and under 450 characters when possible",
-    "sourceIds": ["supplied-source-id"]
+    "answer": "one concise summary sentence under 220 characters",
+    "sourceIds": ["supplied-source-id"],
+    "evidence": [
+      {"sourceId": "supplied-source-id", "point": "one concise source-backed point under 180 characters"}
+    ]
 }`;
 
 const validateSourceIds = (
@@ -1101,19 +1109,23 @@ const handleChat = async (
   const validSourceIds = new Set(
     retrieval.sources.map((source) => source.id),
   );
+  const evidence = Array.isArray(modelResult.evidence)
+    ? modelResult.evidence
+        .map((item) => ({
+          sourceId: clean(item?.sourceId, 120),
+          point: clean(item?.point, 220),
+        }))
+        .filter((item) => validSourceIds.has(item.sourceId) && item.point)
+        .slice(0, 3)
+    : [];
   const sourceIds = validateSourceIds(
-    modelResult.sourceIds,
+    [
+      ...(modelResult.sourceIds || []),
+      ...evidence.map((item) => item.sourceId),
+    ],
     validSourceIds,
     4,
   );
-  const closestEvidence = retrieval.sources
-    .slice(0, 3)
-    .map((source) => {
-      const title = clean(source.title, 180) || "Portfolio evidence";
-      const excerpt = clean(source.excerpt, 420);
-      return excerpt ? `${title}: ${excerpt}` : title;
-    })
-    .join("\n\n");
   const rawAnswer = cleanMultiline(modelResult.answer, 2_400);
   const answerWithoutNegativeLead = rawAnswer
     .replace(
@@ -1122,16 +1134,20 @@ const handleChat = async (
     )
     .trim()
     .replace(/^the closest/i, "The closest");
+  const fallbackEvidence = retrieval.sources.slice(0, 3).map((source) => ({
+    sourceId: source.id,
+    point: clean(source.excerpt, 220) || "Relevant documented portfolio evidence.",
+  }));
   const answer = cleanMultiline(
-    answerWithoutNegativeLead ||
-      `The closest relevant documented evidence is:\n\n${closestEvidence}`,
-    900,
+    answerWithoutNegativeLead || "The closest relevant documented evidence is listed below.",
+    500,
   );
 
   return json(request, env, {
     action: "chat",
     answer,
     sourceIds,
+    evidence: evidence.length ? evidence : fallbackEvidence,
     sources: retrieval.sources.filter((source) =>
       sourceIds.includes(source.id),
     ),

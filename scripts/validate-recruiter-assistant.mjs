@@ -59,6 +59,7 @@ requireText(recruiterPage, recruiterPagePath, [
   "data-source-dialog",
   "data-limit-dialog",
   "Contact Alex directly",
+  "data-chat-reset",
   "Supported by work",
   "Supported by projects",
 ]);
@@ -83,6 +84,7 @@ requireText(workerCore, workerCorePath, [
   "scopeGuardAnswer",
   "closest relevant documented evidence",
   "Never open with a negative statement about Alex",
+  '"evidence"',
   "class RateLimiter",
   "@cf/qwen/qwen3-30b-a3b-fp8",
 ]);

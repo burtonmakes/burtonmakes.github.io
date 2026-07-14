@@ -597,6 +597,33 @@
   background: linear-gradient(180deg, rgba(22, 49, 90, 0.94), rgba(19, 36, 68, 0.95));
 }
 
+.chat-evidence-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.chat-evidence-item {
+  padding: 8px 9px;
+  border: 1px solid rgba(145, 200, 229, 0.13);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.chat-evidence-item strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--accent-2);
+  font-size: 0.68rem;
+  line-height: 1.25;
+}
+
+.chat-evidence-item p {
+  color: var(--muted-2);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
 .suggested-questions {
   display: grid;
   gap: 6px;
