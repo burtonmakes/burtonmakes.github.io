@@ -1021,18 +1021,6 @@ const handleChat = async (
         .slice(0, 12)
     : [];
 
-  if (!clean(roleSummary.summary) && !jobText) {
-    return json(
-      request,
-      env,
-      {
-        error: "Analyze the role before using the portfolio chat.",
-        code: "analysis_required",
-      },
-      400,
-    );
-  }
-
   const quota = await checkQuota(request, env, "chat");
   if (!quota.allowed) {
     return json(

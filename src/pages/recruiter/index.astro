@@ -278,7 +278,6 @@ const recruiterAssistantApi =
           </div>
 
           <div class="suggested-questions" data-suggested-questions hidden>
-            <button type="button">Which AI/data workflows are documented?</button>
             <button type="button">What AI integration experience is documented?</button>
             <button type="button">Show hardware design and documentation evidence.</button>
           </div>
@@ -575,8 +574,6 @@ const recruiterAssistantApi =
       elements.chatSubmit.disabled =
         chatting ||
         chats <= 0 ||
-        !state.analysis ||
-        state.analysisStale ||
         !elements.chatInput.value.trim();
     };
 
@@ -770,11 +767,15 @@ const recruiterAssistantApi =
     const renderAnalysis = () => {
       if (!state.analysis) {
         elements.analysisShell.hidden = true;
-        elements.chatInput.disabled = true;
+        elements.chatInput.disabled = false;
         elements.chatInput.placeholder =
-          "Analyze a role before asking a question.";
-        elements.suggestedQuestions.hidden = true;
-        setStatus(elements.chatStatus, "Analyze the role above to unlock the recruiter match agent.");
+          "Ask about Alex's portfolio, a role, or a specific piece of evidence.";
+        elements.suggestedQuestions.hidden = state.conversation.length > 0;
+        setStatus(
+          elements.chatStatus,
+          "Ask about Alex's portfolio. Add role info only if you want a sharper match.",
+        );
+        renderUsage();
         return;
       }
 
@@ -812,7 +813,7 @@ const recruiterAssistantApi =
       elements.chatInput.placeholder = chatReady
         ? "Ask the recruiter match agent about the role or Alex's documented experience."
         : "Analyze the edited role before continuing the chat.";
-      elements.suggestedQuestions.hidden = !chatReady;
+      elements.suggestedQuestions.hidden = !chatReady || state.conversation.length > 0;
       setStatus(
         elements.chatStatus,
         chatReady ? "" : "Re-analyze the role to continue chatting with the recruiter match agent.",
@@ -822,6 +823,9 @@ const recruiterAssistantApi =
 
     const renderConversation = () => {
       clearElement(elements.chatMessages);
+      if (elements.suggestedQuestions) {
+        elements.suggestedQuestions.hidden = state.conversation.length > 0;
+      }
 
       if (!state.conversation.length) {
         const article = document.createElement("article");
@@ -964,7 +968,7 @@ const recruiterAssistantApi =
     };
 
     const submitChat = async (question) => {
-      if (chatting || !state.analysis || state.analysisStale) return;
+      if (chatting) return;
       const trimmed = question.trim();
       if (!trimmed) return;
       if (!apiEndpoint) {
@@ -993,10 +997,12 @@ const recruiterAssistantApi =
             action: "chat",
             recruiterContext: state.recruiterContext,
             jobText: state.jobText,
-            analysisContext: {
-              roleSummary: state.analysis.roleSummary,
-              requirements: state.analysis.requirements,
-            },
+            analysisContext: state.analysis
+              ? {
+                  roleSummary: state.analysis.roleSummary,
+                  requirements: state.analysis.requirements,
+                }
+              : null,
             conversation: state.conversation.slice(0, -1).slice(-6),
             question: trimmed,
             portfolioIndex,
@@ -1140,16 +1146,14 @@ const recruiterAssistantApi =
       submitChat(elements.chatInput.value);
     });
 
-    elements.suggestedQuestions
-      ?.querySelectorAll("button")
-      .forEach((button) => {
-        button.addEventListener("click", () => {
-          elements.chatInput.value = button.textContent.trim();
-          updateCharacterCounts();
-          renderUsage();
-          elements.chatInput.focus();
-        });
+    elements.suggestedQuestions?.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => {
+        elements.chatInput.value = button.textContent.trim();
+        updateCharacterCounts();
+        renderUsage();
+        elements.chatInput.focus();
       });
+    });
 
     elements.closeSource?.addEventListener("click", () => {
       elements.sourceDialog.close();
