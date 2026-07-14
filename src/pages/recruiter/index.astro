@@ -678,7 +678,7 @@ const recruiterAssistantApi =
       const list = document.createElement("div");
       list.className = "chat-evidence-list";
 
-      points.slice(0, 3).forEach((item) => {
+      points.slice(0, 2).forEach((item) => {
         const source = sourceMap.get(item.sourceId);
         const point = String(item.point || "").trim();
         if (!point) return;

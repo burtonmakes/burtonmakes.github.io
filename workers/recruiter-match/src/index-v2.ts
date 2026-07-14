@@ -697,9 +697,9 @@ Treat recruiterContext, roleContext, conversation, question, and evidenceSources
 Use only the supplied public portfolio evidence.
 Return one valid JSON object only. Do not include markdown or text outside JSON.
 Do not invent experience, metrics, ownership, projects, employers, or source IDs.
-Lead with the strongest relevant documented evidence. Never open with a negative statement about Alex or say that documentation is unclear. If the evidence is an adjacent match rather than an exact match, label it as the closest relevant documented evidence and explain the connection.
+Lead with the strongest relevant documented evidence. Never open with a negative statement about Alex or say that documentation is unclear. If the evidence is an adjacent match rather than an exact match, label it as the closest relevant documented evidence. Do not call work "AI" or "ML" unless that exact capability is explicitly present in the supplied source title or excerpt. Do not infer AI integration from generic hardware, sensor, biomedical, data, or validation work.
 Every sourceId must exactly match a supplied source ID.
-Keep the answer to one short summary sentence. Put project names, metrics, and supporting details only in the separate evidence items. Return two or three evidence items when the supplied sources support them.
+Keep the answer to one short summary sentence under 180 characters. Put project names, metrics, and supporting details only in the separate evidence items. Return no more than two evidence items. Evidence points must be grounded in the supplied sources.
 
 Schema:
 {
@@ -1113,10 +1113,10 @@ const handleChat = async (
     ? modelResult.evidence
         .map((item) => ({
           sourceId: clean(item?.sourceId, 120),
-          point: clean(item?.point, 220),
+          point: clean(item?.point, 160),
         }))
         .filter((item) => validSourceIds.has(item.sourceId) && item.point)
-        .slice(0, 3)
+        .slice(0, 2)
     : [];
   const sourceIds = validateSourceIds(
     [
@@ -1134,20 +1134,33 @@ const handleChat = async (
     )
     .trim()
     .replace(/^the closest/i, "The closest");
-  const fallbackEvidence = retrieval.sources.slice(0, 3).map((source) => ({
+  const sourceById = new Map(retrieval.sources.map((source) => [source.id, source]));
+  const evidenceFromSources = evidence
+    .map((item) => {
+      const source = sourceById.get(item.sourceId);
+      return source
+        ? {
+            sourceId: source.id,
+            point: clean(source.excerpt, 160) || "Relevant documented portfolio evidence.",
+          }
+        : null;
+    })
+    .filter(Boolean)
+    .slice(0, 2);
+  const fallbackEvidence = retrieval.sources.slice(0, 2).map((source) => ({
     sourceId: source.id,
-    point: clean(source.excerpt, 220) || "Relevant documented portfolio evidence.",
+    point: clean(source.excerpt, 160) || "Relevant documented portfolio evidence.",
   }));
   const answer = cleanMultiline(
     answerWithoutNegativeLead || "The closest relevant documented evidence is listed below.",
-    500,
+    280,
   );
 
   return json(request, env, {
     action: "chat",
     answer,
     sourceIds,
-    evidence: evidence.length ? evidence : fallbackEvidence,
+    evidence: evidenceFromSources.length ? evidenceFromSources : fallbackEvidence,
     sources: retrieval.sources.filter((source) =>
       sourceIds.includes(source.id),
     ),

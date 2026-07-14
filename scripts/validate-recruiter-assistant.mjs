@@ -84,6 +84,7 @@ requireText(workerCore, workerCorePath, [
   "scopeGuardAnswer",
   "closest relevant documented evidence",
   "Never open with a negative statement about Alex",
+  "Do not infer AI integration from generic hardware",
   '"evidence"',
   "class RateLimiter",
   "@cf/qwen/qwen3-30b-a3b-fp8",

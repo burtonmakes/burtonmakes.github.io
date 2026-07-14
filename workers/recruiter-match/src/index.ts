@@ -298,7 +298,7 @@ const deterministicAnalysisFallback = (payload: Record<string, unknown>) => {
 };
 
 const deterministicChatFallback = (payload: Record<string, unknown>) => {
-  const sources = evidenceSourcesFromPayload(payload).slice(0, 4);
+  const sources = evidenceSourcesFromPayload(payload).slice(0, 2);
   const question = clean(payload.question, 300);
 
   if (!sources.length) {
@@ -310,9 +310,9 @@ const deterministicChatFallback = (payload: Record<string, unknown>) => {
     };
   }
 
-  const evidence = sources.slice(0, 3).map((source) => ({
+  const evidence = sources.map((source) => ({
     sourceId: clean(source.id, 160),
-    point: clean(source.excerpt, 260) || "Relevant documented portfolio evidence.",
+    point: clean(source.excerpt, 160) || "Relevant documented portfolio evidence.",
   }));
 
   return {
