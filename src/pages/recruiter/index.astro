@@ -646,13 +646,17 @@ const recruiterAssistantApi =
         const periodElement = article.querySelector("[data-card-period]");
         const count = article.querySelector("[data-card-support]");
         const requirements = article.querySelector("[data-card-requirements]");
-        const link = article.querySelector("[data-card-link]");
+        const link = article.matches("[data-card-link]")
+          ? article
+          : article.querySelector("[data-card-link]");
 
         type.textContent = source.type === "work" ? "Work" : "Project";
         title.textContent = source.title;
         summary.textContent = source.summary;
-        link.href = source.href;
-        link.setAttribute("aria-label", `Open ${source.title}`);
+        if (link && source.href) {
+          link.href = source.href;
+          link.setAttribute("aria-label", `Open ${source.title}`);
+        }
         const requirementCount = item.requirementIds?.length || 0;
         count.textContent = `Supports ${requirementCount} ${
           requirementCount === 1 ? "requirement" : "requirements"
