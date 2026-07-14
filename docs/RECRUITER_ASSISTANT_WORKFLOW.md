@@ -2,6 +2,51 @@
 
 This document shows exactly how the recruiter-facing workflow operates, which files provide the portfolio evidence, which buttons trigger requests, and how Cloudflare usage is limited.
 
+## Canonical implementation map
+
+This is the end-to-end path for the deployed recruiter review. The browser supplies recruiter context, role text, and a compact public portfolio index; the Worker retrieves and validates evidence before the browser renders the result.
+
+```mermaid
+flowchart LR
+    subgraph Browser[Astro recruiter page]
+        A[Recruiter context and role text] --> B[Build portfolioIndex]
+        B --> C[POST /match action analyze or chat]
+        C --> D[Render role summary, coverage, evidence cards, or chat]
+        D --> E[Source dialog opens public evidence URL]
+        B -. localStorage burton-recruiter-onepage-session-v3 .-> D
+    end
+
+    subgraph StaticData[Repository source data]
+        F[src/data/site.ts<br/>work history and projects]
+        G[src/data/capability-map.ts<br/>capability-to-source links]
+        F --> B
+        G --> B
+    end
+
+    subgraph Worker[Cloudflare Worker]
+        H[src/index.ts<br/>CORS, JSON guard, fallback]
+        I[src/index-v2.ts<br/>request validation and orchestration]
+        J[Durable Object<br/>daily quota counters]
+        K[AI Search<br/>hybrid retrieval and BGE reranking]
+        L[Portfolio fallback<br/>token-overlap ranking]
+        M[Qwen3 30B A3B FP8<br/>JSON analysis or chat]
+        N[Source-ID validation<br/>coverage counts in code]
+        O[JSON response]
+        H --> I --> J
+        I -->|AI Search available| K
+        I -->|AI Search unavailable or empty| L
+        K --> M
+        L --> M
+        M --> N --> O
+    end
+
+    C --> H
+    O --> D
+    P[Malformed model JSON] --> Q[Llama 3.1 8B JSON repair]
+    Q --> N
+    M -. invalid output .-> P
+```
+
 ## Recruiter experience
 
 ```mermaid
@@ -18,7 +63,7 @@ flowchart TD
     I --> K[Review project-supported requirements]
     J --> L[Open source chips or evidence cards]
     K --> L
-    I --> M[Use Portfolio chat]
+    I --> M[Open Recruiter Match Agent]
     M --> N[Ask a follow-up question]
     N --> O[Receive a source-backed answer]
 ```
@@ -46,10 +91,10 @@ flowchart TD
     F --> G[Check Durable Object quota]
     G -->|Allowed| H[Cloudflare AI Search]
     G -->|Limit reached| Z[Return HTTP 429 and remaining quota]
-    H --> I[Hybrid semantic and keyword retrieval]
+    H --> I[Hybrid retrieval: semantic plus keyword, RRF]
     I --> J[BGE reranking]
     J --> K[Consolidate work and project sources]
-    K --> L[Gemma 4 26B A4B at temperature 0.05]
+    K --> L[Qwen3 30B A3B FP8<br/>temperature 0.05, top_p 0.9, seed 1701]
     L --> M{Valid JSON object?}
     M -->|Yes| N[Validate returned source IDs]
     M -->|No| R[Llama 3.1 8B JSON-schema repair]
@@ -59,7 +104,7 @@ flowchart TD
     T --> M
     N --> O[Calculate supported-by-work count in code]
     N --> P[Calculate supported-by-project count in code]
-    O --> Q[Render role summary, reasons, and evidence]
+    O --> Q[Render role summary, coverage, and recruiter evidence cards]
     P --> Q
 ```
 
@@ -76,13 +121,13 @@ flowchart TD
     E -->|Allowed| F[Combine question with condensed role context]
     F --> G[Run a new AI Search retrieval]
     G --> H[Rerank and keep strongest sources]
-    H --> I[Generate answer with Gemma]
+    H --> I[Generate answer with Qwen3 30B A3B FP8]
     I --> J{Valid JSON object?}
     J -->|No| K[Repair against chat JSON schema]
     J -->|Yes| L[Reject unknown source IDs]
     K --> L
     L --> M[Return answer and cited source objects]
-    M --> N[Render answer in Portfolio chat]
+    M --> N[Render answer in Recruiter Match Agent]
     N --> O[Source chips open exact evidence]
 ```
 
@@ -100,7 +145,7 @@ Each chat question runs a fresh retrieval. The chat does not rely only on the ev
 | `src/data/site.ts` | Canonical public work-history and project content used to build the compact portfolio index. |
 | `src/data/capability-map.ts` | Connects public work and project sources to capability labels and supporting evidence. |
 
-The static page builds `portfolioIndex` from `src/data/site.ts` and `src/data/capability-map.ts`. Each item includes a stable evidence ID, title, source type, public URL, summary, highlights, tags, and capabilities.
+The static page builds `portfolioIndex` from `src/data/site.ts` and `src/data/capability-map.ts`. Each item includes a stable evidence ID, title, source type, public URL, summary, highlights, tags, and capabilities. The browser stores the editable recruiter session under `burton-recruiter-onepage-session-v3`; it does not send hidden site content.
 
 ### Worker and Cloudflare files
 
@@ -122,26 +167,49 @@ It should exclude recruiter pages, contact pages, navigation, footer text, and r
 
 If AI Search is unavailable or empty, the Worker falls back to ranking the compact public portfolio index supplied by the page. This is a retrieval fallback only; the recruiter does not see a separate fuzzy-analysis product or percentage.
 
+### Exact retrieval behavior
+
+| Stage | Implementation detail |
+| --- | --- |
+| Search query | Analysis combines `hiringFor`, `company`, and `jobText`; chat combines the analyzed role title, role summary, requirement labels, and the question. |
+| AI Search retrieval | `retrieval_type: hybrid`, up to 24 candidates for analysis or 18 for chat, `match_threshold: 0.3`, `fusion_method: rrf`, and `keyword_match_mode: or`. |
+| Reranking | `@cf/baai/bge-reranker-base`, enabled with `match_threshold: 0.25`. |
+| Consolidation | Chunks are grouped by normalized `/work/**` or `/projects/**` URL, excerpts are combined, and the highest score is kept. The final source limit is 8 for analysis and 6 for chat. |
+| Fallback | Token overlap is calculated against each compact portfolio item's title, summary, tags, highlights, and capabilities. |
+
+### Browser response rendering
+
+| Response field | Recruiter-facing result |
+| --- | --- |
+| `roleSummary` | Interpreted role title, concise summary, and role themes. |
+| `requirements` | Requirement labels used as the evidence-card labels. |
+| `coverage` | Unique requirement IDs supported by validated work sources versus validated project sources. Counts are calculated in Worker code. |
+| `evidence` | Source ID, role-relevance summary, and matched requirement IDs. The browser renders one compact card per source. |
+| `sources` | Validated title, type, public URL, excerpt, and score used by the source dialog and chat citations. |
+| `answer` and `sourceIds` | Chat answer plus source chips that open the exact public evidence excerpt. |
+
 ## Model configuration
 
 | Setting | Value |
 | --- | --- |
-| Primary generation model | `@cf/google/gemma-4-26b-a4b-it` |
+| Primary generation model | `@cf/qwen/qwen3-30b-a3b-fp8` |
 | JSON repair model | `@cf/meta/llama-3.1-8b-instruct-fast` |
 | Temperature | `0.05` |
 | Top-p | `0.9` |
 | Seed | `1701` |
 | AI Search mode | Hybrid semantic and keyword retrieval |
 | Reranker | `@cf/baai/bge-reranker-base` |
+| Analysis generation budget | 900 tokens per primary attempt |
+| Chat generation budget | 450 tokens per primary attempt |
 | Analysis sources | Up to 8 consolidated sources |
 | Chat sources | Up to 6 consolidated sources |
 
-Gemma performs the evidence reasoning and writing. If its response is not valid JSON, the entrypoint sends only the malformed structured response to the smaller repair model with an explicit JSON Schema. The repair model cannot add portfolio evidence because source IDs are still validated by the core Worker. The core generation path also retries once. Raw JSON parser messages are never returned to the recruiter.
+Qwen performs the evidence reasoning and writing. The production entrypoint first normalizes the Qwen response. If it is malformed, only the malformed response, original request context, and explicit JSON Schema are sent to the Llama repair model. If repair also fails, the entrypoint returns a deterministic source-backed fallback. The core generation path can retry once with a shorter request. The repair model cannot add portfolio evidence because source IDs are still validated by the core Worker. Raw JSON parser messages are never returned to the recruiter.
 
 ## Source-safety rules
 
-1. The model receives only retrieved public evidence.
-2. The model must return source IDs from that supplied list.
+1. All factual portfolio claims supplied to the model come from retrieved public evidence or the compact public-index fallback.
+2. The model must return source IDs from the supplied evidence list.
 3. `validateSourceIds` removes IDs that were not retrieved.
 4. Reasons without a valid source are removed.
 5. Evidence entries without a valid source and requirement ID are removed.

@@ -295,55 +295,8 @@
   line-height: 1.4;
 }
 
-.reason-list,
 .evidence-list {
   margin-top: 16px;
-}
-
-.match-points {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.match-points li {
-  display: grid;
-  grid-template-columns: 10px minmax(0, 1fr);
-  gap: 8px 10px;
-  padding: 0 0 10px;
-  border-bottom: 1px solid var(--line-soft);
-}
-
-.match-points li::before {
-  width: 7px;
-  height: 7px;
-  margin-top: 0.48em;
-  border-radius: 50%;
-  background: var(--accent-2);
-  content: "";
-}
-
-.match-points strong,
-.match-points li > span {
-  grid-column: 2;
-}
-
-.match-points strong {
-  color: var(--text);
-  font-size: 0.96rem;
-  line-height: 1.35;
-}
-
-.match-points li > span {
-  color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.45;
-}
-
-.match-points .source-chip-row {
-  grid-column: 2;
 }
 
 .evidence-list {
@@ -382,8 +335,7 @@
   text-align: right;
 }
 
-.evidence-summary,
-.evidence-why {
+.evidence-summary {
   margin: 7px 0 0;
   color: var(--muted-2);
   font-size: 0.84rem;
@@ -410,7 +362,7 @@
 }
 
 .card-tag-row:empty,
-.evidence-why:empty {
+.evidence-summary:empty {
   display: none;
 }
 

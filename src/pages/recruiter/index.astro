@@ -204,7 +204,7 @@ const recruiterAssistantApi =
                   <span aria-hidden="true">03</span>
                   Relevant evidence
                 </span>
-                <h2 id="evidence-heading">Why this is a strong match</h2>
+                <h2 id="evidence-heading">Recruiter-relevant evidence</h2>
               </div>
               <div class="evidence-filters" role="group" aria-label="Evidence filters">
                 <button type="button" data-evidence-filter="all" data-active="true">
@@ -216,7 +216,6 @@ const recruiterAssistantApi =
                 </button>
               </div>
             </div>
-            <div class="reason-list" data-reason-list></div>
             <div class="evidence-list" data-evidence-list></div>
 
             <template data-card-template="evidence">
@@ -225,16 +224,14 @@ const recruiterAssistantApi =
                   <div>
                     <span class="evidence-type" data-card-type></span>
                     <h3 data-card-title></h3>
-                    <p class="evidence-summary" data-card-summary></p>
                   </div>
                   <div class="evidence-card-meta">
                     <span class="evidence-period" data-card-period></span>
                     <span class="card-support-label" data-card-support></span>
                   </div>
                 </header>
-                <div class="card-tag-row" data-card-tags></div>
                 <div class="card-tag-row" data-card-requirements></div>
-                <p class="evidence-why" data-card-why></p>
+                <p class="evidence-summary" data-card-summary></p>
               </article>
             </template>
           </section>
@@ -440,7 +437,6 @@ const recruiterAssistantApi =
       roleThemes: page.querySelector("[data-role-themes]"),
       workCoverage: page.querySelector("[data-work-coverage]"),
       projectCoverage: page.querySelector("[data-project-coverage]"),
-      reasonList: page.querySelector("[data-reason-list]"),
       evidenceList: page.querySelector("[data-evidence-list]"),
       evidenceTemplate: page.querySelector("[data-card-template=\"evidence\"]"),
       evidenceFilters: [...page.querySelectorAll("[data-evidence-filter]")],
@@ -622,45 +618,6 @@ const recruiterAssistantApi =
       container.append(row);
     };
 
-    const appendTagList = (container, values, className = "source-chip") => {
-      (values || []).slice(0, 4).forEach((value) => {
-        const chip = document.createElement("span");
-        chip.className = className;
-        chip.textContent = value;
-        container.append(chip);
-      });
-    };
-
-    const renderReasons = () => {
-      clearElement(elements.reasonList);
-      const reasons = state.analysis?.reasons || [];
-
-      if (!reasons.length) {
-        const empty = document.createElement("p");
-        empty.textContent =
-          "No source-backed interview reasons were returned for this role.";
-        elements.reasonList.append(empty);
-        return;
-      }
-
-      const list = document.createElement("ul");
-      list.className = "match-points";
-      reasons.slice(0, 4).forEach((reason) => {
-        const item = document.createElement("li");
-        const statement = document.createElement("strong");
-        statement.textContent = reason.statement;
-        item.append(statement);
-        if (reason.relevance) {
-          const relevance = document.createElement("span");
-          relevance.textContent = reason.relevance;
-          item.append(relevance);
-        }
-        appendSourceButtons(item, reason.sourceIds || []);
-        list.append(item);
-      });
-      elements.reasonList.append(list);
-    };
-
     const visibleEvidence = () => {
       const evidence = state.analysis?.evidence || [];
       const filter = state.activeEvidenceFilter || "all";
@@ -692,9 +649,7 @@ const recruiterAssistantApi =
         const summary = article.querySelector("[data-card-summary]");
         const periodElement = article.querySelector("[data-card-period]");
         const count = article.querySelector("[data-card-support]");
-        const tags = article.querySelector("[data-card-tags]");
         const requirements = article.querySelector("[data-card-requirements]");
-        const why = article.querySelector("[data-card-why]");
 
         type.textContent = source.type === "work" ? "Work" : "Project";
         title.textContent = source.title;
@@ -713,10 +668,13 @@ const recruiterAssistantApi =
         const period = source.period || sourceIndexItem?.period;
         periodElement.textContent = period || "";
         periodElement.hidden = !period;
-        appendTagList(tags, source.tags);
         appendEvidenceMatchLabels(requirements, item.sourceId, item.requirementIds);
-        why.textContent = item.whyRelevant || "";
-        why.hidden = !item.whyRelevant;
+        summary.textContent =
+          item.whyRelevant ||
+          source.summary ||
+          sourceIndexItem?.summary ||
+          source.excerpt ||
+          "Documented public portfolio evidence.";
         elements.evidenceList.append(article);
       });
     };
@@ -759,7 +717,6 @@ const recruiterAssistantApi =
         );
       });
 
-      renderReasons();
       renderEvidence();
 
       const chatReady = !state.analysisStale;
