@@ -249,6 +249,7 @@ const checkQuota = async (
   request: Request,
   env: Env,
   action: QuotaAction,
+  consume = true,
 ) => {
   const limits = quotaConfig(env, action);
 
@@ -276,6 +277,7 @@ const checkQuota = async (
         clientId: await getClientId(request),
         perClientLimit: limits.perClient,
         globalLimit: limits.global,
+        consume,
       }),
     }),
   );
@@ -287,6 +289,21 @@ const checkQuota = async (
     globalRemaining: number;
     retryAfterSeconds: number;
   }>;
+};
+
+const handleUsage = async (request: Request, env: Env) => {
+  const [analysis, chat] = await Promise.all([
+    checkQuota(request, env, "analyze", false),
+    checkQuota(request, env, "chat", false),
+  ]);
+
+  return json(request, env, {
+    action: "usage",
+    usage: {
+      analysisRemaining: analysis.perClientRemaining,
+      chatRemaining: chat.perClientRemaining,
+    },
+  });
 };
 
 const readRecruiterContext = (value: unknown): RecruiterContext => {
@@ -1129,7 +1146,7 @@ const handleChat = async (
   const rawAnswer = cleanMultiline(modelResult.answer, 2_400);
   const answerWithoutNegativeLead = rawAnswer
     .replace(
-      /^(?:direct documentation|i don't see|the available public portfolio does not clearly document|no direct documentation)[^.?!]*[.?!]\s*(?:however,?\s*)?/i,
+      /^(?:direct documentation|i don't see|the available public portfolio does not clearly document|no direct documentation|no |there is no |the (?:source|portfolio) does not)[^.?!]*[.?!]\s*(?:however,?\s*)?/i,
       "",
     )
     .trim()
@@ -1201,6 +1218,7 @@ export class RateLimiter {
       clientId?: unknown;
       perClientLimit?: unknown;
       globalLimit?: unknown;
+      consume?: unknown;
     };
 
     const day = clean(body.day, 20) || getDay();
@@ -1215,6 +1233,7 @@ export class RateLimiter {
       String(body.globalLimit || ""),
       action === "analyze" ? 100 : 50,
     );
+    const consume = body.consume !== false;
 
     const prefix = `${day}:${action}`;
     const clientKey = `${prefix}:client:${clientId}`;
@@ -1258,6 +1277,18 @@ export class RateLimiter {
           allowed: false,
           reason: "client",
           perClientRemaining: 0,
+          globalRemaining: Math.max(0, globalLimit - globalCount),
+          retryAfterSeconds,
+        }),
+        { headers: { "content-type": "application/json" } },
+      );
+    }
+
+    if (!consume) {
+      return new Response(
+        JSON.stringify({
+          allowed: true,
+          perClientRemaining: Math.max(0, perClientLimit - clientCount),
           globalRemaining: Math.max(0, globalLimit - globalCount),
           retryAfterSeconds,
         }),
@@ -1317,6 +1348,9 @@ export default {
     }
 
     try {
+      if (body.action === "usage") {
+        return await handleUsage(request, env);
+      }
       if (body.action === "chat") {
         return await handleChat(request, env, body);
       }

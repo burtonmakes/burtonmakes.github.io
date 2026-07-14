@@ -627,6 +627,23 @@ const recruiterAssistantApi =
       elements.chatCount.textContent = `${chatCount.toLocaleString()} / ${maxChatCharacters.toLocaleString()}`;
     };
 
+    const syncUsage = async () => {
+      if (!apiEndpoint) return;
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ action: "usage" }),
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.usage) return;
+        state.analysisRemaining = Number(result.usage.analysisRemaining ?? 10);
+        state.chatRemaining = Number(result.usage.chatRemaining ?? 5);
+        writeState();
+        renderUsage();
+      } catch {}
+    };
+
     const clearElement = (element) => {
       while (element.firstChild) element.firstChild.remove();
     };
@@ -1290,6 +1307,7 @@ const recruiterAssistantApi =
     renderConversation();
     renderUsage();
     updateCharacterCounts();
+    syncUsage();
 
     if (elements.contextDialog && !contextComplete() && !state.recruiterContext.skipped) {
       window.requestAnimationFrame(() => {
