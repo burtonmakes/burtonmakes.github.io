@@ -1,15 +1,14 @@
 .recruiter-portal {
   display: block;
   min-height: auto;
-  padding-block: clamp(2rem, 4vw, 4rem) clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(4.5rem, 9vh, 7.5rem) clamp(3rem, 6vw, 5rem);
 }
 
 .portal-header {
-  max-width: 860px;
-  margin-bottom: 20px;
+  max-width: 1180px;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
 }
 
-.portal-header-copy,
 .role-entry-panel,
 .role-summary-panel,
 .coverage-panel,
@@ -22,23 +21,24 @@
 }
 
 .portal-header-copy {
-  padding: clamp(18px, 3vw, 28px);
+  max-width: 1180px;
 }
 
 .portal-header h1 {
-  max-width: 18ch;
-  margin: 0 0 12px;
-  font-size: clamp(2.35rem, 4.5vw, 4.15rem);
+  max-width: none;
+  margin: 0 0 22px;
+  color: var(--text);
+  font-size: clamp(2.8rem, 6vw, 5.8rem);
   line-height: 0.98;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.055em;
 }
 
 .portal-intro,
 .panel-heading-row p {
-  max-width: 64ch;
+  max-width: 860px;
   margin: 0;
   color: var(--muted-2);
-  font-size: 0.96rem;
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
   line-height: 1.5;
 }
 
@@ -741,7 +741,6 @@
 }
 
 @media (max-width: 760px) {
-  .portal-header-copy,
   .role-entry-panel,
   .role-summary-panel,
   .coverage-panel,
@@ -751,7 +750,7 @@
   }
 
   .portal-header h1 {
-    font-size: clamp(2rem, 10vw, 2.9rem);
+    font-size: clamp(2.7rem, 11vw, 4rem);
   }
 
   .panel-heading-row,
