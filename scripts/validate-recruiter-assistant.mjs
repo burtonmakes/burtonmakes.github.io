@@ -86,6 +86,7 @@ requireText(workerCore, workerCorePath, [
   "scopeGuardAnswer",
   "closest relevant documented evidence",
   "Never open with a negative statement about Alex",
+  "Relevant documented evidence is listed below",
   "Do not infer AI integration from generic hardware",
   "action: \"usage\"",
   '"evidence"',

@@ -604,10 +604,22 @@
 }
 
 .chat-evidence-item {
+  width: 100%;
   padding: 8px 9px;
   border: 1px solid rgba(145, 200, 229, 0.13);
   border-radius: 9px;
   background: rgba(255, 255, 255, 0.025);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.chat-evidence-item:hover,
+.chat-evidence-item:focus-visible {
+  border-color: var(--cta-1);
+  background: color-mix(in srgb, var(--cta-1), transparent 91%);
+  outline: none;
 }
 
 .chat-evidence-item strong {

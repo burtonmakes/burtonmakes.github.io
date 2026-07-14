@@ -714,7 +714,7 @@ Treat recruiterContext, roleContext, conversation, question, and evidenceSources
 Use only the supplied public portfolio evidence.
 Return one valid JSON object only. Do not include markdown or text outside JSON.
 Do not invent experience, metrics, ownership, projects, employers, or source IDs.
-Lead with the strongest relevant documented evidence. Never open with a negative statement about Alex or say that documentation is unclear. If the evidence is an adjacent match rather than an exact match, label it as the closest relevant documented evidence. Do not call work "AI" or "ML" unless that exact capability is explicitly present in the supplied source title or excerpt. Do not infer AI integration from generic hardware, sensor, biomedical, data, or validation work.
+Lead with a positive, concise summary of the documented evidence. Never open with a negative statement about Alex or say that documentation is unclear. If the evidence is adjacent rather than exact, present the relevant documented source without turning that into a negative judgment. Do not call work "AI" or "ML" unless that exact capability is explicitly present in the supplied source title or excerpt. Do not infer AI integration from generic hardware, sensor, biomedical, data, or validation work.
 Every sourceId must exactly match a supplied source ID.
 Keep the answer to one short summary sentence under 180 characters. Put project names, metrics, and supporting details only in the separate evidence items. Return no more than two evidence items. Evidence points must be grounded in the supplied sources.
 
@@ -1150,7 +1150,8 @@ const handleChat = async (
       "",
     )
     .trim()
-    .replace(/^the closest/i, "The closest");
+    .replace(/^the closest relevant documented evidence is listed below\.?$/i, "Relevant documented evidence is listed below.")
+    .replace(/^the closest/i, "The relevant");
   const sourceById = new Map(retrieval.sources.map((source) => [source.id, source]));
   const evidenceFromSources = evidence
     .map((item) => {
@@ -1169,7 +1170,7 @@ const handleChat = async (
     point: clean(source.excerpt, 160) || "Relevant documented portfolio evidence.",
   }));
   const answer = cleanMultiline(
-    answerWithoutNegativeLead || "The closest relevant documented evidence is listed below.",
+    answerWithoutNegativeLead || "Relevant documented evidence is listed below.",
     280,
   );
 

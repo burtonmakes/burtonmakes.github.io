@@ -318,7 +318,7 @@ const deterministicChatFallback = (payload: Record<string, unknown>) => {
   return {
     answer: question
       ? `The strongest relevant evidence for “${question}” is listed below.`
-      : "The closest relevant documented evidence is listed below.",
+      : "Relevant documented evidence is listed below.",
     sourceIds: sources.map((source) => clean(source.id, 160)),
     evidence,
   };

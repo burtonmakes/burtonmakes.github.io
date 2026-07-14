@@ -700,13 +700,15 @@ const recruiterAssistantApi =
         const point = String(item.point || "").trim();
         if (!point) return;
 
-        const evidence = document.createElement("article");
+        const evidence = document.createElement("button");
+        evidence.type = "button";
         evidence.className = "chat-evidence-item";
         const title = document.createElement("strong");
         title.textContent = source?.title || "Relevant evidence";
         const copy = document.createElement("p");
         copy.textContent = point;
         evidence.append(title, copy);
+        evidence.addEventListener("click", () => openSource(item.sourceId));
         list.append(evidence);
       });
 
