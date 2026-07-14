@@ -573,14 +573,20 @@ const recruiterAssistantApi =
 
     const openSource = (sourceId) => {
       const source = sourceMap.get(sourceId);
-      if (!source) return;
+      if (!source || !elements.sourceDialog || !elements.sourceType || !elements.sourceTitle) return;
       elements.sourceType.textContent =
         source.type === "work" ? "Work evidence" : "Project evidence";
       elements.sourceTitle.textContent = source.title;
-      elements.sourceExcerpt.textContent =
-        source.excerpt || "Open the full portfolio page for more detail.";
-      elements.sourceLink.href = source.href;
-      elements.sourceDialog.showModal();
+      if (elements.sourceExcerpt) {
+        elements.sourceExcerpt.textContent =
+          source.excerpt || "Open the full portfolio page for more detail.";
+      }
+      if (elements.sourceLink && source.href) {
+        elements.sourceLink.href = source.href;
+      }
+      if (!elements.sourceDialog.open) {
+        elements.sourceDialog.showModal();
+      }
     };
 
     const rebuildSourceMap = (sources = []) => {
@@ -631,7 +637,7 @@ const recruiterAssistantApi =
       if (!evidence.length) {
         const empty = document.createElement("p");
         empty.textContent = "No evidence is available for this filter.";
-        elements.evidenceList.append(empty);
+        elements.evidenceList?.append(empty);
         return;
       }
 
@@ -656,6 +662,9 @@ const recruiterAssistantApi =
         if (link && source.href) {
           link.href = source.href;
           link.setAttribute("aria-label", `Open ${source.title}`);
+        } else if (link) {
+          link.removeAttribute("href");
+          link.setAttribute("aria-hidden", "true");
         }
         const requirementCount = item.requirementIds?.length || 0;
         count.textContent = `Supports ${requirementCount} ${
@@ -678,7 +687,7 @@ const recruiterAssistantApi =
           sourceIndexItem?.summary ||
           source.excerpt ||
           "Documented public portfolio evidence.";
-        elements.evidenceList.append(article);
+        elements.evidenceList?.append(article);
       });
     };
 
@@ -749,7 +758,7 @@ const recruiterAssistantApi =
           ? "Ask about a requirement, work example, or project."
           : "Analyze the role first.";
         article.append(speaker, copy);
-        elements.chatMessages.append(article);
+        elements.chatMessages?.append(article);
         return;
       }
 
@@ -767,10 +776,12 @@ const recruiterAssistantApi =
           appendSourceButtons(article, message.sourceIds);
         }
 
-        elements.chatMessages.append(article);
+        elements.chatMessages?.append(article);
       });
 
-      elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+      if (elements.chatMessages) {
+        elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+      }
     };
 
     const saveContextFromFields = (skipped = false) => {
@@ -958,7 +969,7 @@ const recruiterAssistantApi =
       }
     };
 
-    if (elements.closeContext && elements.contextDialog) {
+      if (elements.closeContext && elements.contextDialog) {
       elements.closeContext.addEventListener("click", () => {
         elements.contextDialog.close();
       });
@@ -979,7 +990,7 @@ const recruiterAssistantApi =
       });
     }
 
-    elements.roleText.addEventListener("input", () => {
+    elements.roleText?.addEventListener("input", () => {
       state.jobText = elements.roleText.value;
       if (state.analysis) state.analysisStale = true;
       writeState();
@@ -993,7 +1004,7 @@ const recruiterAssistantApi =
       }
     });
 
-    elements.clearRole.addEventListener("click", () => {
+    elements.clearRole?.addEventListener("click", () => {
       elements.roleText.value = "";
       state.jobText = "";
       state.analysis = null;
@@ -1008,7 +1019,7 @@ const recruiterAssistantApi =
       elements.roleText.focus();
     });
 
-    elements.analyzeRole.addEventListener("click", runAnalysis);
+    elements.analyzeRole?.addEventListener("click", runAnalysis);
 
     elements.evidenceFilters.forEach((button) => {
       button.addEventListener("click", () => {
@@ -1018,12 +1029,12 @@ const recruiterAssistantApi =
       });
     });
 
-    elements.chatInput.addEventListener("input", () => {
+    elements.chatInput?.addEventListener("input", () => {
       updateCharacterCounts();
       renderUsage();
     });
 
-    elements.chatInput.addEventListener("keydown", (event) => {
+    elements.chatInput?.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         if (!elements.chatSubmit.disabled) {
@@ -1033,26 +1044,28 @@ const recruiterAssistantApi =
     });
 
     const setChatMinimized = (minimized) => {
+      if (!elements.chatPanel || !elements.chatToggle) return;
       elements.chatPanel.dataset.minimized = String(minimized);
       elements.chatToggle.setAttribute("aria-expanded", String(!minimized));
       elements.chatToggle.setAttribute(
         "aria-label",
         minimized ? "Open Recruiter Match Agent" : "Minimize Recruiter Match Agent",
       );
-      elements.chatToggle.querySelector("span").textContent = minimized ? "+" : "−";
+      const toggleMark = elements.chatToggle.querySelector("span");
+      if (toggleMark) toggleMark.textContent = minimized ? "+" : "−";
     };
 
-    elements.chatToggle.addEventListener("click", () => {
+    elements.chatToggle?.addEventListener("click", () => {
       setChatMinimized(elements.chatPanel.dataset.minimized !== "true");
     });
 
-    elements.chatForm.addEventListener("submit", (event) => {
+    elements.chatForm?.addEventListener("submit", (event) => {
       event.preventDefault();
       submitChat(elements.chatInput.value);
     });
 
     elements.suggestedQuestions
-      .querySelectorAll("button")
+      ?.querySelectorAll("button")
       .forEach((button) => {
         button.addEventListener("click", () => {
           elements.chatInput.value = button.textContent.trim();
@@ -1062,7 +1075,7 @@ const recruiterAssistantApi =
         });
       });
 
-    elements.closeSource.addEventListener("click", () => {
+    elements.closeSource?.addEventListener("click", () => {
       elements.sourceDialog.close();
     });
 
