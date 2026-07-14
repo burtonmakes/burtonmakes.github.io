@@ -660,6 +660,10 @@
   gap: 10px;
 }
 
+.limit-dialog-actions {
+  gap: 10px;
+}
+
 .dialog-heading p {
   max-width: 62ch;
   margin: 8px 0 0;

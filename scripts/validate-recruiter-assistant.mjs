@@ -57,6 +57,8 @@ requireText(recruiterPage, recruiterPagePath, [
   "data-analyze-role",
   "data-chat-form",
   "data-source-dialog",
+  "data-limit-dialog",
+  "Contact Alex directly",
   "Supported by work",
   "Supported by projects",
 ]);
@@ -109,6 +111,7 @@ requireText(wrangler, wranglerPath, [
   'JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"',
   'PER_CLIENT_ANALYSIS_LIMIT = "10"',
   'PER_CLIENT_CHAT_LIMIT = "5"',
+  'QUOTA_NAMESPACE = "2026-07-14-final-ui"',
 ]);
 
 requireText(stateBridge, stateBridgePath, [

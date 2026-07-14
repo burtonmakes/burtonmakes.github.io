@@ -417,6 +417,31 @@ const recruiterAssistantApi =
         </div>
       </article>
     </dialog>
+
+    <dialog class="source-dialog limit-dialog" data-limit-dialog>
+      <article class="source-dialog-panel">
+        <div class="dialog-heading">
+          <div>
+            <span class="section-label">Recruiter assistant</span>
+            <h2 data-limit-title>Today's AI credits are used</h2>
+          </div>
+          <button type="button" class="dialog-close" data-close-limit aria-label="Close">
+            ×
+          </button>
+        </div>
+        <p class="source-excerpt" data-limit-copy>
+          You can keep browsing the portfolio, or contact Alex directly to continue the conversation.
+        </p>
+        <div class="source-dialog-actions limit-dialog-actions">
+          <button class="button button-secondary compact-button" type="button" data-close-limit-action>
+            Keep browsing
+          </button>
+          <a class="button button-primary compact-button" href="/contact/">
+            Contact Alex directly
+          </a>
+        </div>
+      </article>
+    </dialog>
   </section>
 </BaseLayout>
 
@@ -429,8 +454,8 @@ const recruiterAssistantApi =
 >
   const portfolioIndex = JSON.parse(portfolioJson);
   const apiEndpoint = recruiterAssistantApi;
-  const storageKey = "burton-recruiter-onepage-session-v3";
-  const legacyStorageKey = "burton-recruiter-onepage-session-v2";
+  const storageKey = "burton-recruiter-onepage-session-v4";
+  const legacyStorageKey = "burton-recruiter-onepage-session-v3";
   const maxRoleCharacters = 10000;
   const maxChatCharacters = 1200;
 
@@ -487,6 +512,10 @@ const recruiterAssistantApi =
       evidenceLink: page.querySelector("[data-evidence-link]"),
       closeEvidence: page.querySelector("[data-close-evidence]"),
       evidenceBack: page.querySelector("[data-evidence-back]"),
+      limitDialog: page.querySelector("[data-limit-dialog]"),
+      limitTitle: page.querySelector("[data-limit-title]"),
+      limitCopy: page.querySelector("[data-limit-copy]"),
+      closeLimit: [...page.querySelectorAll("[data-close-limit], [data-close-limit-action]")],
     };
 
     const defaultState = {
@@ -588,6 +617,27 @@ const recruiterAssistantApi =
       if (elements.evidenceDialog?.open) {
         elements.evidenceDialog.close();
       }
+    };
+
+    const closeLimitDialog = () => {
+      if (elements.limitDialog?.open) elements.limitDialog.close();
+    };
+
+    const openLimitDialog = (action, reason = "client") => {
+      if (!elements.limitDialog) return;
+      const isAnalysis = action === "analyze";
+      if (elements.limitTitle) {
+        elements.limitTitle.textContent = isAnalysis
+          ? "Today's role-analysis credits are used"
+          : "Today's chat credits are used";
+      }
+      if (elements.limitCopy) {
+        const scope = reason === "global" ? "for the site" : "for this connection";
+        elements.limitCopy.textContent = isAnalysis
+          ? `The role-analysis allowance ${scope} is used for today. You can keep browsing the portfolio, or contact Alex directly to continue the conversation.`
+          : `The portfolio-chat allowance ${scope} is used for today. You can keep browsing the portfolio, or contact Alex directly to continue the conversation.`;
+      }
+      if (!elements.limitDialog.open) elements.limitDialog.showModal();
     };
 
     const appendSourceButtons = (container, sourceIds) => {
@@ -922,6 +972,12 @@ const recruiterAssistantApi =
             state.analysisRemaining = result.usage.analysisRemaining;
             writeState();
           }
+          if (response.status === 429) {
+            openLimitDialog(
+              "analyze",
+              result?.code?.includes("global") ? "global" : "client",
+            );
+          }
           throw new Error(
             result?.error || `Role analysis failed with ${response.status}.`,
           );
@@ -943,6 +999,7 @@ const recruiterAssistantApi =
         writeState();
         renderAnalysis();
         renderConversation();
+        if (Number(state.analysisRemaining) <= 0) openLimitDialog("analyze");
         setStatus(
           elements.portalStatus,
           "Role analysis complete. Review the summary and open any source for more detail.",
@@ -1011,6 +1068,12 @@ const recruiterAssistantApi =
             state.chatRemaining = result.usage.chatRemaining;
             writeState();
           }
+          if (response.status === 429) {
+            openLimitDialog(
+              "chat",
+              result?.code?.includes("global") ? "global" : "client",
+            );
+          }
           throw new Error(
             result?.error || `Portfolio chat failed with ${response.status}.`,
           );
@@ -1026,6 +1089,7 @@ const recruiterAssistantApi =
           result.usage?.chatRemaining ?? state.chatRemaining;
         writeState();
         renderConversation();
+        if (Number(state.chatRemaining) <= 0) openLimitDialog("chat");
         setStatus(elements.chatStatus, "");
       } catch (error) {
         state.conversation.push({
@@ -1157,6 +1221,9 @@ const recruiterAssistantApi =
 
     elements.closeEvidence?.addEventListener("click", closeEvidenceDialog);
     elements.evidenceBack?.addEventListener("click", closeEvidenceDialog);
+    elements.closeLimit.forEach((button) => {
+      button.addEventListener("click", closeLimitDialog);
+    });
 
     elements.roleText.value = String(state.jobText || "").slice(
       0,

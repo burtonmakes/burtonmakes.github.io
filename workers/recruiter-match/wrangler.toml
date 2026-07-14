@@ -22,6 +22,7 @@ ALLOWED_ORIGINS = "https://burtonmakes.github.io,https://cocometric.com,https://
 GENERATION_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8"
 JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"
 AI_SEARCH_INSTANCE = "burton-portfolio"
+QUOTA_NAMESPACE = "2026-07-14-final-ui"
 PER_CLIENT_ANALYSIS_LIMIT = "10"
 GLOBAL_ANALYSIS_LIMIT = "100"
 PER_CLIENT_CHAT_LIMIT = "5"

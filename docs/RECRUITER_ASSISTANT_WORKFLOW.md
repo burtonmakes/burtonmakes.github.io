@@ -153,7 +153,7 @@ The static page builds `portfolioIndex` from `src/data/site.ts` and `src/data/ca
 | --- | --- |
 | `workers/recruiter-match/src/index.ts` | Production entrypoint. Normalizes structured responses, repairs malformed JSON with a schema-capable model, and hides raw parser errors. |
 | `workers/recruiter-match/src/index-v2.ts` | Analyze and chat API, retrieval, model calls, source validation, and quota handling. |
-| `workers/recruiter-match/wrangler.toml` | Workers AI binding, AI Search binding, Durable Object binding, model selection, origins, and quotas. |
+| `workers/recruiter-match/wrangler.toml` | Workers AI binding, AI Search binding, Durable Object binding, model selection, origins, quotas, and the deployment reset namespace. |
 | `workers/recruiter-match/README.md` | Deployment and Cloudflare configuration instructions. |
 
 ### Indexed public pages

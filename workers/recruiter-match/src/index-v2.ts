@@ -35,6 +35,7 @@ type Env = {
   ALLOWED_ORIGINS?: string;
   GENERATION_MODEL?: string;
   AI_SEARCH_INSTANCE?: string;
+  QUOTA_NAMESPACE?: string;
   PER_CLIENT_ANALYSIS_LIMIT?: string;
   GLOBAL_ANALYSIS_LIMIT?: string;
   PER_CLIENT_CHAT_LIMIT?: string;
@@ -257,8 +258,9 @@ const checkQuota = async (
   }
 
   const day = getDay();
+  const namespace = clean(env.QUOTA_NAMESPACE, 80) || "default";
   const durableObject = env.RATE_LIMITER.get(
-    env.RATE_LIMITER.idFromName(day),
+    env.RATE_LIMITER.idFromName(`${namespace}:${day}`),
   );
   const response = await durableObject.fetch(
     new Request("https://quota.internal/check", {

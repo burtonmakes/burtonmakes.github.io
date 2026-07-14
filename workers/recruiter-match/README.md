@@ -31,6 +31,11 @@ The Worker uses the AI Search instance when available. During local setup or bef
 
 Limits reset at 00:00 UTC.
 
+The Worker also uses `QUOTA_NAMESPACE` when naming its daily Durable Object
+counter. Change that value for a deliberate deployment reset, then deploy the
+Worker and rebuild the site so the browser receives the matching fresh session
+key.
+
 | Limit | Per connection | Site-wide |
 | --- | ---: | ---: |
 | Role analyses | 10/day | 100/day |
