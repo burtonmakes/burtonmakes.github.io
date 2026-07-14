@@ -51,11 +51,6 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
     <GlobalEffects client:load />
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <aside class="site-notice" aria-label="Site status notice">
-      <strong>Site in progress.</strong>
-      <span>Information has not been fully validated and may change. Do not rely on it as final or verified.</span>
-    </aside>
-
     <header class="site-header">
       <nav class="nav-shell" aria-label="Primary navigation">
         <a class="brand" href="/" aria-label={`${siteMeta.personName} home`}>
