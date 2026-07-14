@@ -116,11 +116,16 @@ const ANALYSIS_SOURCE_LIMIT = 8;
 const CHAT_SOURCE_LIMIT = 6;
 
 const recruiterScopeTerms = [
+  "alex",
   "candidate",
   "career",
+  "capabilit",
   "communication",
   "company",
+  "design",
+  "device",
   "employer",
+  "engineer",
   "evidence",
   "experience",
   "fit",
@@ -129,6 +134,7 @@ const recruiterScopeTerms = [
   "impact",
   "interview",
   "leadership",
+  "miniature",
   "ownership",
   "portfolio",
   "project",
@@ -138,6 +144,7 @@ const recruiterScopeTerms = [
   "skill",
   "strength",
   "team",
+  "technical",
   "work",
 ];
 
