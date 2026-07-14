@@ -10,22 +10,25 @@ export default function GlobalEffects() {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
     const cleanup = [];
-    gsap.set(".reveal", { autoAlpha: 0, y: 18 });
-    gsap.utils.toArray(".reveal").forEach((element, index) => {
-      const tween = gsap.to(element, {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.78,
-        delay: Math.min(index * 0.02, 0.18),
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: element,
-          start: "top 88%",
-          once: true,
-        },
+    const revealElements = gsap.utils.toArray(".reveal");
+    if (revealElements.length > 0) {
+      gsap.set(revealElements, { autoAlpha: 0, y: 18 });
+      revealElements.forEach((element, index) => {
+        const tween = gsap.to(element, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.78,
+          delay: Math.min(index * 0.02, 0.18),
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: element,
+            start: "top 88%",
+            once: true,
+          },
+        });
+        cleanup.push(() => tween.kill());
       });
-      cleanup.push(() => tween.kill());
-    });
+    }
 
     gsap.utils.toArray("[data-count]").forEach((element) => {
       const rawValue = element.dataset.count;
