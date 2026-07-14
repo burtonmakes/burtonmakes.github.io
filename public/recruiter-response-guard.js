@@ -24,6 +24,7 @@
 
   let stageInterval = 0;
   let stageStartedAt = 0;
+  let evidenceObserver = null;
 
   const delay = (milliseconds) =>
     new Promise((resolve) => window.setTimeout(resolve, milliseconds));
@@ -158,9 +159,119 @@
     });
   };
 
+  const ensureEvidenceCardStyles = () => {
+    if (document.querySelector("#recruiter-evidence-card-link-styles")) return;
+
+    const style = document.createElement("style");
+    style.id = "recruiter-evidence-card-link-styles";
+    style.textContent = `
+      .evidence-card[data-card-link-ready="true"] {
+        cursor: pointer;
+      }
+
+      .evidence-card[data-card-link-ready="true"]:focus-visible {
+        border-color: var(--cta-1);
+        box-shadow:
+          inset 0 1px rgba(255, 255, 255, 0.06),
+          0 0 0 3px color-mix(in srgb, var(--cta-1), transparent 76%),
+          0 14px 34px rgba(0, 0, 0, 0.22);
+        outline: none;
+        transform: translateY(-1px);
+      }
+
+      .evidence-card[data-card-link-ready="true"] .card-tag-row {
+        order: 3;
+        margin-top: 14px;
+      }
+
+      .evidence-card[data-card-link-ready="true"] .evidence-match-label {
+        pointer-events: none;
+        cursor: default;
+      }
+
+      .evidence-card[data-card-link-ready="true"] .evidence-match-label:hover,
+      .evidence-card[data-card-link-ready="true"] .evidence-match-label:focus-visible {
+        border-color: color-mix(in srgb, var(--cta-1), transparent 52%);
+        background: color-mix(in srgb, var(--cta-1), transparent 91%);
+        box-shadow: none;
+        color: var(--text);
+      }
+    `;
+    document.head.append(style);
+  };
+
+  const prepareEvidenceCards = () => {
+    if (
+      window.location.pathname !== "/recruiter/" &&
+      window.location.pathname !== "/recruiter"
+    ) {
+      return;
+    }
+
+    ensureEvidenceCardStyles();
+
+    document
+      .querySelectorAll('.evidence-card:not([data-card-link-ready="true"])')
+      .forEach((card) => {
+        const tagRow = card.querySelector("[data-card-requirements]");
+        const sourceButton = tagRow?.querySelector("button");
+        const summary = card.querySelector("[data-card-summary]");
+        const title = card.querySelector("[data-card-title]")?.textContent?.trim();
+
+        if (!tagRow || !sourceButton) return;
+
+        const openEvidence = () => sourceButton.click();
+
+        [...tagRow.querySelectorAll("button")].forEach((button) => {
+          const tag = document.createElement("span");
+          tag.className = button.className;
+          tag.textContent = button.textContent;
+          tagRow.replaceChild(tag, button);
+        });
+
+        if (summary) summary.after(tagRow);
+
+        card.dataset.cardLinkReady = "true";
+        card.tabIndex = 0;
+        card.setAttribute("role", "link");
+        card.setAttribute(
+          "aria-label",
+          title ? `Open ${title}` : "Open portfolio evidence",
+        );
+        card.addEventListener("click", openEvidence);
+        card.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          openEvidence();
+        });
+      });
+  };
+
+  const watchEvidenceCards = () => {
+    if (
+      window.location.pathname !== "/recruiter/" &&
+      window.location.pathname !== "/recruiter"
+    ) {
+      evidenceObserver?.disconnect();
+      evidenceObserver = null;
+      return;
+    }
+
+    prepareEvidenceCards();
+    if (evidenceObserver) return;
+
+    const page = document.querySelector("[data-recruiter-portal]");
+    if (!page) return;
+
+    evidenceObserver = new MutationObserver(prepareEvidenceCards);
+    evidenceObserver.observe(page, { childList: true, subtree: true });
+  };
+
   const prepare = () => {
     watchLoader();
+    watchEvidenceCards();
     window.setTimeout(watchLoader, 0);
+    window.setTimeout(watchEvidenceCards, 0);
   };
 
   if (document.readyState === "loading") {
