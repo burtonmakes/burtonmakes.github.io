@@ -173,9 +173,9 @@ approved export into `src/data/generated/profile-source.json`. Raw job-search
 evidence is never sent to the browser.
 
 Local builds expect `../job-search` next to this repository. CI checks out the
-source repository into the sibling path using `JOB_SEARCH_READ_TOKEN` when the
-source repository is private, falling back to the workflow token when it is
-public.
+private source repository into an isolated workspace path using the required
+`JOB_SEARCH_READ_TOKEN` secret. There is intentionally no public-token
+fallback.
 
 Before changing the sync contract, preserve the current state with:
 
