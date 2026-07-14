@@ -648,7 +648,13 @@
   padding: clamp(20px, 3vw, 30px);
 }
 
-.dialog-heading,
+.dialog-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
 .dialog-actions,
 .source-dialog-actions {
   display: flex;
@@ -673,14 +679,27 @@
 }
 
 .dialog-close {
+  display: grid;
+  flex: 0 0 auto;
   width: 38px;
   height: 38px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
+  margin-left: auto;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
   background: transparent;
   color: var(--text);
   font-size: 1.5rem;
+  line-height: 1;
+  outline: none;
   cursor: pointer;
+}
+
+.dialog-close:hover,
+.dialog-close:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--accent-2);
 }
 
 .dialog-fields {
