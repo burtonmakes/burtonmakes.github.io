@@ -612,6 +612,8 @@ const recruiterAssistantApi =
         button.type = "button";
         button.className = "source-chip evidence-match-label";
         button.textContent = label;
+        button.title = "Open source evidence";
+        button.setAttribute("aria-label", `Open source evidence for ${label}`);
         button.addEventListener("click", () => openSource(sourceId));
         row.append(button);
       });
