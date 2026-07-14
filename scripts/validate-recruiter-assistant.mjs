@@ -116,7 +116,7 @@ requireText(wrangler, wranglerPath, [
   'JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"',
   'PER_CLIENT_ANALYSIS_LIMIT = "10"',
   'PER_CLIENT_CHAT_LIMIT = "5"',
-  'QUOTA_NAMESPACE = "2026-07-14-final-ui"',
+  'QUOTA_NAMESPACE = "2026-07-14-counter-reset-02"',
 ]);
 
 requireText(stateBridge, stateBridgePath, [
