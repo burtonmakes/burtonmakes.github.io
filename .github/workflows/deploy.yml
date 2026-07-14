@@ -21,6 +21,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Checkout approved profile source
+        uses: actions/checkout@v4
+        with:
+          repository: CocoHusky/job-search
+          path: .profile-source/job-search
+          token: ${{ secrets.JOB_SEARCH_READ_TOKEN || github.token }}
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -35,6 +42,7 @@ jobs:
       - name: Build Site
         run: npm run build
         env:
+          JOB_SEARCH_ROOT: ${{ github.workspace }}/.profile-source/job-search
           PUBLIC_ANALYTICS_ENABLED: ${{ vars.PUBLIC_ANALYTICS_ENABLED }}
           PUBLIC_ANALYTICS_PROVIDER: ${{ vars.PUBLIC_ANALYTICS_PROVIDER }}
           PUBLIC_PLAUSIBLE_SCRIPT_URL: ${{ vars.PUBLIC_PLAUSIBLE_SCRIPT_URL }}

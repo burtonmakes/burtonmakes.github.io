@@ -1,10 +1,5 @@
-import {
-  earlySensingAccomplishments,
-  eunilAccomplishments,
-  graduateResearchAccomplishments,
-  rhaeosAccomplishments,
-  workProofPoints,
-} from "./publicFacts";
+import { workProofPoints } from "./publicFacts";
+import profileSource from "./generated/profile-source.json";
 
 export const siteMeta = {
   siteTitle: "Alex Burton",
@@ -54,120 +49,16 @@ export const featuredWork = [
   },
 ] as const;
 
-export const workHistory = [
-  {
-    title: "Senior R&D Engineer",
-    company: "Rhaeos, Inc.",
-    dates: "May 2022 – Dec 2025",
-    context:
-      "Commercial wearable medical-device R&D across FlowSense Clinical, FlowSense Home, wound sensing, algorithm validation, build/reliability improvement, and FDA-ready documentation.",
-    summary:
-      "Led technical work across wearable hardware, sensor integration, home/clinical data workflows, reliability, ML validation, and regulated documentation.",
-    responsibilities: [
-      "Supported FlowSense Clinical / ACE, FlowSense Home / Lynx, and Wound Monitoring Platform / Tabby development.",
-      "Integrated sensors, electronics, packaging, adhesives, Qi charging, motion sensing, onboard memory, and data workflows.",
-      "Built validation workflows across bench testing, clinical/home monitoring, preclinical studies, data review, and deployment checks.",
-      "Created FDA-ready engineering documentation including requirements, test protocols, assembly procedures, inspection records, BOMs, DMFEA, and design notes.",
-      "Worked across hardware, firmware, software, clinical, regulatory, manufacturing, supplier, patient, and caregiver feedback loops.",
-    ],
-    accomplishments: rhaeosAccomplishments,
-    skills: [
-      "Medical devices",
-      "Wearable sensing",
-      "FlowSense",
-      "Algorithm validation",
-      "Reliability",
-      "Sensor integration",
-      "Adhesives and skin interface",
-      "Qi charging",
-      "BLE / NFC",
-      "Manufacturing readiness",
-      "FDA-ready documentation",
-      "Physiological ML",
-    ],
-  },
-  {
-    title: "Graduate Research Assistant",
-    company: "Gutruf Lab, University of Arizona",
-    dates: "Dec 2018 – May 2022",
-    context:
-      "Ph.D. research on wireless, battery-free implantable bioelectronics for neural recording, neuromodulation, musculoskeletal sensing, and functional electrical stimulation.",
-    summary:
-      "Designed and validated miniaturized implantable systems across wireless power, flexible interfaces, encapsulation, communication, stimulation, and preclinical workflows.",
-    responsibilities: [
-      "Developed wireless battery-free photometry, neurostimulation, osseosurface sensing, and high-power FES platforms.",
-      "Integrated rigid electronics with flexible probes, serpentine interconnects, soft packaging, and biocompatible encapsulation.",
-      "Built bench-validation infrastructure for antenna/power tuning, output characterization, fixture design, accelerated aging, and packaging validation.",
-      "Supported preclinical validation in freely moving small-animal models where device mass, packaging, wireless reliability, and surgical handling controlled study quality.",
-    ],
-    accomplishments: graduateResearchAccomplishments,
-    skills: [
-      "Implantables",
-      "Wireless power",
-      "13.56 MHz coupling",
-      "Flexible electronics",
-      "Encapsulation",
-      "Photometry",
-      "Neurostimulation",
-      "Functional electrical stimulation",
-      "Antenna tuning",
-      "Preclinical validation",
-    ],
-  },
-  {
-    title: "Research Technician",
-    company: "EUNIL / University of Arizona",
-    dates: "Jan 2016 – Oct 2019",
-    context:
-      "Research role centered on early biomedical sensing hardware, non-invasive recording, low-noise acquisition, signal processing, phantoms, and optical/microfluidic sensing.",
-    summary:
-      "Built early sensing and signal-quality workflows across low-noise hardware, EMI control, phantoms, DSP, wavelets, and low-cost optical/microfluidic analysis.",
-    responsibilities: [
-      "Designed and optimized non-invasive biomedical recording hardware and algorithms.",
-      "Improved signal quality through amplifier optimization, EMI control, DSP, and wavelet-based processing.",
-      "Built phantoms and experimental tools for sensing and recording studies.",
-      "Supported ultrasound/acoustoelectric sensing and current-density detection workflows.",
-      "Developed optical/microfluidic nanoparticle analysis using fluorescence microscopy and Brownian-motion tracking.",
-    ],
-    accomplishments: eunilAccomplishments,
-    skills: [
-      "Low-noise acquisition",
-      "Analog sensing",
-      "Amplifier optimization",
-      "EMI control",
-      "DSP / wavelets",
-      "Experimental phantoms",
-      "Microfluidics",
-      "Optical sensing",
-    ],
-  },
-  {
-    title: "Data Analyst",
-    company: "iCAMP Research Group, University of Arizona",
-    dates: "Sep 2014 – Jan 2017",
-    context:
-      "Early physiological-sensing role focused on chest-worn ECG/accelerometer data, environmental stress, fall-risk/frailty studies, calibration, labeling, and prediction workflows.",
-    summary:
-      "Built a foundation in noisy human wearable data, ECG/HRV feature extraction, accelerometer calibration, labeling, and early predictive modeling support.",
-    responsibilities: [
-      "Analyzed chest-worn ECG and acceleration data from wearable physiological studies.",
-      "Performed ECG filtering, R-wave detection, R-R interval correction, and HRV feature generation in time and frequency domains.",
-      "Calibrated and reoriented 3D acceleration data for windowed posture/activity classification.",
-      "Supported wearable-data feature extraction for environmental stress and fall-risk/frailty modeling.",
-    ],
-    accomplishments: earlySensingAccomplishments,
-    skills: [
-      "Physiological sensing",
-      "ECG / HRV",
-      "Accelerometers",
-      "Data labeling",
-      "Calibration",
-      "Feature engineering",
-      "Prediction workflows",
-      "Time-series analysis",
-    ],
-  },
-] as const;
+export const workHistory = profileSource.workHistory satisfies ReadonlyArray<{
+  title: string;
+  company: string;
+  dates: string;
+  context: string;
+  summary: string;
+  responsibilities: readonly string[];
+  accomplishments: readonly string[];
+  skills: readonly string[];
+}>;
 
 export const workMetrics = workProofPoints;
 

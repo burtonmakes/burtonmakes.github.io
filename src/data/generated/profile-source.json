@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "visibility": "public-approved",
+  "source": "CocoHusky/job-search/profile",
+  "workHistory": [
+    {
+      "title": "Data Infrastructure & Local AI Project",
+      "company": "Independent",
+      "dates": "Dec 2025 – Present",
+      "context": "Independent data infrastructure and local AI systems work spanning evidence organization, local-first data infrastructure, private AI/LLM workflows, OCR/CLIP embeddings, vector search, full-text retrieval, and backup/recovery.",
+      "summary": "Built local-first data infrastructure, retrieval workflows, and AI tooling for private engineering knowledge management and automation.",
+      "responsibilities": [
+        "Built private VM and file-service infrastructure for local-first data workflows.",
+        "Developed OCR, CLIP embedding, vector-search, and full-text retrieval workflows.",
+        "Created backup, recovery, remote-access, and documentation workflows for engineering data.",
+        "Organized job-search and project-source material into structured evidence workflows."
+      ],
+      "accomplishments": [
+        "Built a private evidence and retrieval workflow spanning structured facts, source links, OCR, embeddings, and search.",
+        "Connected local infrastructure, AI tooling, and automation into a maintainable engineering knowledge system."
+      ],
+      "skills": [
+        "Local AI",
+        "Data infrastructure",
+        "OCR",
+        "CLIP embeddings",
+        "Vector search",
+        "Full-text retrieval",
+        "Backup and recovery",
+        "Automation"
+      ]
+    },
+    {
+      "title": "Senior R&D Engineer",
+      "company": "Rhaeos, Inc.",
+      "dates": "May 2022 – Dec 2025",
+      "context": "Senior R&D Engineer supporting wearable medical devices, FlowSense Clinical/Home, hydrocephalus shunt-flow assessment, algorithm/ML pipelines, wound monitoring, FDA-ready documentation, manufacturing/reliability, and clinical/preclinical studies.",
+      "summary": "Led technical work across wearable hardware, sensor integration, home/clinical data workflows, reliability, ML validation, and regulated documentation.",
+      "responsibilities": [
+        "Supported FlowSense Clinical / ACE, FlowSense Home / Lynx, and Wound Monitoring Platform / Tabby development.",
+        "Integrated sensors, electronics, packaging, adhesives, Qi charging, motion sensing, onboard memory, and data workflows.",
+        "Built validation workflows across bench testing, clinical/home monitoring, preclinical studies, data review, and deployment checks.",
+        "Created FDA-ready engineering documentation including requirements, test protocols, assembly procedures, inspection records, BOMs, DMFEA, and design notes.",
+        "Worked across hardware, firmware, software, clinical, regulatory, manufacturing, supplier, patient, and caregiver feedback loops."
+      ],
+      "accomplishments": [
+        "Improved FlowSense Home field reliability from about 70% in Gen 1 to about 96% by the final Gen 3 clinical study.",
+        "Led 20–30 clinical-study device builds and reduced build cycles from about 6 weeks to about 3 weeks.",
+        "Advanced FlowSense Home across 3 design generations, 100+ manufactured units, 200+ participants, and 2,800+ home-device wear hours.",
+        "Supported 3,000+ hours of physiological/device data and 200+ HA Connect datasets.",
+        "Built DSP/ML workflows spanning ingestion, labeling, QC, dataset versioning, feature generation, validation, bias checks, explainability, and deployment checks.",
+        "Helped improve FlowSense clinical algorithm performance from a 74% baseline to 0.81 AUC / 82% accuracy in blinded clinical validation.",
+        "Led NIH R43 Phase I wound-sensing work from concept to study-ready device and grant deliverables in about 1 year."
+      ],
+      "skills": [
+        "Medical devices",
+        "Wearable sensing",
+        "FlowSense",
+        "Algorithm validation",
+        "Reliability",
+        "Sensor integration",
+        "Adhesives and skin interface",
+        "Qi charging",
+        "BLE / NFC",
+        "Manufacturing readiness",
+        "FDA-ready documentation",
+        "Physiological ML"
+      ]
+    },
+    {
+      "title": "Graduate Research Assistant",
+      "company": "Gutruf Lab, University of Arizona",
+      "dates": "Dec 2018 – May 2022",
+      "context": "Graduate research role focused on wireless, battery-free implantable bioelectronics for neural recording, neuromodulation, musculoskeletal sensing, wireless power transfer, flexible implant packaging, preclinical validation, and publication-backed device translation.",
+      "summary": "Designed and validated miniaturized implantable systems across wireless power, flexible interfaces, optical photometry, encapsulation, communication, stimulation, and preclinical workflows.",
+      "responsibilities": [
+        "Developed wireless battery-free photometry, neurostimulation, osseosurface sensing, and high-power FES platforms.",
+        "Integrated rigid electronics with flexible probes, serpentine interconnects, soft packaging, and biocompatible encapsulation.",
+        "Built bench-validation infrastructure for antenna/power tuning, output characterization, fixture design, accelerated aging, and packaging validation.",
+        "Supported preclinical validation in freely moving small-animal models where device mass, packaging, wireless reliability, and surgical handling controlled study quality."
+      ],
+      "accomplishments": [
+        "Developed fully implantable wireless and battery-free platforms for neural recording, neurostimulation, musculoskeletal monitoring, and functional electrical stimulation.",
+        "Built reusable validation infrastructure across 20+ test fixtures, 6 tuned antenna designs, and 3 simulation frameworks.",
+        "Contributed to peer-reviewed work in PNAS, Microsystems & Nanoengineering, and Nature Communications, with 14 peer-reviewed journal articles.",
+        "Supported miniaturized implant platforms below 50 mg and up to 2 m wireless power range in source-review framing.",
+        "Mentored or managed 10+ researchers/students across multidisciplinary implantable-device development tasks."
+      ],
+      "skills": [
+        "Implantables",
+        "Wireless power",
+        "Optical sensing",
+        "Photometry",
+        "13.56 MHz coupling",
+        "Flexible electronics",
+        "Encapsulation",
+        "Neurostimulation",
+        "Functional electrical stimulation",
+        "Antenna tuning",
+        "Preclinical validation"
+      ]
+    },
+    {
+      "title": "Research Technician",
+      "company": "EUNIL / University of Arizona",
+      "dates": "Jan 2016 – Dec 2019",
+      "context": "Research role centered on early biomedical sensing hardware, non-invasive recording, low-noise acquisition, signal processing, experimental phantoms, and optical/microfluidic sensing work.",
+      "summary": "Built early sensing and signal-quality workflows across low-noise hardware, EMI control, phantoms, DSP, wavelets, and optical/microfluidic analysis.",
+      "responsibilities": [
+        "Designed and optimized non-invasive biomedical recording hardware and algorithms.",
+        "Improved signal quality through amplifier optimization, EMI control, DSP, and wavelet-based processing.",
+        "Built phantoms and experimental tools for sensing and recording studies.",
+        "Supported ultrasound/acoustoelectric sensing and current-density detection workflows.",
+        "Developed optical/microfluidic nanoparticle analysis using fluorescence microscopy and Brownian-motion tracking."
+      ],
+      "accomplishments": [
+        "Built early biomedical sensing workflows spanning low-noise acquisition, amplifier optimization, EMI control, DSP, wavelet-based processing, and experimental phantom development.",
+        "Developed a low-cost optical/microfluidic nanoparticle analyzer with about $4,500 prototype cost and below 1.9% size error across 50 nm to 1 µm particles."
+      ],
+      "skills": [
+        "Low-noise acquisition",
+        "Analog sensing",
+        "Amplifier optimization",
+        "EMI control",
+        "DSP / wavelets",
+        "Experimental phantoms",
+        "Microfluidics",
+        "Optical sensing"
+      ]
+    },
+    {
+      "title": "Data Analyst",
+      "company": "iCAMP Research Group, University of Arizona",
+      "dates": "Sep 2014 – Jan 2017",
+      "context": "Early physiological-sensing role focused on chest-worn ECG/accelerometer data, environmental stress, fall-risk/frailty studies, calibration, labeling, and prediction workflows.",
+      "summary": "Built a foundation in noisy human wearable data, ECG/HRV feature extraction, accelerometer calibration, labeling, and predictive modeling support.",
+      "responsibilities": [
+        "Analyzed chest-worn ECG and acceleration data from wearable physiological studies.",
+        "Performed ECG filtering, R-wave detection, R-R interval correction, and HRV feature generation.",
+        "Calibrated and reoriented 3D acceleration data for posture/activity classification.",
+        "Supported wearable-data feature extraction for environmental stress and fall-risk/frailty modeling."
+      ],
+      "accomplishments": [
+        "Extracted ECG, HRV, posture, and activity features from 800+ hours of chest-worn wearable data across 31 subjects.",
+        "Built wearable physiological-data workflows spanning filtering, feature generation, calibration, labeling, and prediction support."
+      ],
+      "skills": [
+        "Physiological sensing",
+        "ECG / HRV",
+        "Accelerometers",
+        "Data labeling",
+        "Calibration",
+        "Feature engineering",
+        "Prediction workflows",
+        "Time-series analysis"
+      ]
+    }
+  ]
+}

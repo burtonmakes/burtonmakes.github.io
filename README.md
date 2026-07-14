@@ -164,6 +164,28 @@ You do not need Plausible to run or deploy the site. The repo includes `.env.exa
 
 The recruiter-facing workflow lives at `/recruiter/start/` and `/recruiter/`.
 
+## Profile source synchronization
+
+Approved public and recruiter-facing work-history facts are authored in the
+`CocoHusky/job-search` repository at `profile/public-portfolio.json`. The site
+build runs `npm run profile:sync` before validation and copies only that
+approved export into `src/data/generated/profile-source.json`. Raw job-search
+evidence is never sent to the browser.
+
+Local builds expect `../job-search` next to this repository. CI checks out the
+source repository into the sibling path using `JOB_SEARCH_READ_TOKEN` when the
+source repository is private, falling back to the workflow token when it is
+public.
+
+Before changing the sync contract, preserve the current state with:
+
+```sh
+git branch backup/pre-profile-sync-20260714
+```
+
+The generated snapshot can be reverted independently if the source checkout
+or profile schema needs to be rolled back.
+
 The complete architecture, exact button actions, Mermaid diagrams, source files, retrieval flow, quota behavior, and deployment dependencies are documented here:
 
 - [`docs/RECRUITER_ASSISTANT_WORKFLOW.md`](docs/RECRUITER_ASSISTANT_WORKFLOW.md)
