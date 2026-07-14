@@ -1,5 +1,5 @@
 [![Deploy to GitHub Pages](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml)
-[![Validate recruiter assistant](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate-recruiter-assistant.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate-recruiter-assistant.yml)
+[![Validate site and AI checks](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate.yml)
 
 # Alex Burton / Burton Makes
 

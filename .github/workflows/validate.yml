@@ -1,0 +1,33 @@
+name: Validate site and AI checks
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate and build
+        run: npm run build
+        env:
+          PUBLIC_ANALYTICS_ENABLED: ${{ vars.PUBLIC_ANALYTICS_ENABLED }}
+          PUBLIC_ANALYTICS_PROVIDER: ${{ vars.PUBLIC_ANALYTICS_PROVIDER }}
+          PUBLIC_PLAUSIBLE_SCRIPT_URL: ${{ vars.PUBLIC_PLAUSIBLE_SCRIPT_URL }}
+          PUBLIC_RECRUITER_MATCH_API: ${{ vars.PUBLIC_RECRUITER_MATCH_API }}
