@@ -573,6 +573,15 @@ const recruiterAssistantApi =
       } catch {}
     };
 
+    if (
+      state.conversation.some(
+        (message) => message.role === "assistant" && !message.evidencePoints?.length,
+      )
+    ) {
+      state.conversation = [];
+      writeState();
+    }
+
     const setStatus = (element, message, mode = "") => {
       element.textContent = message;
       if (mode) element.dataset.state = mode;
