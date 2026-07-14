@@ -307,6 +307,7 @@
 
 .recruiter-card {
   min-width: 0;
+  width: 100%;
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--cta-1), transparent 72%);
   border-radius: 16px;
@@ -315,6 +316,10 @@
     inset 0 1px rgba(255, 255, 255, 0.04),
     0 0 0 1px color-mix(in srgb, var(--cta-2), transparent 94%);
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.evidence-card {
+  text-align: left;
 }
 
 .recruiter-card:hover,
@@ -647,8 +652,12 @@
 .dialog-actions,
 .source-dialog-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
+}
+
+.evidence-dialog .source-dialog-actions {
+  gap: 10px;
 }
 
 .dialog-heading p {

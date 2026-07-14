@@ -272,7 +272,7 @@ const recruiterAssistantApi =
             <article class="chat-message assistant">
               <span class="chat-speaker">Recruiter match agent</span>
               <p>
-                Analyze the role first. Then ask about a requirement, work example, or project.
+                Ask about Alex's portfolio, a work example, or a project. Add a role description when you want a match review.
               </p>
             </article>
           </div>
@@ -408,13 +408,10 @@ const recruiterAssistantApi =
         <p class="source-excerpt" data-evidence-excerpt></p>
         <div class="source-chip-row" data-evidence-requirements></div>
         <div class="source-dialog-actions">
-          <button class="button button-secondary" type="button" data-evidence-back>
+          <button class="button button-secondary compact-button" type="button" data-evidence-back>
             Go back
           </button>
-          <button class="button button-secondary" type="button" data-evidence-yes>
-            Yes, this fits
-          </button>
-          <a class="button button-primary" data-evidence-link href="/">
+          <a class="button button-primary compact-button" data-evidence-link href="/">
             Open detail
           </a>
         </div>
@@ -490,7 +487,6 @@ const recruiterAssistantApi =
       evidenceLink: page.querySelector("[data-evidence-link]"),
       closeEvidence: page.querySelector("[data-close-evidence]"),
       evidenceBack: page.querySelector("[data-evidence-back]"),
-      evidenceYes: page.querySelector("[data-evidence-yes]"),
     };
 
     const defaultState = {
@@ -836,7 +832,7 @@ const recruiterAssistantApi =
         const copy = document.createElement("p");
         copy.textContent = state.analysis
           ? "Ask about a requirement, work example, or project."
-          : "Analyze the role first.";
+          : "Ask about Alex's portfolio, a work example, or a project. Add role information when you want a match review.";
         article.append(speaker, copy);
         elements.chatMessages?.append(article);
         return;
@@ -1161,7 +1157,6 @@ const recruiterAssistantApi =
 
     elements.closeEvidence?.addEventListener("click", closeEvidenceDialog);
     elements.evidenceBack?.addEventListener("click", closeEvidenceDialog);
-    elements.evidenceYes?.addEventListener("click", closeEvidenceDialog);
 
     elements.roleText.value = String(state.jobText || "").slice(
       0,
