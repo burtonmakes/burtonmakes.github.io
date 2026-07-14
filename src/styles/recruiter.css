@@ -133,6 +133,10 @@
   font-weight: 750;
 }
 
+.chat-usage {
+  color: var(--cta-1);
+}
+
 .role-text-label {
   display: block;
   margin-top: 14px;
