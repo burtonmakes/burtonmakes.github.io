@@ -29,7 +29,7 @@ const analyticsEnabled = import.meta.env.PROD && plausibleScriptUrl.length > 0;
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{pageTitle}</title>
     <ClientRouter />
-    <script is:inline src="/recruiter-response-guard.js"></script>
+    <script is:inline src="/recruiter-response-guard.js?v=20260714-2"></script>
     <script is:inline src="/recruiter-state-bridge.js"></script>
     {analyticsEnabled && <script async src={plausibleScriptUrl}></script>}
     {analyticsEnabled && (
