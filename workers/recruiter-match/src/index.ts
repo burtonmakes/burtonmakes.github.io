@@ -291,7 +291,7 @@ const deterministicChatFallback = (payload: Record<string, unknown>) => {
   if (!sources.length) {
     return {
       answer:
-        "The available public portfolio evidence could not be retrieved for this question. Please try the question again.",
+        "I could not retrieve public portfolio evidence for that question. Please try again, or ask about a specific documented work example or project.",
       sourceIds: [],
     };
   }
@@ -306,7 +306,7 @@ const deterministicChatFallback = (payload: Record<string, unknown>) => {
     .join("\n\n");
 
   return {
-    answer: `${question ? `For “${question},” ` : ""}the strongest retrieved public evidence is:\n\n${summaries}`,
+    answer: `${question ? `I don't see direct documentation for “${question}.” ` : ""}The closest relevant documented evidence is:\n\n${summaries}`,
     sourceIds: sources.map((source) => clean(source.id, 160)),
   };
 };

@@ -81,6 +81,7 @@ requireText(workerCore, workerCorePath, [
   "question_out_of_scope",
   "role_text_out_of_scope",
   "scopeGuardAnswer",
+  "closest relevant documented evidence",
   "class RateLimiter",
   "@cf/qwen/qwen3-30b-a3b-fp8",
 ]);

@@ -991,7 +991,6 @@ const recruiterAssistantApi =
           evidence: result.evidence,
           sources: result.sources,
         };
-        state.conversation = [];
         state.analysisRemaining =
           result.usage?.analysisRemaining ?? state.analysisRemaining;
         state.analysisStale = false;
