@@ -869,6 +869,16 @@ const normalizeAnalysis = (
   };
 };
 
+const chatRetrievalQuery = (question: string) => {
+  const concepts = [];
+
+  if (/\boptic(?:al)?\b|\bphotometr(?:y|ic)\b|\bfluorescen/i.test(question)) {
+    concepts.push("optical sensing photometry optical readout source detector fluorescence");
+  }
+
+  return [question, ...concepts].join("\n").slice(0, 4_000);
+};
+
 const handleAnalyze = async (
   request: Request,
   env: Env,
@@ -1079,15 +1089,7 @@ const handleChat = async (
     );
   }
 
-  const query = [
-    clean(roleSummary.title, 180),
-    clean(roleSummary.summary, 600),
-    requirements.join(", "),
-    question,
-  ]
-    .filter(Boolean)
-    .join("\n")
-    .slice(0, 4_000);
+  const query = chatRetrievalQuery(question);
 
   const retrieval = await retrieveSources(
     env,

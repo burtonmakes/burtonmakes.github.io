@@ -87,6 +87,7 @@ const sources = {
   flowsenseClinical: projectSource("flowsense-clinical-ace"),
   flowsenseHome: projectSource("flowsense-home-lynx"),
   tabby: projectSource("wound-monitoring-platform-tabby"),
+  subdermalPhotometry: projectSource("subdermal-photometry-implant"),
   wirelessBatteryFree: projectSource("wireless-battery-free-bioelectronics"),
   openClaw: projectSource("openclaw-ai-agent-system"),
   homeServer: projectSource("home-server-infrastructure"),
@@ -103,6 +104,25 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
     label: "Medical devices",
     summary: "Wearable systems, clinical/home monitoring, and the engineering needed to ship them.",
     nodes: [
+      {
+        id: "optical-sensing",
+        label: "Optical sensing and photometry",
+        summary: "Optical readout, photometry, and miniaturized sensor systems across implantable research platforms.",
+        yearsActive: "4+ years",
+        yearsScore: 44,
+        skillTags: [
+          "Optical sensing",
+          "Optical readout",
+          "Photometry",
+          "Fluorescence microscopy",
+          "Miniaturized electronics",
+          "Neural recording",
+        ],
+        evidence: [
+          evidence(sources.gutruf, "Canonical Gutruf role evidence for wireless battery-free photometry and optical bioelectronics."),
+          evidence(sources.subdermalPhotometry, "Canonical project evidence for optical source/detector hardware, photometry, and miniaturized implant integration."),
+        ],
+      },
       {
         id: "wearable-sensing",
         label: "Wearable sensing",

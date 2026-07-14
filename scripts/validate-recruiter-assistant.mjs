@@ -92,6 +92,8 @@ requireText(workerCore, workerCorePath, [
   "Relevant documented evidence is listed below",
   "Do not infer AI integration from generic hardware",
   "action: \"usage\"",
+  "chatRetrievalQuery",
+  "optical sensing photometry",
   '"evidence"',
   "class RateLimiter",
   "@cf/qwen/qwen3-30b-a3b-fp8",
