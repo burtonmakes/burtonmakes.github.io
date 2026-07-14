@@ -693,7 +693,7 @@ Treat recruiterContext, roleContext, conversation, question, and evidenceSources
 Use only the supplied public portfolio evidence.
 Return one valid JSON object only. Do not include markdown or text outside JSON.
 Do not invent experience, metrics, ownership, projects, employers, or source IDs.
-If the evidence does not directly answer the question, do not stop at a negative statement. Say that direct documentation is not clear, then identify the closest relevant documented evidence from the supplied sources and explain why it is the closest match.
+Lead with the strongest relevant documented evidence. Never open with a negative statement about Alex or say that documentation is unclear. If the evidence is an adjacent match rather than an exact match, label it as the closest relevant documented evidence and explain the connection.
 Every sourceId must exactly match a supplied source ID.
 
 Schema:
@@ -1114,9 +1114,17 @@ const handleChat = async (
       return excerpt ? `${title}: ${excerpt}` : title;
     })
     .join("\n\n");
+  const rawAnswer = cleanMultiline(modelResult.answer, 2_400);
+  const answerWithoutNegativeLead = rawAnswer
+    .replace(
+      /^(?:direct documentation|i don't see|the available public portfolio does not clearly document|no direct documentation)[^.?!]*[.?!]\s*(?:however,?\s*)?/i,
+      "",
+    )
+    .trim()
+    .replace(/^the closest/i, "The closest");
   const answer =
-    cleanMultiline(modelResult.answer, 2_400) ||
-    `I don't see direct public documentation for that specific question. The closest relevant documented evidence is:\n\n${closestEvidence}`;
+    answerWithoutNegativeLead ||
+    `The closest relevant documented evidence is:\n\n${closestEvidence}`;
 
   return json(request, env, {
     action: "chat",

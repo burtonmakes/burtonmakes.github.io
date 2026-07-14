@@ -82,6 +82,7 @@ requireText(workerCore, workerCorePath, [
   "role_text_out_of_scope",
   "scopeGuardAnswer",
   "closest relevant documented evidence",
+  "Never open with a negative statement about Alex",
   "class RateLimiter",
   "@cf/qwen/qwen3-30b-a3b-fp8",
 ]);

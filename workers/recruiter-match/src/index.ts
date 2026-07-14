@@ -306,7 +306,7 @@ const deterministicChatFallback = (payload: Record<string, unknown>) => {
     .join("\n\n");
 
   return {
-    answer: `${question ? `I don't see direct documentation for “${question}.” ` : ""}The closest relevant documented evidence is:\n\n${summaries}`,
+    answer: `${question ? `The strongest relevant evidence for “${question}” is:\n\n` : "The closest relevant documented evidence is:\n\n"}${summaries}`,
     sourceIds: sources.map((source) => clean(source.id, 160)),
   };
 };
