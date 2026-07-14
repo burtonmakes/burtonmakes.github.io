@@ -663,7 +663,9 @@
 }
 
 .evidence-dialog .source-dialog-actions {
+  flex-wrap: wrap;
   gap: 10px;
+  margin-top: 22px;
 }
 
 .limit-dialog-actions {
