@@ -69,7 +69,14 @@ Layout rules:
 
 ## Where to edit content
 
-Primary structured content lives in:
+Canonical profile and project content lives in the private source repository:
+
+- `CocoHusky/job-search/profile/public-portfolio.json`
+
+The public site consumes the approved export during the build. Do not edit the
+generated snapshot directly.
+
+Public site data consumers live in:
 
 - `src/data/site.ts`
 
@@ -85,8 +92,9 @@ Routes live in:
 
 ## How to add a project
 
-1. Add a new project object to `projects` in `src/data/site.ts`.
-2. Include:
+1. Add or correct the verified project record in the private `job-search` repository.
+2. Approve the record for public display in `profile/public-portfolio.json`.
+3. Include:
    - `slug`
    - `title`
    - `section`
@@ -104,7 +112,7 @@ Routes live in:
    - `learned`
    - `stack`
    - `nextSteps`
-3. The project will automatically appear on:
+4. Run `npm run profile:sync` locally, then build. The project will automatically appear on:
    - `/projects/`
    - `/projects/[slug]/`
 
@@ -196,7 +204,7 @@ High-level behavior:
 - the recruiter pastes or edits the complete job description
 - clicking `Analyze role` sends the role text to the Cloudflare Worker
 - Cloudflare AI Search retrieves public work and project evidence
-- Gemma creates a concise role summary and source-backed reasons to interview
+- Qwen creates a concise role summary and source-backed reasons to interview
 - the Worker validates every returned source ID before the page displays it
 - evidence coverage is shown as requirements supported by work and requirements supported by projects
 - the right-side Portfolio chat runs a new retrieval for every follow-up question
@@ -223,7 +231,7 @@ Repository validation:
 npm run validate:recruiter
 ```
 
-GitHub Actions also runs `.github/workflows/validate-recruiter-assistant.yml`, which validates the UI contract, compiles the Worker with a Wrangler dry run, builds the production site, and verifies the generated recruiter pages.
+GitHub Actions also runs `.github/workflows/validate.yml`, which validates the UI contract, compiles the Worker with a Wrangler dry run, builds the production site, and verifies the generated recruiter pages.
 
 After deploying the Worker, set this GitHub Actions repository variable so the static site knows where to send recruiter requests:
 

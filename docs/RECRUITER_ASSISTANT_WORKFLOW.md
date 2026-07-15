@@ -2,6 +2,34 @@
 
 This document shows exactly how the recruiter-facing workflow operates, which files provide the portfolio evidence, which buttons trigger requests, and how Cloudflare usage is limited.
 
+## Data publishing and AI path
+
+This is the boundary between private source material, public web pages, and
+recruiter-facing AI. Raw `job-search` evidence is never copied into the browser
+or sent to the Worker.
+
+```mermaid
+flowchart LR
+    A[Private job-search<br/>verified work and project records] --> B[profile/public-portfolio.json<br/>approved public export]
+    B -->|JOB_SEARCH_READ_TOKEN in CI| C[scripts/sync-profile-source.mjs]
+    C --> D[src/data/generated/profile-source.json<br/>public build snapshot]
+    D --> E[src/data/site.ts<br/>public data contract]
+    E --> F[Astro pages<br/>work, projects, recruiter index]
+    F --> G[Browser renders public pages]
+    F --> H[Compact portfolioIndex]
+    H --> I[Cloudflare Worker /match]
+    I --> J[AI Search<br/>public indexed pages]
+    I --> K[Portfolio fallback<br/>public index ranking]
+    J --> L[Qwen analysis or chat]
+    K --> L
+    L --> M[Source-ID validation<br/>quota and JSON guards]
+    M --> N[Summary, coverage, evidence cards, chat sources]
+    N --> G
+```
+
+The private repository remains the canonical source. The public repository
+contains only the approved export snapshot and the code needed to render it.
+
 ## Canonical implementation map
 
 This is the end-to-end path for the deployed recruiter review. The browser supplies recruiter context, role text, and a compact public portfolio index; the Worker retrieves and validates evidence before the browser renders the result.
@@ -13,38 +41,41 @@ flowchart LR
         B --> C[POST /match action analyze or chat]
         C --> D[Render role summary, coverage, evidence cards, or chat]
         D --> E[Source dialog opens public evidence URL]
-        B -. localStorage burton-recruiter-onepage-session-v3 .-> D
+        B -. localStorage burton-recruiter-onepage-session-v5 .-> D
     end
 
     subgraph StaticData[Repository source data]
-        F[src/data/site.ts<br/>work history and projects]
-        G[src/data/capability-map.ts<br/>capability-to-source links]
-        F --> B
-        G --> B
+        F[job-search/profile/public-portfolio.json<br/>approved public export]
+        G[scripts/sync-profile-source.mjs<br/>CI source sync]
+        H[src/data/generated/profile-source.json<br/>public build snapshot]
+        I[src/data/site.ts<br/>public data contract]
+        J[src/data/capability-map.ts<br/>capability-to-source links]
+        F --> G --> H --> I --> B
+        I --> J --> B
     end
 
     subgraph Worker[Cloudflare Worker]
-        H[src/index.ts<br/>CORS, JSON guard, fallback]
-        I[src/index-v2.ts<br/>request validation and orchestration]
-        J[Durable Object<br/>daily quota counters]
-        K[AI Search<br/>hybrid retrieval and BGE reranking]
-        L[Portfolio fallback<br/>token-overlap ranking]
-        M[Qwen3 30B A3B FP8<br/>JSON analysis or chat]
-        N[Source-ID validation<br/>coverage counts in code]
-        O[JSON response]
-        H --> I --> J
-        I -->|AI Search available| K
-        I -->|AI Search unavailable or empty| L
-        K --> M
-        L --> M
-        M --> N --> O
+        K[src/index.ts<br/>CORS, JSON guard, fallback]
+        L[src/index-v2.ts<br/>request validation and orchestration]
+        M[Durable Object<br/>daily quota counters]
+        N[AI Search<br/>hybrid retrieval and BGE reranking]
+        O[Portfolio fallback<br/>token-overlap ranking]
+        P[Qwen3 30B A3B FP8<br/>JSON analysis or chat]
+        Q[Source-ID validation<br/>coverage counts in code]
+        R[JSON response]
+        K --> L --> M
+        L -->|AI Search available| N
+        L -->|AI Search unavailable or empty| O
+        N --> P
+        O --> P
+        P --> Q --> R
     end
 
-    C --> H
-    O --> D
-    P[Malformed model JSON] --> Q[Llama 3.1 8B JSON repair]
-    Q --> N
-    M -. invalid output .-> P
+    C --> K
+    R --> D
+    S[Malformed model JSON] --> T[Llama 3.1 8B JSON repair]
+    T --> Q
+    P -. invalid output .-> S
 ```
 
 ## Recruiter experience
@@ -142,10 +173,14 @@ Each chat question runs a fresh retrieval. The chat does not rely only on the ev
 | `src/pages/recruiter/start.astro` | Initial recruiter name, company, and target-role form. |
 | `src/pages/recruiter/index.astro` | Editable job-description field, analysis request, evidence rendering, source drawer, and Portfolio chat. |
 | `public/recruiter-state-bridge.js` | UTC quota-display reset, stale-analysis handling, and persisted chat-source objects. |
-| `src/data/site.ts` | Canonical public work-history and project content used to build the compact portfolio index. |
+| `src/data/site.ts` | Public data contract that consumes the synced work-history and project export used to build the compact portfolio index. |
 | `src/data/capability-map.ts` | Connects public work and project sources to capability labels and supporting evidence. |
 
-The static page builds `portfolioIndex` from `src/data/site.ts` and `src/data/capability-map.ts`. Each item includes a stable evidence ID, title, source type, public URL, summary, highlights, tags, and capabilities. The browser stores the editable recruiter session under `burton-recruiter-onepage-session-v3`; it does not send hidden site content.
+The static page builds `portfolioIndex` from the synced `src/data/site.ts` and
+`src/data/capability-map.ts`. Each item includes a stable evidence ID, title,
+source type, public URL, summary, highlights, tags, and capabilities. The
+browser stores the editable recruiter session under
+`burton-recruiter-onepage-session-v5`; it does not send hidden site content.
 
 ### Worker and Cloudflare files
 
@@ -233,7 +268,7 @@ The Durable Object stores hashed connection identifiers and counters. It does no
 
 ## GitHub validation
 
-The dedicated workflow is `.github/workflows/validate-recruiter-assistant.yml`.
+The dedicated validation workflow is `.github/workflows/validate.yml`.
 
 It runs these checks on recruiter-related pull requests and manual dispatches:
 
