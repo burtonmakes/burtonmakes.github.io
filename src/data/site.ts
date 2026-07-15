@@ -61,6 +61,8 @@ export const workHistory = profileSource.workHistory satisfies ReadonlyArray<{
   skills: readonly string[];
 }>;
 
+export const workDetailHref = (roleId: string) => `/work/${roleId}/`;
+
 export const workMetrics = workProofPoints;
 
 export const skillsDemonstrated = [

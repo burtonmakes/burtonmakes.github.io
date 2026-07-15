@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { capabilityTaxonomy } from "../../data/capability-map";
-import { projects, workHistory } from "../../data/site";
+import { projects, workDetailHref, workHistory } from "../../data/site";
 import "../../styles/global.css";
 import "../../styles/recruiter.css";
 
@@ -56,7 +56,7 @@ workHistory.forEach((role) => {
     id: key,
     title: `${role.title} · ${role.company}`,
     kind: "work",
-    href: "/work/",
+    href: workDetailHref(role.id),
     summary: role.summary,
     period: role.dates,
     tags: [...role.skills].slice(0, 18),

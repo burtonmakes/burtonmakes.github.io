@@ -1,0 +1,104 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projects, workHistory } from "../../data/site";
+import "../../styles/global.css";
+
+export function getStaticPaths() {
+  return workHistory.map((role) => ({
+    params: { id: role.id },
+    props: { role },
+  }));
+}
+
+const { role } = Astro.props;
+
+if (!role) {
+  return Astro.redirect("/work/");
+}
+
+const relatedProjects = projects.filter((project) => project.parentExperienceId === role.id);
+---
+
+<BaseLayout title={`${role.title} · ${role.company}`} description={role.summary}>
+  <section class="section hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Work evidence</p>
+      <h1>{role.title}</h1>
+      <p class="hero-subtitle">{role.summary}</p>
+      <p class="project-parent-role">{role.company} · {role.dates}</p>
+
+      <div class="hero-actions">
+        <a class="button button-tertiary" href="/work/">← Back to work</a>
+      </div>
+    </div>
+
+    <div class="feature-card project-profile-panel tilt-card reveal">
+      <div class="profile-list">
+        <div>
+          <span>Role focus</span>
+          <strong>{role.context}</strong>
+        </div>
+        <div>
+          <span>Projects</span>
+          <strong>{relatedProjects.length} documented projects</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Responsibilities</p>
+      <h2>What this role covered.</h2>
+    </div>
+
+    <article class="feature-card reveal">
+      <ul class="branch-list">
+        {role.responsibilities.map((item) => <li>{item}</li>)}
+      </ul>
+    </article>
+  </section>
+
+  <section class="section split-band">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Achievements</p>
+      <h2>Evidence from the work.</h2>
+    </div>
+
+    <article class="feature-card reveal">
+      <ul class="branch-list">
+        {role.accomplishments.map((item) => <li>{item}</li>)}
+      </ul>
+    </article>
+  </section>
+
+  <section class="section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Technical range</p>
+      <h2>Tools, systems, and engineering areas.</h2>
+    </div>
+
+    <div class="tag-panel reveal">
+      {role.skills.map((skill) => <span class="tag tag-large">{skill}</span>)}
+    </div>
+  </section>
+
+  {relatedProjects.length > 0 && (
+    <section class="section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Related projects</p>
+        <h2>Projects completed within this role.</h2>
+      </div>
+
+      <div class="card-grid">
+        {relatedProjects.map((project) => (
+          <a class="story-card reveal" href={`/projects/${project.slug}/`}>
+            <span class="feature-kicker">{project.section}</span>
+            <h3>{project.title}</h3>
+            <p>{project.summary}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>

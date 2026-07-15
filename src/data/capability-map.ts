@@ -1,4 +1,4 @@
-import { projects, workHistory } from "./site";
+import { projects, workDetailHref, workHistory } from "./site";
 
 export type CapabilitySource = {
   key: string;
@@ -59,7 +59,7 @@ const workSource = (title: string, company: string): CapabilitySource => {
     key: makeWorkKey(role.title, role.company),
     kind: "work",
     title: `${role.title} · ${role.company}`,
-    href: "/work/",
+    href: workDetailHref(role.id),
     period: role.dates,
     summary: role.summary,
     highlights: role.accomplishments.slice(0, 3),
