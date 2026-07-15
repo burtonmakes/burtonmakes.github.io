@@ -256,7 +256,9 @@ const repairAndReuse = [
     </div>
 
     <div class="hobby-scroll-list">
-      {makerProjects.map((item) => (
+      {[...makerProjects]
+        .sort((a, b) => getYearsValue(b.years) - getYearsValue(a.years))
+        .map((item) => (
         <article class={`hobby-mini-card ${item.cardTone} reveal`}>
           <div class="card-top">
             <div class="card-title">
