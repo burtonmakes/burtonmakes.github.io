@@ -102,7 +102,7 @@ const makerProjects = [
     detail: "Sewing · embroidery",
     description:
       "I like making physical things by hand, testing textile materials, and turning small design ideas into gifts that are useful and purely customized for someone.",
-    years: "5 years",
+    years: "2 years",
     cardTone: "active",
     pillTone: "green",
     pill: "Active interest",
@@ -132,10 +132,10 @@ const makerProjects = [
     detail: "Tiny cameras · audio · physiological sensing",
     description:
       "I explore small wearable systems, including cameras, audio recorders, pulse oximetry, and mmWave sensing for breathing and heart-rate detection.",
-    years: "1 year",
-    cardTone: "seasonal",
-    pillTone: "blue",
-    pill: "Exploring",
+    years: "6 years",
+    cardTone: "active",
+    pillTone: "green",
+    pill: "Active interest",
   },
   {
     title: "Software Tools and Automation",
@@ -146,6 +146,28 @@ const makerProjects = [
     cardTone: "seasonal",
     pillTone: "blue",
     pill: "Exploring",
+  },
+  {
+    title: "Electronics Repair and Diagnostics",
+    detail: "Schematics · voltage testing · multimeter · thermal camera",
+    description:
+      "I repaired four Apple laptops and two Windows computers, including water-damaged systems, an expanded battery, and a failed keyboard, by tracing schematics, testing voltages, and isolating faults.",
+    years: "6 systems",
+    metricLabel: "Computers repaired",
+    cardTone: "active",
+    pillTone: "green",
+    pill: "Home achievement",
+  },
+  {
+    title: "Home Systems and Appliance Repair",
+    detail: "Appliances · HVAC · plumbing · wiring · networking",
+    description:
+      "I replaced washer and dryer motors, repaired an AC controller and dishwasher latch, fixed shower-wall leaks, reran Ethernet and power behind walls, and installed an EV charger and its electrical lines.",
+    years: "8+ projects",
+    metricLabel: "Major repairs and installs",
+    cardTone: "core",
+    pillTone: "red",
+    pill: "Home achievement",
   },
 ];
 ---
@@ -223,11 +245,11 @@ const makerProjects = [
   <section class="section hobby-scroll-section maker-scroll-section">
     <div class="section-heading hobby-section-heading hobby-sticky-copy reveal">
       <p class="eyebrow">Hands-on work after hours</p>
-      <h2>Maker Projects</h2>
+      <h2>Maker Projects & Home Achievements</h2>
       <p>
         I like projects where I can build, fix, organize, automate, and keep improving things over time.
-        Some are practical repairs or physical parts; others are local infrastructure, sensing experiments,
-        or small tools that make everyday workflows easier.
+        This includes practical repairs, fabrication, local infrastructure, sensing experiments, and the
+        home systems I have diagnosed, rebuilt, and installed myself.
       </p>
     </div>
 
@@ -244,7 +266,7 @@ const makerProjects = [
           <p>{item.description}</p>
           <div class="bars">
             <div class="bar-label">
-              <span>Years active</span>
+              <span>{item.metricLabel ?? "Years active"}</span>
               <strong>{item.years}</strong>
             </div>
             <div class="bar">
