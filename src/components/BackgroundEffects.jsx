@@ -1,18 +1,24 @@
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import * as THREE from "three";
 
 export default function BackgroundEffects() {
   const canvasRef = useRef(null);
   const spotlightRef = useRef(null);
 
   useEffect(() => {
+    const cleanup = [];
+    let cancelled = false;
+
+    const initialize = async () => {
+      const [{ default: gsap }, THREE] = await Promise.all([
+        import("gsap"),
+        import("three"),
+      ]);
+      if (cancelled) return;
+
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
     const pointer = { x: 0, y: 0 };
     const pointerTarget = { x: 0, y: 0 };
-    const cleanup = [];
-
     const onPointerMove = (event) => {
       pointerTarget.x = (event.clientX / window.innerWidth - 0.5) * 2;
       pointerTarget.y = (event.clientY / window.innerHeight - 0.5) * 2;
@@ -381,6 +387,16 @@ export default function BackgroundEffects() {
     });
 
     return () => cleanup.forEach((item) => item());
+    };
+
+    initialize().catch(() => {
+      // Decorative effects must never block the portfolio from rendering.
+    });
+
+    return () => {
+      cancelled = true;
+      cleanup.forEach((item) => item());
+    };
   }, []);
 
   return (
