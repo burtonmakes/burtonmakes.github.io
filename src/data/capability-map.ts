@@ -330,13 +330,15 @@ export const capabilityTaxonomy: CapabilityGroup[] = [
       {
         id: "ai-automation",
         label: "AI automation and developer tooling",
-        summary: "AI-driven workflow support when it is constrained around real engineering tasks.",
+        summary: "AI-driven workflow support, retrieval infrastructure, and ML validation when constrained around real engineering tasks.",
         yearsActive: "1+ years",
         yearsScore: 18,
-        skillTags: ["AI systems", "Automation", "Developer tools", "Agents", "AI", "Local infrastructure"],
+        skillTags: ["AI systems", "AI workflows", "Automation", "Developer tools", "Agents", "Local infrastructure", "ML validation", "Deployment checks"],
         evidence: [
           evidence(sources.dataInfrastructure, "Canonical independent-work evidence for private AI, retrieval, and automation workflows."),
           evidence(sources.openClaw, "Canonical project evidence for local AI-agent workflow systems."),
+          evidence(sources.flowsenseClinical, "Canonical ACE project evidence for DSP/ML validation, explainability, and deployment-check workflows."),
+          evidence(sources.rhaeos, "Canonical Rhaeos role evidence for ML validation workflows used in wearable medical-device development."),
         ],
       },
       {

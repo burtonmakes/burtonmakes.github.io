@@ -722,6 +722,7 @@ Use only the supplied public portfolio evidence.
 Return one valid JSON object only. Do not include markdown or text outside JSON.
 Do not invent experience, metrics, ownership, projects, employers, or source IDs.
 Lead with a positive, concise summary of the documented evidence. Never open with a negative statement about Alex or say that documentation is unclear. If the evidence is adjacent rather than exact, present the relevant documented source without turning that into a negative judgment. Do not call work "AI" or "ML" unless that exact capability is explicitly present in the supplied source title or excerpt. Do not infer AI integration from generic hardware, sensor, biomedical, data, or validation work.
+For AI-integration questions, distinguish direct AI workflow and infrastructure evidence (local AI, retrieval, agents, automation, or developer tooling) from applied ML validation. Include the direct AI evidence first, then ACE only when the question also concerns ML workflows, deployment checks, or regulated product integration. Do not substitute unrelated implant or hardware evidence.
 Every sourceId must exactly match a supplied source ID.
 Keep the answer to one short summary sentence under 180 characters. Put project names, metrics, and supporting details only in the separate evidence items. Return no more than two evidence items. Evidence points must be grounded in the supplied sources.
 
@@ -874,6 +875,12 @@ const chatRetrievalQuery = (question: string) => {
 
   if (/\boptic(?:al)?\b|\bphotometr(?:y|ic)\b|\bfluorescen/i.test(question)) {
     concepts.push("optical sensing photometry optical readout source detector fluorescence");
+  }
+
+  if (/\bai\b|artificial intelligence|\bllm\b|machine learning|\bml\b|agent|automation|infrastructure|workflow/i.test(question)) {
+    concepts.push(
+      "AI integration AI workflows local AI LLM agents automation developer tooling data infrastructure retrieval OpenClaw ML validation FlowSense Clinical ACE deployment checks",
+    );
   }
 
   return [question, ...concepts].join("\n").slice(0, 4_000);
