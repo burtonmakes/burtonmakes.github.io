@@ -9,7 +9,7 @@ recruiter-facing AI. Raw `job-search` evidence is never copied into the browser
 or sent to the Worker.
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Private job-search<br/>verified work and project records] --> B[profile/public-portfolio.json<br/>approved public export]
     B -->|JOB_SEARCH_READ_TOKEN in CI| C[scripts/sync-profile-source.mjs]
     C --> D[src/data/generated/profile-source.json<br/>public build snapshot]
@@ -35,7 +35,7 @@ contains only the approved export snapshot and the code needed to render it.
 This is the end-to-end path for the deployed recruiter review. The browser supplies recruiter context, role text, and a compact public portfolio index; the Worker retrieves and validates evidence before the browser renders the result.
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Browser[Astro recruiter page]
         A[Recruiter context and role text] --> B[Build portfolioIndex]
         B --> C[POST /match action analyze or chat]
