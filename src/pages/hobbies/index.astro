@@ -147,27 +147,30 @@ const makerProjects = [
     pillTone: "blue",
     pill: "Exploring",
   },
+];
+
+const repairAndReuse = [
   {
-    title: "Electronics Repair and Diagnostics",
-    detail: "Schematics · voltage testing · multimeter · thermal camera",
+    title: "Home Electronics",
+    detail: "4 Apple laptops · 2 Windows computers",
     description:
-      "I repaired four Apple laptops and two Windows computers, including water-damaged systems, an expanded battery, and a failed keyboard, by tracing schematics, testing voltages, and isolating faults.",
-    years: "6 systems",
-    metricLabel: "Computers repaired",
+      "I repaired two water-damaged Apple laptops, one with an expanded battery, one with a failed keyboard, and two water-damaged Windows computers. I used schematics, voltage testing, a multimeter, and thermal imaging to find the faults.",
+    metric: "6 computers",
+    metricLabel: "Devices repaired",
     cardTone: "active",
     pillTone: "green",
-    pill: "Home achievement",
+    pill: "Repair & reuse",
   },
   {
-    title: "Home Systems and Appliance Repair",
-    detail: "Appliances · HVAC · plumbing · wiring · networking",
+    title: "Home Appliances & Systems",
+    detail: "Appliances · HVAC · plumbing · electrical · networking",
     description:
-      "I replaced washer and dryer motors, repaired an AC controller and dishwasher latch, fixed shower-wall leaks, reran Ethernet and power behind walls, and installed an EV charger and its electrical lines.",
-    years: "8+ projects",
-    metricLabel: "Major repairs and installs",
-    cardTone: "core",
-    pillTone: "red",
-    pill: "Home achievement",
+      "I replaced the motors in our washer and dryer, fixed a failed AC controller and dishwasher latch, repaired leaks behind the shower, reran Ethernet and power behind apartment walls, and installed an EV charger and its electrical lines.",
+    metric: "8+ projects",
+    metricLabel: "Repairs and installs",
+    cardTone: "active",
+    pillTone: "green",
+    pill: "Repair & reuse",
   },
 ];
 ---
@@ -245,11 +248,10 @@ const makerProjects = [
   <section class="section hobby-scroll-section maker-scroll-section">
     <div class="section-heading hobby-section-heading hobby-sticky-copy reveal">
       <p class="eyebrow">Hands-on work after hours</p>
-      <h2>Maker Projects & Home Achievements</h2>
+      <h2>Maker Projects</h2>
       <p>
-        I like projects where I can build, fix, organize, automate, and keep improving things over time.
-        This includes practical repairs, fabrication, local infrastructure, sensing experiments, and the
-        home systems I have diagnosed, rebuilt, and installed myself.
+        I like projects where I can build, organize, automate, and keep improving things over time.
+        These include fabrication, local infrastructure, sensing experiments, and practical tools.
       </p>
     </div>
 
@@ -266,11 +268,46 @@ const makerProjects = [
           <p>{item.description}</p>
           <div class="bars">
             <div class="bar-label">
-              <span>{item.metricLabel ?? "Years active"}</span>
+              <span>Years active</span>
               <strong>{item.years}</strong>
             </div>
             <div class="bar">
               <i class="bar-fill" style={getBarStyle(getYearsValue(item.years))}></i>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section hobby-scroll-section repair-reuse-section">
+    <div class="section-heading hobby-section-heading hobby-sticky-copy reveal">
+      <p class="eyebrow">Keeping useful equipment in service</p>
+      <h2>Repair & Reuse</h2>
+      <p>
+        I repair electronics and home systems when replacement is unnecessary. These fixes reduce waste,
+        extend equipment life, and avoid the cost of replacing otherwise useful products.
+      </p>
+    </div>
+
+    <div class="hobby-scroll-list">
+      {repairAndReuse.map((item) => (
+        <article class={`hobby-mini-card ${item.cardTone} reveal`}>
+          <div class="card-top">
+            <div class="card-title">
+              <h3>{item.title}</h3>
+              <small>{item.detail}</small>
+            </div>
+            <span class={`pill interest-pill interest-${item.pillTone}`}>{item.pill}</span>
+          </div>
+          <p>{item.description}</p>
+          <div class="bars">
+            <div class="bar-label">
+              <span>{item.metricLabel}</span>
+              <strong>{item.metric}</strong>
+            </div>
+            <div class="bar">
+              <i class="bar-fill" style={getBarStyle(getYearsValue(item.metric))}></i>
             </div>
           </div>
         </article>
