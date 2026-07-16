@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -29,13 +29,37 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+      - name: Install and build static archive
+        id: archive_build
+        shell: bash
+        run: |
+          set +e
+          (
+            echo "Commit: $GITHUB_SHA"
+            echo "Node: $(node --version)"
+            echo "npm: $(npm --version)"
+            npm install --no-audit --no-fund && npm exec astro build
+          ) 2>&1 | tee CI_DIAGNOSTIC.txt
+          status=${PIPESTATUS[0]}
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit 0
 
-      - name: Build static archive
-        run: npm exec astro build
+      - name: Record failed build diagnostic
+        if: steps.archive_build.outputs.exit_code != '0'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CI_DIAGNOSTIC.txt
+          git commit -m "Record archive build diagnostic [skip ci]"
+          git push
+
+      - name: Stop after failed build
+        if: steps.archive_build.outputs.exit_code != '0'
+        run: exit "${{ steps.archive_build.outputs.exit_code }}"
 
       - name: Upload artifact
+        if: steps.archive_build.outputs.exit_code == '0'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
