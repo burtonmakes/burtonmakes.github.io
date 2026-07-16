@@ -104,9 +104,16 @@
   const nativeFetch = window.fetch.bind(window);
   window.fetch = (input, init) => {
     const url = typeof input === "string" ? input : input?.url || "";
+    let hostname = "";
+    try {
+      hostname = new URL(url, window.location.href).hostname;
+    } catch {
+      hostname = "";
+    }
+
     if (
-      url.includes("burton-recruiter-match.burtonmakes.workers.dev") ||
-      url.includes("api.web3forms.com")
+      hostname === "burton-recruiter-match.burtonmakes.workers.dev" ||
+      hostname === "api.web3forms.com"
     ) {
       return Promise.resolve(
         new Response(JSON.stringify({ error: unavailableMessage }), {
