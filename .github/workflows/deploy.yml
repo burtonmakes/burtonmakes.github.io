@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout public Burton Makes archive
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Build Site
-        run: npm run build
+      - name: Build static archive
+        run: npm exec astro build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
