@@ -12,7 +12,6 @@ interface Props {
 
 const { title, description = siteMeta.siteDescription, eyebrow } = Astro.props;
 const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.siteTitle}`;
-const analyticsEnabled = false;
 ---
 
 <!doctype html>
@@ -30,7 +29,6 @@ const analyticsEnabled = false;
     <script is:inline src="/recruiter-response-guard.js"></script>
     <script is:inline src="/recruiter-state-bridge.js"></script>
     <script is:inline src="/archive-mode.js"></script>
-    {analyticsEnabled && <script async src=""></script>}
   </head>
 
   <body>
