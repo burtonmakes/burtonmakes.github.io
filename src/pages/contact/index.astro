@@ -28,8 +28,7 @@ import "../../styles/global.css";
     <div class="interface-shell contact-shell reveal">
       <div class="interface-topbar"><span></span><span></span><span></span></div>
 
-      <form class="contact-form" id="contact-form" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="53d6c7c6-13c6-4da5-b029-517d7dc7fd0a" />
+      <form class="contact-form" id="contact-form" action="#" method="POST">
         <input type="hidden" name="subject" value="New message from burtonmakes.github.io" />
         <input type="hidden" name="from_name" value="Burton Makes Contact Form" />
         <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" class="contact-honeypot" aria-hidden="true" />
@@ -68,44 +67,11 @@ import "../../styles/global.css";
 <script>
   const form = document.getElementById("contact-form");
   const status = document.getElementById("contact-status");
-  const submitButton = form?.querySelector("button[type='submit']");
 
-  form?.addEventListener("submit", async (event) => {
+  form?.addEventListener("submit", (event) => {
     event.preventDefault();
-
-    if (!submitButton || !status) {
-      return;
-    }
-
-    const formData = new FormData(form);
-    const originalText = submitButton.textContent || "Send message";
-
-    submitButton.textContent = "Sending...";
-    submitButton.disabled = true;
-    status.textContent = "";
-    status.dataset.state = "";
-
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        form.reset();
-        status.textContent = "Message sent. I will follow up soon.";
-        status.dataset.state = "success";
-      } else {
-        status.textContent = data.message || "Could not send the message. Please try again.";
-        status.dataset.state = "error";
-      }
-    } catch {
-      status.textContent = "Could not send the message. Please try again.";
-      status.dataset.state = "error";
-    } finally {
-      submitButton.textContent = originalText;
-      submitButton.disabled = false;
-    }
+    if (!status) return;
+    status.textContent = "This archived feature is no longer available. Use one of the public profile links instead.";
+    status.dataset.state = "archived";
   });
 </script>
