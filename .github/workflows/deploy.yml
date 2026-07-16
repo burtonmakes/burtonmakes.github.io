@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy archived public site
 
 on:
   push:
@@ -21,18 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Require private profile-source token
-        env:
-          JOB_SEARCH_READ_TOKEN: ${{ secrets.JOB_SEARCH_READ_TOKEN }}
-        run: test -n "$JOB_SEARCH_READ_TOKEN"
-
-      - name: Checkout approved profile source
-        uses: actions/checkout@v4
-        with:
-          repository: CocoHusky/job-search
-          path: .profile-source/job-search
-          token: ${{ secrets.JOB_SEARCH_READ_TOKEN }}
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -42,17 +30,11 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --no-audit --no-fund
 
       - name: Build Site
         run: npm run build
-        env:
-          JOB_SEARCH_ROOT: ${{ github.workspace }}/.profile-source/job-search
-          PUBLIC_ANALYTICS_ENABLED: ${{ vars.PUBLIC_ANALYTICS_ENABLED }}
-          PUBLIC_ANALYTICS_PROVIDER: ${{ vars.PUBLIC_ANALYTICS_PROVIDER }}
-          PUBLIC_PLAUSIBLE_SCRIPT_URL: ${{ vars.PUBLIC_PLAUSIBLE_SCRIPT_URL }}
-          PUBLIC_RECRUITER_MATCH_API: ${{ vars.PUBLIC_RECRUITER_MATCH_API }}
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
