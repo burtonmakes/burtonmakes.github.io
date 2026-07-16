@@ -15,7 +15,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout public Burton Makes archive
@@ -27,6 +30,8 @@ jobs:
           node-version: 24
 
       - name: Setup Pages
+        id: pages_setup
+        continue-on-error: true
         uses: actions/configure-pages@v5
 
       - name: Install and build static archive
@@ -44,33 +49,42 @@ jobs:
           echo "exit_code=$status" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Record failed build diagnostic
-        if: steps.archive_build.outputs.exit_code != '0'
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CI_DIAGNOSTIC.txt
-          git commit -m "Record archive build diagnostic [skip ci]"
-          git push
-
-      - name: Stop after failed build
-        if: steps.archive_build.outputs.exit_code != '0'
-        run: exit "${{ steps.archive_build.outputs.exit_code }}"
-
-      - name: Upload artifact
-        if: steps.archive_build.outputs.exit_code == '0'
+      - name: Upload Pages artifact
+        id: artifact_upload
+        if: steps.archive_build.outputs.exit_code == '0' && steps.pages_setup.outcome == 'success'
+        continue-on-error: true
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
+        if: steps.archive_build.outputs.exit_code == '0' && steps.pages_setup.outcome == 'success' && steps.artifact_upload.outcome == 'success'
+        continue-on-error: true
         uses: actions/deploy-pages@v4
+
+      - name: Record failed action diagnostic
+        if: steps.archive_build.outputs.exit_code != '0' || steps.pages_setup.outcome != 'success' || steps.artifact_upload.outcome != 'success' || steps.deployment.outcome != 'success'
+        shell: bash
+        env:
+          BUILD_EXIT: ${{ steps.archive_build.outputs.exit_code }}
+          SETUP_OUTCOME: ${{ steps.pages_setup.outcome }}
+          UPLOAD_OUTCOME: ${{ steps.artifact_upload.outcome }}
+          DEPLOY_OUTCOME: ${{ steps.deployment.outcome }}
+        run: |
+          {
+            echo "Commit: $GITHUB_SHA"
+            echo "build_exit=$BUILD_EXIT"
+            echo "pages_setup=$SETUP_OUTCOME"
+            echo "artifact_upload=$UPLOAD_OUTCOME"
+            echo "pages_deploy=$DEPLOY_OUTCOME"
+          } > CI_ACTION_STATUS.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CI_DIAGNOSTIC.txt CI_ACTION_STATUS.txt
+          git commit -m "Record archive action diagnostic [skip ci]"
+          git push
+
+      - name: Fail unsuccessful deployment
+        if: steps.archive_build.outputs.exit_code != '0' || steps.pages_setup.outcome != 'success' || steps.artifact_upload.outcome != 'success' || steps.deployment.outcome != 'success'
+        run: exit 1
