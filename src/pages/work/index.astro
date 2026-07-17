@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   skillsDemonstrated,
+  workDetailHref,
   workHistory,
   workMetrics,
 } from "../../data/site";
@@ -148,6 +149,10 @@ const getYearRange = (dates: string) => {
                 </div>
               </section>
             </div>
+
+            <a class="text-link career-detail-link" href={workDetailHref(role.id)}>
+              Open complete role details →
+            </a>
           </article>
         ))}
       </div>
@@ -205,7 +210,16 @@ const getYearRange = (dates: string) => {
   }
 
   .career-track {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: stretch;
+    gap: 1px;
+    overflow: visible;
+    background: var(--line);
+  }
+
+  .career-track::after {
+    display: none;
   }
 
   .career-stop {
@@ -213,7 +227,10 @@ const getYearRange = (dates: string) => {
     grid-template-rows: auto minmax(2.5rem, auto) minmax(2.7rem, auto);
     align-content: start;
     gap: 8px;
+    width: 100%;
     min-width: 0;
+    border: 0;
+    background: rgb(3 8 15 / 94%);
   }
 
   .career-stop span,
@@ -405,6 +422,10 @@ const getYearRange = (dates: string) => {
     margin-top: 4px;
   }
 
+  .career-detail-link {
+    margin-top: 22px;
+  }
+
   .split-band:has(.metrics-card-grid) {
     grid-template-columns: minmax(260px, 0.68fr) minmax(0, 1.32fr);
   }
@@ -462,9 +483,34 @@ const getYearRange = (dates: string) => {
     }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1180px) {
+    .career-track {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
     .career-stop {
+      grid-column: span 2;
+    }
+
+    .career-stop:nth-child(4):nth-last-child(2),
+    .career-stop:nth-child(5):last-child {
+      grid-column: span 3;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .career-track {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .career-stop {
+      grid-column: span 1;
       grid-template-rows: none;
+      min-width: 0;
+    }
+
+    .career-stop:nth-child(5):last-child {
+      grid-column: 1 / -1;
     }
 
     .career-scan-item {
@@ -478,6 +524,19 @@ const getYearRange = (dates: string) => {
 
     .branch-list {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .career-track {
+      grid-template-columns: 1fr;
+    }
+
+    .career-stop,
+    .career-stop:nth-child(4):nth-last-child(2),
+    .career-stop:nth-child(5):last-child {
+      grid-column: span 1;
+      min-width: 0;
     }
   }
 </style>

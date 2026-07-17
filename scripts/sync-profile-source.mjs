@@ -40,7 +40,7 @@ const experienceIds = new Set(source.workHistory.map((role) => role.id));
 
 const projectSlugs = new Set();
 for (const [index, project] of source.projects.entries()) {
-  for (const field of ["slug", "title", "section", "type", "status", "timeline", "summary", "parentExperienceId"]) {
+  for (const field of ["slug", "title", "section", "type", "status", "timeline", "summary"]) {
     if (typeof project[field] !== "string" || !project[field].trim()) {
       throw new Error(`Project ${index + 1} is missing ${field}.`);
     }
@@ -49,7 +49,12 @@ for (const [index, project] of source.projects.entries()) {
     throw new Error(`Duplicate project slug: ${project.slug}`);
   }
   projectSlugs.add(project.slug);
-  if (!experienceIds.has(project.parentExperienceId)) {
+  if (
+    project.parentExperienceId !== undefined &&
+    (typeof project.parentExperienceId !== "string" ||
+      !project.parentExperienceId.trim() ||
+      !experienceIds.has(project.parentExperienceId))
+  ) {
     throw new Error(`Project ${project.slug} references an unknown parent experience.`);
   }
   for (const field of ["skills", "labels", "links", "facts"]) {

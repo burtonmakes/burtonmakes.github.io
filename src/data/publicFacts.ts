@@ -20,9 +20,9 @@ export const graduateResearchAccomplishments = [
 ] as const;
 
 export const eunilAccomplishments = [
-  "Built early biomedical sensing workflows spanning low-noise acquisition, amplifier optimization, EMI control, DSP, wavelet-based processing, and experimental phantom development.",
-  "Supported non-invasive neural recording, ultrasound/acoustoelectric sensing, and current-density detection workflows.",
-  "Developed a low-cost optical/microfluidic nanoparticle analyzer with about $4,500 prototype cost, below $5 chamber cost per unit, and below 1.9% size error across 50 nm to 1 µm particles.",
+  "Built and optimized front-end hardware, phantoms, and signal-processing workflows for 4D acoustoelectric current-density imaging.",
+  "Designed and debugged low-noise neural-recording hardware, amplifiers, interconnects, grounding, shielding, and EMI controls.",
+  "Presented the non-invasive neural-recording work at BMES 2017 and IEEE IUS 2018.",
 ] as const;
 
 export const earlySensingAccomplishments = [
@@ -56,7 +56,6 @@ export const workProofPoints = [
   ["Osseosurface readout", "~87 Hz / 14-bit"],
   ["Early wearable-data study", "31 subjects / 800+ hours"],
   ["Fall-risk model reference", "0.73 baseline AUC → 0.969 mixed-model AUC"],
-  ["Nanoparticle analyzer", "~$4,500 prototype / <$5 chambers / <1.9% size error across 50 nm–1 µm"],
 ] as const;
 
 export const projectFacts = {
@@ -127,9 +126,15 @@ export const projectFacts = {
   ],
   "early-biomedical-sensing-hardware": [
     "EUNIL research role: Jan 2016 – Oct 2019.",
-    "Work covered non-invasive recording, analog sensor work, low-noise amplifiers, amplifier optimization, EMI control, DSP, wavelets, and experimental phantoms.",
-    "Nanoparticle analyzer: approximately $4,500 prototype cost, below $5 chamber cost, and below 1.9% size error across 50 nm to 1 µm particles.",
-    "Analyzer method: fluorescence microscopy with Brownian-motion tracking.",
+    "Work covered non-invasive neural recording, current-density simulation, low-noise amplifiers, amplifier optimization, EMI control, DSP, wavelets, and experimental phantoms.",
+    "Built and optimized front-end hardware and experimental workflows for 4D acoustoelectric current-density imaging.",
+    "Presented the work at BMES 2017 and IEEE IUS 2018.",
+  ],
+  "low-cost-nanoparticle-analyzer-capstone": [
+    "Undergraduate biomedical engineering capstone completed in 2016–2017.",
+    "Prototype cost: approximately $4,500, with disposable chamber cost below $5 each.",
+    "Sizing error: below 1.9% across particles from 50 nm to 1 µm.",
+    "Method: fluorescence microscopy with Brownian-motion tracking in microfluidic chambers.",
   ],
   "wearable-physiological-data-analysis": [
     "iCAMP role: 31 subjects and 800+ hours of chest-worn wearable data.",

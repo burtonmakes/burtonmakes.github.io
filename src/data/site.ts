@@ -100,7 +100,7 @@ export type Project = {
   type: string;
   status: "active" | "building" | "planning" | "completed" | "archived";
   timeline: string;
-  parentExperienceId: string;
+  parentExperienceId?: string;
   visibility: "public-approved";
   summary: string;
   skills: string[];
