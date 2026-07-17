@@ -4,7 +4,7 @@ import profileSource from "./generated/profile-source.json";
 export const siteMeta = {
   siteTitle: "Alex Burton",
   personName: "Alex Burton",
-  brandName: "Burton Makes",
+  brandName: "Coco Metric",
   siteDescription:
     "Engineering portfolio for Alex Burton — medical devices, wearable sensing systems, implantables, AI tools, and infrastructure projects.",
   links: {
