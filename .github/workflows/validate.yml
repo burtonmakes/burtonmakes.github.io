@@ -1,4 +1,4 @@
-name: Validate public archive
+name: Validate public site
 
 on:
   push:

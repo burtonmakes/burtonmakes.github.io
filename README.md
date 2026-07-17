@@ -1,242 +1,163 @@
 [![Deploy to GitHub Pages](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/deploy.yml)
-[![Validate site and AI checks](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate.yml)
+[![Validate site](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate.yml/badge.svg)](https://github.com/burtonmakes/burtonmakes.github.io/actions/workflows/validate.yml)
 
-# Alex Burton / Burton Makes
+# Burton Makes
 
-Personal engineering portfolio for Alex Burton.
+Burton Makes is Alex Burton's public engineering portfolio. It brings professional work, technical projects, measurable outcomes, hobbies, and interactive demonstrations into one evidence-based site.
 
-Live site:
+**Live site:** [burtonmakes.github.io](https://burtonmakes.github.io)
 
-[https://burtonmakes.github.io](https://burtonmakes.github.io)
+The repository is public for two reasons:
 
-## Site purpose
+- to make the structure behind the portfolio as transparent as the work it presents;
+- to give engineers, researchers, and makers a practical reference for documenting their own work.
 
-This site is a focused public portfolio, not a full archive.
+This is a working portfolio rather than an empty starter theme. The architecture, page patterns, and data model can be adapted; a personal fork replaces Alex's writing, images, identity, and project facts with its owner's material.
 
-It focuses on:
+## What the site demonstrates
 
-- professional medical-device and wearable-sensing work
-- selected technical projects
-- AI tools and infrastructure systems
-- public contact/profile links
+- A portfolio organized around evidence instead of a long résumé page
+- Separate but connected views for roles, projects, capabilities, and quantitative results
+- Data-driven detail pages generated from structured records
+- A recruiter review that connects a job description to public portfolio evidence
+- A scroll-driven Three.js product story for the Cocometric infrastructure project
+- Static deployment through Astro and GitHub Pages
 
-## Top-level navigation
+## Architecture at a glance
 
-The public navigation should stay small:
-
-- `/`
-- `/work/`
-- `/projects/`
-- `/contact/`
-
-Avoid adding archive, private, notes, or research sections to the main nav until the base site feels clean.
-
-## Current visual system
-
-The current site direction is a **darker lab interface**.
-
-Use these values as the canonical color reference:
-
-```css
-:root {
-  --bg: #000000;
-  --bg-2: #010102;
-  --surface-window: rgba(1, 5, 10, 0.999);
-  --surface-window-strong: rgba(3, 9, 16, 0.999);
-  --text: #f6faff;
-  --muted: #a9bcd7;
-  --muted-2: #e6eef8;
-  --line: rgba(255, 255, 255, 0.16);
-  --line-soft: rgba(255, 255, 255, 0.10);
-  --accent: #4c8dff;
-  --accent-2: #6fd3ff;
-  --cta-1: #e2b869;
-  --cta-2: #e86f4e;
-  --blue-glow: rgba(32, 64, 120, 0.27);
-  --coral-glow: rgba(92, 40, 28, 0.22);
-}
+```mermaid
+flowchart TD
+    A["Visitor"] --> B["GitHub Pages"]
+    B --> C["Astro routes"]
+    C --> D["Shared layout and navigation"]
+    C --> E["Portfolio data"]
+    D --> F["React, GSAP, and Three.js effects"]
+    E --> G["Work and project pages"]
+    E --> H["Capability map"]
+    C --> I["Recruiter review"]
+    I -. "optional API request" .-> J["Cloudflare Worker"]
 ```
 
-Layout rules:
+Astro generates the public HTML. `BaseLayout.astro` supplies the shared shell, React components add site-wide motion and WebGL effects, and structured data supplies the work and project pages. The recruiter review can call the included Cloudflare Worker, while the rest of the portfolio remains a static site.
 
-- Page and hero backgrounds should use the same darker color palette.
-- Do not dim the grid, network, particles, or mouse-follow effect to make the page darker.
-- Cards and panels should be 99.9% opaque, not glassy.
-- Grid wrappers should stay transparent; only individual cards should have card backgrounds.
-- Body copy should use `--muted-2` for readability.
-- Blue/cyan are the main technical accents.
-- Amber/coral are for CTAs, selected states, and highlighted data only.
+## Page map
 
-## Where to edit content
+| Route | Purpose | Primary source |
+| --- | --- | --- |
+| `/` | Introduces Alex's engineering story and directs visitors to the main areas. | `src/pages/index.astro` |
+| `/work/` | Presents the career timeline, role scope, accomplishments, metrics, and skills. | `src/pages/work/index.astro` |
+| `/work/[id]/` | Generates one detail page for each role. | `src/pages/work/[id].astro` + `workHistory` |
+| `/work/map/` | Connects capabilities to the roles and projects that demonstrate them. | `src/pages/work/map/index.astro` + `capability-map.ts` |
+| `/projects/` | Filters and summarizes the complete public project set. | `src/pages/projects/index.astro` |
+| `/projects/[slug]/` | Generates a project case study with facts, decisions, failures, and lessons. | `src/pages/projects/[slug].astro` + `projects` |
+| `/hobbies/` | Adds personal context through outdoor, maker, and repair activities. | `src/pages/hobbies/index.astro` |
+| `/contact/` | Links to current contact and professional profiles. | `src/pages/contact/index.astro` |
+| `/recruiter/start/` | Collects optional recruiter and role context in browser storage. | `src/pages/recruiter/start.astro` |
+| `/recruiter/` | Reviews a role against documented public evidence. | `src/pages/recruiter/index.astro` |
+| `/cocometric/` | Shows a scroll-driven, exploded 3D infrastructure story. | `src/pages/cocometric/index.astro` |
 
-Canonical profile and project content lives in the private source repository:
+## Repository map
 
-- `CocoHusky/job-search/profile/public-portfolio.json`
+| Path | What it contains | Why it exists |
+| --- | --- | --- |
+| `src/pages/` | Astro route files | Keeps each public page discoverable from the URL structure. |
+| `src/layouts/BaseLayout.astro` | Metadata, navigation, footer, and shared visual shell | Gives the main portfolio pages one consistent frame. |
+| `src/components/BackgroundEffects.jsx` | Three.js particles, network animation, and pointer spotlight | Creates the technical background without coupling it to page content. |
+| `src/components/GlobalEffects.jsx` | Reveal motion, navigation behavior, interaction tracking, and shared page effects | Centralizes behavior used across several routes. |
+| `src/data/generated/profile-source.json` | Public work and project records | Provides the structured content used to generate detail pages. |
+| `src/data/site.ts` | Site metadata and the main data contract | Exposes profile records in a stable shape to the routes. |
+| `src/data/publicFacts.ts` | Curated quantitative proof points | Keeps important metrics reusable across portfolio views. |
+| `src/data/capability-map.ts` | Capability taxonomy and evidence links | Connects broad skills to concrete roles and projects. |
+| `src/styles/` | Global, recruiter, and Cocometric styles | Separates the shared visual system from feature-specific layouts. |
+| `src/scripts/cocometric-viewer.js` | 3D model loading, camera stages, highlighting, and scroll behavior | Keeps the Cocometric experience independent from the main layout. |
+| `public/` | Static images, icons, and browser helpers | Serves files that do not need Astro processing. |
+| `workers/recruiter-match/` | Optional Cloudflare Worker | Adds retrieved, source-backed role analysis and portfolio chat. |
+| `scripts/` | Validation, profile synchronization, and Worker deployment utilities | Makes content and interactive features reproducible. |
+| `.github/workflows/` | Site validation and GitHub Pages deployment | Tests proposed changes and publishes `main`. |
 
-The public site consumes the approved export during the build. Do not edit the
-generated snapshot directly.
+More detail is available in [Site architecture](docs/SITE_ARCHITECTURE.md).
 
-Public site data consumers live in:
+## How portfolio information moves through the site
 
-- `src/data/site.ts`
+```mermaid
+flowchart LR
+    A["Approved profile records"] --> B["profile-source.json"]
+    B --> C["site.ts"]
+    C --> D["Work routes"]
+    C --> E["Project routes"]
+    C --> F["Recruiter evidence index"]
+    G["publicFacts.ts"] --> D
+    H["capability-map.ts"] --> F
+    H --> I["Capability map"]
+```
 
-Shared layout and site chrome live in:
+The committed JSON file contains only information intended for public display. In Alex's workflow, `scripts/sync-profile-source.mjs` can refresh that snapshot from a separate source repository. A fork can keep the same split-source approach or replace it with a single public JSON file.
 
-- `src/layouts/BaseLayout.astro`
-- `src/components/GlobalEffects.jsx`
-- `src/styles/global.css`
+## Run locally
 
-Routes live in:
-
-- `src/pages/`
-
-## How to add a project
-
-1. Add or correct the verified project record in the private `job-search` repository.
-2. Approve the record for public display in `profile/public-portfolio.json`.
-3. Include:
-   - `slug`
-   - `title`
-   - `section`
-   - `type`
-   - `status`
-   - `timeline`
-   - `summary`
-   - `skills`
-   - `labels`
-   - `links`
-   - `why`
-   - `built`
-   - `worked`
-   - `failed`
-   - `learned`
-   - `stack`
-   - `nextSteps`
-4. Run `npm run profile:sync` locally, then build. The project will automatically appear on:
-   - `/projects/`
-   - `/projects/[slug]/`
-
-## Content rule
-
-Every public section should answer one of these:
-
-1. Who is Alex?
-2. What does he build?
-3. What proof exists?
-4. Where should the visitor click next?
-
-If a section does not answer one of those, cut it.
-
-## Public-safety rules
-
-Everything in this repo should remain public-safe.
-
-- Do not include private company details.
-- Do not include confidential work details.
-- Do not include private infrastructure details.
-- Do not include credentials, tokens, API keys, secrets, private URLs, or internal hostnames.
-- Do not add private admin materials.
-- If a detail is sensitive, omit it or rewrite it into a public-safe summary.
-
-## Local development
-
-Install dependencies and run:
+The GitHub workflows use Node.js 24.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Build for production:
+Astro prints the local development URL, normally `http://localhost:4321`.
+
+Build the static production site with:
 
 ```bash
 npm run build
 ```
 
-The build validates both the Cocometric model and the recruiter assistant contract before Astro compiles the site.
+The build validates the embedded Cocometric model and recruiter feature before generating `dist/`.
 
-## Analytics
+## Adapt it for another portfolio
 
-This site uses optional [Plausible](https://plausible.io/) analytics for privacy-friendly, aggregate tracking.
+The shortest path is:
 
-How it works:
+1. Fork the repository and replace the identity and links in `src/data/site.ts`.
+2. Replace the example work and project records in `src/data/generated/profile-source.json`.
+3. Replace the quantitative highlights in `src/data/publicFacts.ts`.
+4. Rebuild `src/data/capability-map.ts` around the capabilities your evidence supports.
+5. Update the homepage, hobbies page, contact page, logo, and images.
+6. Remove the recruiter Worker or Cocometric 3D story if those features do not fit your portfolio.
+7. Run `npm run build`, then enable GitHub Pages through GitHub Actions.
 
-- the site loads the Plausible-hosted script only in production
-- analytics stays off unless the env flags are enabled
-- tracked events are aggregate interactions such as page views, nav clicks, project opens, and source-code clicks
-- the site still works normally if Plausible is not configured
+[Customizing the portfolio](docs/CUSTOMIZING.md) explains the content schema, two possible data workflows, public-safety review, and deployment choices.
 
-You do not need Plausible to run or deploy the site. The repo includes `.env.example` with the non-secret settings needed to enable it if you want analytics on your own deployment.
+## Optional recruiter review
 
-## Recruiter portfolio assistant
+The recruiter pages turn public portfolio records into a compact evidence index. The included Cloudflare Worker retrieves the most relevant sources, generates a structured response, validates every source identifier, and returns evidence-linked results.
 
-The recruiter-facing workflow lives at `/recruiter/start/` and `/recruiter/`.
+The static portfolio does not depend on this service. Forks can:
 
-## Profile source synchronization
+- keep the recruiter pages and deploy their own Worker;
+- point `PUBLIC_RECRUITER_MATCH_API` to another compatible endpoint; or
+- remove the recruiter routes and Worker directory entirely.
 
-Approved public and recruiter-facing work-history facts are authored in the
-`CocoHusky/job-search` repository at `profile/public-portfolio.json`. The site
-build runs `npm run profile:sync` before validation and copies only that
-approved export into `src/data/generated/profile-source.json`. Raw job-search
-evidence is never sent to the browser.
+See [Recruiter review architecture](docs/RECRUITER_ASSISTANT_WORKFLOW.md) and the [Worker reference](workers/recruiter-match/README.md).
 
-Local builds expect `../job-search` next to this repository. CI checks out the
-private source repository into an isolated workspace path using the required
-`JOB_SEARCH_READ_TOKEN` secret. There is intentionally no public-token
-fallback.
+## Design language
 
-Before changing the sync contract, preserve the current state with:
+The interface uses a near-black laboratory-inspired palette, opaque technical panels, blue/cyan system accents, and amber/coral actions. Motion adds spatial context while reduced-motion preferences and static content keep the site usable without animation.
 
-```sh
-git branch backup/pre-profile-sync-20260714
-```
+The tokens, component treatments, rationale, and visual QA notes are documented in [Design system](DESIGN_SYSTEM.md). `DESIGN_SYSTEM_VISUAL.html` is a standalone browser preview of the core palette and surfaces.
 
-The generated snapshot can be reverted independently if the source checkout
-or profile schema needs to be rolled back.
+## Public information boundary
 
-The complete architecture, exact button actions, Mermaid diagrams, source files, retrieval flow, quota behavior, and deployment dependencies are documented here:
+The repository is designed to contain only material suitable for public display. Before publishing a fork, review every data file, link, image, commit, and generated artifact for confidential details, personal contact information, credentials, private infrastructure names, and employer-owned material.
 
-- [`docs/RECRUITER_ASSISTANT_WORKFLOW.md`](docs/RECRUITER_ASSISTANT_WORKFLOW.md)
+The recruiter feature sends submitted role text and questions to its configured API. The regular work, project, hobby, and contact pages are statically generated.
 
-High-level behavior:
+## Documentation
 
-- the recruiter enters a name, company or team, and target role
-- the recruiter pastes or edits the complete job description
-- clicking `Analyze role` sends the role text to the Cloudflare Worker
-- Cloudflare AI Search retrieves public work and project evidence
-- Qwen creates a concise role summary and source-backed reasons to interview
-- the Worker validates every returned source ID before the page displays it
-- evidence coverage is shown as requirements supported by work and requirements supported by projects
-- the right-side Portfolio chat runs a new retrieval for every follow-up question
-- the page does not show a fuzzy score or hiring percentage
+- [Site architecture](docs/SITE_ARCHITECTURE.md)
+- [Customizing the portfolio](docs/CUSTOMIZING.md)
+- [Design system](DESIGN_SYSTEM.md)
+- [Recruiter review architecture](docs/RECRUITER_ASSISTANT_WORKFLOW.md)
+- [Recruiter Worker reference](workers/recruiter-match/README.md)
 
-Worker commands:
+## Contributing
 
-```bash
-npm run worker:dev
-npm run worker:deploy
-```
-
-Primary implementation files:
-
-- `src/pages/recruiter/start.astro`
-- `src/pages/recruiter/index.astro`
-- `public/recruiter-state-bridge.js`
-- `workers/recruiter-match/src/index-v2.ts`
-- `workers/recruiter-match/wrangler.toml`
-
-Repository validation:
-
-```bash
-npm run validate:recruiter
-```
-
-GitHub Actions also runs `.github/workflows/validate.yml`, which validates the UI contract, compiles the Worker with a Wrangler dry run, builds the production site, and verifies the generated recruiter pages.
-
-After deploying the Worker, set this GitHub Actions repository variable so the static site knows where to send recruiter requests:
-
-```text
-PUBLIC_RECRUITER_MATCH_API=https://burton-recruiter-match.burtonmakes.workers.dev
-```
-
-Without `PUBLIC_RECRUITER_MATCH_API`, the recruiter pages still render but analysis and chat report that the endpoint is not configured.
+Issues and pull requests are useful when they improve accessibility, documentation, reliability, or reusable portfolio patterns. Changes to Alex's biography, work history, metrics, or project claims need supporting public evidence and remain specific to this portfolio rather than becoming generic template content.

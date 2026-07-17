@@ -1,10 +1,22 @@
-# Portfolio Design System
+# Burton Makes design system
 
-Canonical direction: **darker lab interface + electric blue system identity + signal coral actions**.
+Burton Makes uses a dark, laboratory-inspired interface to frame technical work without competing with it. The near-black background creates depth, blue and cyan identify system information, and a restrained amber-to-coral treatment makes primary actions easy to find.
 
-This repo’s visual language should stay dark, technical, calm, and readable. Keep the page near-black, keep cards and panels nearly solid, and keep the background effects visible. The goal is a darker palette, not hidden motion or flatter composition.
+`DESIGN_SYSTEM_VISUAL.html` is a standalone preview of the core palette, cards, panels, tags, and primary action.
 
-## Canonical tokens
+## Visual principles
+
+| Principle | How it appears in the site | Reason |
+| --- | --- | --- |
+| Technical, not sterile | Fine grid, particles, network points, and precise labels | Suggests systems thinking while preserving a human portfolio voice. |
+| Dark with readable contrast | Near-black page, nearly opaque panels, bright body copy | Keeps long case studies comfortable to scan. |
+| Evidence has hierarchy | Large outcomes, compact metadata, grouped proof cards | Lets visitors move from a claim to supporting detail. |
+| Warm actions are rare | Amber and coral appear on the main call to action or selected state | Makes an action visible without turning the whole interface orange. |
+| Motion explains structure | Reveals, transitions, and 3D component highlights | Adds context to relationships rather than decorating every element. |
+
+## Core color tokens
+
+The shared values are defined in `src/styles/global.css` and reinforced by `src/layouts/BaseLayout.astro`.
 
 ```css
 :root {
@@ -12,15 +24,11 @@ This repo’s visual language should stay dark, technical, calm, and readable. K
   --bg-2: #010102;
   --surface-window: rgba(1, 5, 10, 0.999);
   --surface-window-strong: rgba(3, 9, 16, 0.999);
-  --panel: var(--surface-window);
-  --panel-strong: var(--surface-window-strong);
-  --panel-soft: var(--surface-window);
   --text: #f6faff;
   --muted: #a9bcd7;
   --muted-2: #e6eef8;
   --line: rgba(255, 255, 255, 0.16);
   --line-soft: rgba(255, 255, 255, 0.10);
-  --line-strong: rgba(76, 141, 255, 0.28);
   --accent: #4c8dff;
   --accent-2: #6fd3ff;
   --cta-1: #e2b869;
@@ -30,9 +38,18 @@ This repo’s visual language should stay dark, technical, calm, and readable. K
 }
 ```
 
-## Background
+### Color roles
 
-Use the same darker background system everywhere:
+- `--text` carries headings and high-priority labels.
+- `--muted-2` carries normal body copy.
+- `--muted` carries metadata, inactive navigation, and supporting labels.
+- `--accent` and `--accent-2` mark technical relationships and interactive focus.
+- `--cta-1` and `--cta-2` identify the primary action or emphasized state.
+- `--line` and `--line-soft` separate surfaces without creating bright boxes.
+
+## Background and depth
+
+The page background combines three restrained radial glows with a black vertical gradient:
 
 ```css
 body {
@@ -44,23 +61,44 @@ body {
 }
 ```
 
-Do not lower the opacity of `body::before`, `.mesh-canvas`, `.particle-canvas`, `.spotlight`, or `body::after` when darkening the site.
+Four layers create the sense of depth:
+
+1. the base gradient;
+2. the fixed grid and vignette in global CSS;
+3. the Three.js particle and network canvas from `BackgroundEffects.jsx`;
+4. the pointer-following spotlight on fine-pointer devices.
+
+Cards remain almost opaque so these background layers are visible around content rather than through paragraphs.
 
 ## Surfaces
 
-- Use `--surface-window` for default card and panel surfaces.
-- Use `--surface-window-strong` for hover or active emphasis.
-- Keep grid wrappers transparent. Do not place one large background behind an entire card grid.
+Default cards and panels use `--surface-window`. Hovered or selected surfaces use `--surface-window-strong`. Grid containers stay transparent, which allows each card to read as an individual piece of evidence instead of one large dashboard slab.
 
-## Text
+The main surface families include:
 
-- Use `--text` for headings and primary labels.
-- Use `--muted-2` for body copy.
-- Use `--muted` for small labels, metadata, and inactive navigation.
+- navigation and interface shells;
+- capability, work, and project cards;
+- metric and evidence tiles;
+- dialogs and recruiter panels;
+- contact and hobby cards.
 
-## Buttons
+Feature pages can introduce new layouts while retaining the same contrast, border, spacing, and action hierarchy.
 
-Primary actions use the amber-to-signal-coral gradient:
+## Typography
+
+The portfolio uses Geist with a system-font fallback. Large headings use tight line height and tracking, while body text keeps a wider line height for technical descriptions. Eyebrows and metadata use smaller type, stronger weight, and increased letter spacing to distinguish structure from narrative content.
+
+The visual hierarchy is:
+
+1. page or case-study title;
+2. section heading;
+3. card title or outcome;
+4. body explanation;
+5. metadata, tags, and evidence labels.
+
+## Buttons and links
+
+The primary action uses the warm gradient:
 
 ```css
 .button-primary {
@@ -70,17 +108,43 @@ Primary actions use the amber-to-signal-coral gradient:
 }
 ```
 
-Use that gradient sparingly so it stays a CTA treatment, not a general background system.
+Secondary, tertiary, and text links rely on borders, cool accents, or plain text. This keeps the warm treatment meaningful. Entire work and project cards are links when the full card represents one destination; tags describe the item and are not separate navigation targets.
 
-## Final checklist
+## Motion and interaction
 
-Before merging a visual change, confirm:
+`GlobalEffects.jsx` supplies short reveal motion, counters, navigation behavior, and page-transition support. `BackgroundEffects.jsx` supplies ambient motion and pointer response. The Cocometric route uses scroll position to explain the spatial relationship between hardware layers.
 
-- darker page and glow colors
-- original grid, network, particle, and mouse-follower visibility
-- nearly solid card and panel surfaces
-- no large grid backplates behind cards
-- electric blue and light cyan for technical accents
-- amber and coral for primary actions and highlighted data
-- bright readable body copy
-- Geist typography
+Motion follows three rules:
+
+- it communicates entry, focus, or spatial relationship;
+- it does not delay access to content;
+- reduced-motion preferences receive a quieter experience.
+
+## Responsive behavior
+
+The main layout moves from multi-column grids to one-column reading order as space narrows. Navigation changes to a menu button, controls remain large enough for touch, and the background scene reduces its particle and node counts on smaller screens.
+
+The Cocometric page has separate desktop and mobile styles because its camera framing, fixed copy, stage controls, and final service section depend on viewport geometry.
+
+## Accessibility considerations
+
+- A skip link reaches the main content.
+- Navigation and interactive controls use visible text or accessible labels.
+- Active and expanded states are reflected through ARIA attributes where appropriate.
+- Body text uses the brighter muted token rather than low-contrast gray.
+- Content remains in the document even when animation or WebGL is unavailable.
+- Motion code checks `prefers-reduced-motion`.
+
+## Applying the system to a new component
+
+A new component normally begins with an existing layout primitive from `global.css`, an opaque surface, a single-pixel line, and the established text hierarchy. Cool accents describe technical state; the warm gradient is reserved for the most important action.
+
+Before merging a visual change, review:
+
+- text contrast at normal and hover states;
+- keyboard focus and control labels;
+- mobile reading order and touch targets;
+- reduced-motion behavior;
+- consistency with existing card radius, border, and spacing;
+- whether the background remains visible around, rather than through, content;
+- whether the primary action is still visually unique.
