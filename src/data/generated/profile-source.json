@@ -107,19 +107,18 @@
       "id": "eunil-research-tech",
       "title": "Research Technician",
       "company": "EUNIL / University of Arizona",
-      "dates": "Jan 2016 – Dec 2019",
-      "context": "Research role centered on early biomedical sensing hardware, non-invasive recording, low-noise acquisition, signal processing, experimental phantoms, and optical/microfluidic sensing work.",
-      "summary": "Built early sensing and signal-quality workflows across low-noise hardware, EMI control, phantoms, DSP, wavelets, and optical/microfluidic analysis.",
+      "dates": "Jan 2016 – Oct 2019",
+      "context": "Research role focused on non-invasive neural recording, acoustoelectric current-density imaging, low-noise acquisition, analog front-end optimization, experimental phantoms, and signal processing.",
+      "summary": "Designed and debugged low-noise neural-recording hardware, 4D acoustoelectric imaging instrumentation, phantoms, and DSP workflows for current-density detection.",
       "responsibilities": [
-        "Designed and optimized non-invasive biomedical recording hardware and algorithms.",
-        "Improved signal quality through amplifier optimization, EMI control, DSP, and wavelet-based processing.",
-        "Built phantoms and experimental tools for sensing and recording studies.",
-        "Supported ultrasound/acoustoelectric sensing and current-density detection workflows.",
-        "Developed optical/microfluidic nanoparticle analysis using fluorescence microscopy and Brownian-motion tracking."
+        "Designed and debugged low-noise neural-recording hardware, amplifiers, interconnects, and bench instrumentation.",
+        "Simulated electrode current densities and supported 4D acoustoelectric imaging workflows.",
+        "Built tissue-equivalent phantoms and controlled experimental setups for sensing and recording studies.",
+        "Improved signal fidelity through circuit optimization, grounding, shielding, EMI control, DSP, wavelet processing, and MATLAB analysis."
       ],
       "accomplishments": [
-        "Built early biomedical sensing workflows spanning low-noise acquisition, amplifier optimization, EMI control, DSP, wavelet-based processing, and experimental phantom development.",
-        "Developed a low-cost optical/microfluidic nanoparticle analyzer with about $4,500 prototype cost and below 1.9% size error across 50 nm to 1 µm particles."
+        "Built and optimized front-end hardware, phantoms, and signal-processing workflows for 4D acoustoelectric current-density imaging.",
+        "Presented the non-invasive neural-recording work at BMES 2017 and IEEE IUS 2018."
       ],
       "skills": [
         "Low-noise acquisition",
@@ -128,8 +127,9 @@
         "EMI control",
         "DSP / wavelets",
         "Experimental phantoms",
-        "Microfluidics",
-        "Optical sensing"
+        "Acoustoelectric imaging",
+        "Ultrasound",
+        "MATLAB"
       ]
     },
     {
@@ -540,30 +540,30 @@
     },
     {
       "slug": "early-biomedical-sensing-hardware",
-      "title": "Early Biomedical Sensing Hardware",
+      "title": "Non-Invasive Neural Recording Hardware",
       "section": "Biomedical sensing",
       "type": "research hardware",
       "status": "completed",
       "timeline": "2016–2019",
-      "summary": "EUNIL work across low-noise biomedical acquisition, amplifier optimization, EMI control, DSP/wavelets, phantoms, and a <$5-per-chamber nanoparticle analyzer.",
+      "summary": "EUNIL research across low-noise neural recording, 4D acoustoelectric current-density imaging, analog front-end optimization, EMI control, DSP/wavelets, and experimental phantoms.",
       "skills": [
         "Low-noise acquisition",
         "DSP",
-        "Optical sensing",
-        "Microfluidics"
+        "Acoustoelectric imaging",
+        "Experimental phantoms"
       ],
       "labels": [
         "Sensing",
         "Low-noise hardware",
         "DSP",
-        "Microfluidics"
+        "Neural recording"
       ],
       "links": [],
-      "why": "Early biomedical sensing projects needed reliable low-noise acquisition, artifact control, experimental phantoms, and low-cost sensing approaches.",
-      "built": "Non-invasive recording workflows, amplifier/noise-control methods, DSP and wavelet processing, phantoms, and optical/microfluidic nanoparticle-analysis methods.",
-      "worked": "The strongest evidence was practical signal-quality improvement through hardware setup, EMI control, processing, and controlled experimental tools.",
-      "failed": "Early sensing work was sensitive to noise, coupling, phantom setup, and analysis assumptions, so hardware and DSP had to be debugged together.",
-      "learned": "Good physiological sensing starts with low-noise acquisition and testable experimental setups before advanced analysis.",
+      "why": "Non-invasive current-density imaging required detecting weak acoustoelectric signals through low-noise hardware, controlled phantoms, and synchronized signal processing.",
+      "built": "Low-noise amplifiers and interconnects, 4D acoustoelectric imaging instrumentation, tissue-equivalent phantoms, current-density simulations, and MATLAB/DSP analysis workflows.",
+      "worked": "Signal fidelity improved when circuit optimization, grounding, shielding, EMI control, phantom design, and processing were treated as one measurement system.",
+      "failed": "Weak acoustoelectric signals were sensitive to electrical noise, coupling, interconnects, phantom setup, and processing assumptions, so hardware and analysis had to be debugged together.",
+      "learned": "Reliable neural sensing starts with low-noise acquisition and controlled experimental setups before advanced signal interpretation.",
       "stack": [
         "Analog sensing",
         "Low-noise amplifiers",
@@ -571,16 +571,60 @@
         "DSP",
         "Wavelets",
         "Phantoms",
-        "Fluorescence microscopy"
+        "MATLAB",
+        "Acoustoelectric imaging"
       ],
-      "nextSteps": "Use this page as supporting evidence for long-term biomedical sensing and signal-quality depth.",
+      "nextSteps": "Use this page as supporting evidence for non-invasive neural recording, low-noise instrumentation, and signal-quality depth.",
       "parentExperienceId": "eunil-research-tech",
       "visibility": "public-approved",
       "facts": [
         "EUNIL research role: Jan 2016 – Oct 2019.",
-        "Work covered non-invasive recording, analog sensor work, low-noise amplifiers, amplifier optimization, EMI control, DSP, wavelets, and experimental phantoms.",
-        "Nanoparticle analyzer: approximately $4,500 prototype cost, below $5 chamber cost, and below 1.9% size error across 50 nm to 1 µm particles.",
-        "Analyzer method: fluorescence microscopy with Brownian-motion tracking."
+        "Work covered non-invasive neural recording, current-density simulation, low-noise amplifiers, amplifier optimization, EMI control, DSP, wavelets, and experimental phantoms.",
+        "Built and optimized front-end hardware and experimental workflows for 4D acoustoelectric current-density imaging.",
+        "Presented the work at BMES 2017 and IEEE IUS 2018."
+      ]
+    },
+    {
+      "slug": "low-cost-nanoparticle-analyzer-capstone",
+      "title": "Low-Cost Nanoparticle Analyzer Capstone",
+      "section": "Capstone engineering",
+      "type": "undergraduate capstone",
+      "status": "completed",
+      "timeline": "2016–2017",
+      "summary": "Biomedical engineering capstone combining fluorescence microscopy, microfluidics, and Brownian-motion tracking in a ~$4,500 prototype with <$5 chambers and <1.9% sizing error across 50 nm to 1 µm particles.",
+      "skills": [
+        "Fluorescence microscopy",
+        "Microfluidics",
+        "Brownian-motion tracking",
+        "System validation"
+      ],
+      "labels": [
+        "Capstone",
+        "Optical sensing",
+        "Microfluidics",
+        "Biomedical engineering"
+      ],
+      "links": [],
+      "why": "The capstone explored a lower-cost approach to nanoparticle sizing by combining inexpensive microfluidic chambers with optical tracking and analysis.",
+      "built": "A fluorescence-microscopy and microfluidic measurement system with disposable chambers, image acquisition, Brownian-motion tracking, calibration, and prototype validation.",
+      "worked": "Integrating the optical setup, chamber design, tracking workflow, and calibration produced sizing error below 1.9% across 50 nm to 1 µm particles.",
+      "failed": "Measurement quality was sensitive to illumination, chamber consistency, particle tracking, and analysis assumptions, requiring iteration across optics, microfluidics, and software.",
+      "learned": "The measurement only became reliable when optics, chamber fabrication, calibration, and particle-tracking analysis were engineered as one system.",
+      "stack": [
+        "Fluorescence microscopy",
+        "Microfluidic chambers",
+        "Brownian-motion tracking",
+        "Image analysis",
+        "Calibration",
+        "PDR / CDR"
+      ],
+      "nextSteps": "Use this page as standalone undergraduate capstone evidence rather than attributing it to an employment role.",
+      "visibility": "public-approved",
+      "facts": [
+        "Undergraduate biomedical engineering capstone completed in 2016–2017.",
+        "Prototype cost: approximately $4,500, with disposable chamber cost below $5 each.",
+        "Sizing error: below 1.9% across particles from 50 nm to 1 µm.",
+        "Method: fluorescence microscopy with Brownian-motion tracking in microfluidic chambers."
       ]
     },
     {
