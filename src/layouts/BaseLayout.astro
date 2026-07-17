@@ -28,7 +28,6 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
     <ClientRouter />
     <script is:inline src="/recruiter-response-guard.js"></script>
     <script is:inline src="/recruiter-state-bridge.js"></script>
-    <script is:inline src="/archive-mode.js"></script>
   </head>
 
   <body>
@@ -36,11 +35,6 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
     <div class="site-backdrop" aria-hidden="true"></div>
     <GlobalEffects client:load />
     <a class="skip-link" href="#main">Skip to content</a>
-
-    <aside class="archive-banner" aria-label="Archive status">
-      <strong>Archived public reference.</strong>
-      <span>This site is no longer actively maintained. Interactive services remain visible for reference but are no longer available.</span>
-    </aside>
 
     <header class="site-header">
       <nav class="nav-shell" aria-label="Primary navigation">
@@ -134,25 +128,6 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
           radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
           radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
           linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg)) !important;
-      }
-
-      .archive-banner {
-        position: relative;
-        z-index: 80;
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0.65rem 1rem;
-        border-bottom: 1px solid rgba(226, 184, 105, 0.42);
-        background: rgba(18, 13, 7, 0.98);
-        color: #f6faff;
-        font-size: 0.8rem;
-        text-align: center;
-      }
-
-      .archive-banner strong {
-        color: #e2b869;
       }
 
       :is(
