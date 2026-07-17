@@ -227,6 +227,49 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
         background: transparent !important;
         box-shadow: none !important;
       }
+
+      .site-header {
+        padding: 0;
+        border-bottom: 1px solid var(--line-soft);
+        background: rgba(0, 3, 7, 0.88);
+        backdrop-filter: blur(18px) saturate(120%);
+        -webkit-backdrop-filter: blur(18px) saturate(120%);
+      }
+
+      .nav-shell {
+        min-height: 76px;
+        padding: 0 40px;
+        border: 0 !important;
+        border-radius: 0;
+        background: transparent !important;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+
+      .brand-mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        box-shadow: none;
+      }
+
+      .brand-site {
+        font-size: 1.05rem;
+        font-weight: 750;
+      }
+
+      @media (max-width: 760px) {
+        .nav-shell {
+          min-height: 68px;
+          padding: 0 20px;
+        }
+
+        .brand-mark {
+          width: 38px;
+          height: 38px;
+        }
+      }
     </style>
   </body>
 </html>
