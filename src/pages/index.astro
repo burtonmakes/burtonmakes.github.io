@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { featuredWork } from "../data/site";
 import "../styles/global.css";
 
 const pageTitle = "Alex Burton | Biomedical Systems Engineer";
@@ -106,6 +107,32 @@ const originStory = [
       ))}
     </div>
   </section>
+
+  <section class="section selected-work-section">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Selected work</p>
+      <h2>Engineering work and projects.</h2>
+    </div>
+
+    <div class="selected-work-list">
+      {featuredWork.map((item, index) => (
+        <a class="selected-work-item reveal" href={item.href}>
+          <span class="selected-work-number">{String(index + 1).padStart(2, "0")}</span>
+          <div class="selected-work-heading">
+            <p>{item.eyebrow}</p>
+            <h3>{item.title}</h3>
+          </div>
+          <p class="selected-work-description">{item.description}</p>
+          <span class="selected-work-arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="selected-work-actions reveal">
+      <a class="button button-secondary" href="/work/">View all work</a>
+      <a class="button button-tertiary" href="/projects/">View all projects</a>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
@@ -192,23 +219,27 @@ const originStory = [
   }
 
   :global(.capabilities-section),
-  :global(.origin-section) {
+  :global(.origin-section),
+  :global(.selected-work-section) {
     padding-top: clamp(72px, 8vw, 112px);
     padding-bottom: clamp(72px, 8vw, 112px);
   }
 
   :global(.capabilities-section .section-heading),
-  :global(.origin-section .section-heading) {
+  :global(.origin-section .section-heading),
+  :global(.selected-work-section .section-heading) {
     margin-bottom: clamp(32px, 4vw, 52px);
   }
 
   :global(.capabilities-section .eyebrow),
-  :global(.origin-section .eyebrow) {
+  :global(.origin-section .eyebrow),
+  :global(.selected-work-section .eyebrow) {
     margin-bottom: 16px;
   }
 
   :global(.capabilities-section h2),
-  :global(.origin-section h2) {
+  :global(.origin-section h2),
+  :global(.selected-work-section h2) {
     max-width: 17ch;
     font-size: clamp(2.25rem, 3.05vw, 3.55rem);
     line-height: 1.04;
@@ -253,7 +284,8 @@ const originStory = [
     line-height: 1.55;
   }
 
-  :global(.origin-timeline) {
+  :global(.origin-timeline),
+  :global(.selected-work-list) {
     border-top: 1px solid var(--line);
   }
 
@@ -296,6 +328,65 @@ const originStory = [
     line-height: 1.62;
   }
 
+  :global(.selected-work-item) {
+    display: grid;
+    grid-template-columns: 72px minmax(230px, 0.58fr) minmax(0, 1fr) 28px;
+    gap: clamp(24px, 4vw, 64px);
+    align-items: start;
+    padding: clamp(28px, 3.5vw, 46px) 0;
+    border-bottom: 1px solid var(--line);
+    transition: background 180ms ease, padding 180ms ease;
+  }
+
+  :global(.selected-work-item:hover) {
+    padding-right: 18px;
+    padding-left: 18px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  :global(.selected-work-number),
+  :global(.selected-work-arrow) {
+    color: var(--accent-2);
+    font-size: 0.9rem;
+    line-height: 1;
+  }
+
+  :global(.selected-work-heading p) {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  :global(.selected-work-heading h3) {
+    max-width: 22ch;
+    margin: 0;
+    font-size: clamp(1.35rem, 1.75vw, 1.85rem);
+    line-height: 1.12;
+  }
+
+  :global(.selected-work-description) {
+    max-width: 66ch;
+    margin: 0;
+    color: #d6e3f2;
+    font-size: clamp(0.98rem, 1.08vw, 1.08rem);
+    line-height: 1.62;
+  }
+
+  :global(.selected-work-arrow) {
+    justify-self: end;
+    font-size: 1.15rem;
+  }
+
+  :global(.selected-work-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
   @media (max-width: 1050px) {
     :global(.capabilities-flow) {
       grid-template-columns: 1fr;
@@ -304,6 +395,17 @@ const originStory = [
     :global(.capability-flow-item + .capability-flow-item) {
       border-top: 1px solid var(--line);
       border-left: 0;
+    }
+  }
+
+  @media (max-width: 900px) {
+    :global(.selected-work-item) {
+      grid-template-columns: 52px minmax(0, 1fr) 24px;
+      gap: 20px;
+    }
+
+    :global(.selected-work-description) {
+      grid-column: 2 / 4;
     }
   }
 
@@ -335,7 +437,8 @@ const originStory = [
     }
 
     :global(.capabilities-section h2),
-    :global(.origin-section h2) {
+    :global(.origin-section h2),
+    :global(.selected-work-section h2) {
       max-width: none;
     }
 
@@ -346,13 +449,19 @@ const originStory = [
   }
 
   @media (max-width: 540px) {
-    :global(.origin-step) {
+    :global(.origin-step),
+    :global(.selected-work-item) {
       grid-template-columns: 1fr;
       gap: 16px;
     }
 
-    :global(.origin-step-body) {
+    :global(.origin-step-body),
+    :global(.selected-work-description) {
       grid-column: 1;
+    }
+
+    :global(.selected-work-arrow) {
+      display: none;
     }
   }
 </style>
