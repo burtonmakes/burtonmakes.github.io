@@ -105,28 +105,37 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
     <style is:global>
       :root {
         --bg: #000000;
-        --bg-2: #010102;
-        --surface-window: rgba(1, 5, 10, 0.999);
-        --surface-window-strong: rgba(3, 9, 16, 0.999);
+        --bg-2: #010203;
+        --surface-window: rgba(1, 7, 11, 0.999);
+        --surface-window-strong: rgba(3, 13, 19, 0.999);
         --surface-window-line: rgba(255, 255, 255, 0.16);
         --surface-window-line-soft: rgba(255, 255, 255, 0.1);
         --panel: var(--surface-window);
         --panel-strong: var(--surface-window-strong);
         --panel-soft: var(--surface-window);
         --text: #f6faff;
-        --muted: #a9bcd7;
-        --muted-2: #e6eef8;
+        --muted: #9fb5c4;
+        --muted-2: #e8f0f5;
         --line: var(--surface-window-line);
         --line-soft: var(--surface-window-line-soft);
-        --blue-glow: rgba(32, 64, 120, 0.27);
-        --coral-glow: rgba(92, 40, 28, 0.22);
+        --accent: #54d3bd;
+        --accent-2: #85ead8;
+        --cta-1: #f0b35b;
+        --cta-2: #f06b43;
+        --graph-blue: var(--accent);
+        --graph-cyan: var(--accent-2);
+        --graph-cyan-soft: #b7f4e8;
+        --graph-amber: var(--cta-1);
+        --graph-coral: var(--cta-2);
+        --blue-glow: rgba(28, 105, 92, 0.25);
+        --coral-glow: rgba(112, 47, 30, 0.22);
       }
 
       body {
         background:
-          radial-gradient(circle at 18% 12%, rgba(32, 64, 120, 0.27), transparent 28%),
-          radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
-          radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
+          radial-gradient(circle at 18% 12%, rgba(28, 105, 92, 0.25), transparent 28%),
+          radial-gradient(circle at 82% 24%, rgba(51, 112, 105, 0.18), transparent 30%),
+          radial-gradient(circle at 76% 82%, rgba(112, 47, 30, 0.12), transparent 24%),
           linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg)) !important;
       }
 
@@ -231,7 +240,7 @@ const pageTitle = title === siteMeta.siteTitle ? title : `${title} | ${siteMeta.
       .site-header {
         padding: 0;
         border-bottom: 1px solid var(--line-soft);
-        background: rgba(0, 3, 7, 0.88);
+        background: rgba(0, 5, 8, 0.88);
         backdrop-filter: blur(18px) saturate(120%);
         -webkit-backdrop-filter: blur(18px) saturate(120%);
       }
