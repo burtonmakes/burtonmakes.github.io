@@ -1,5 +1,5 @@
 name = "burton-recruiter-match"
-main = "src/index.ts"
+main = "src/index-router.ts"
 compatibility_date = "2026-07-10"
 
 [ai]
@@ -21,9 +21,12 @@ new_sqlite_classes = ["RateLimiter"]
 ALLOWED_ORIGINS = "https://burtonmakes.github.io,https://cocometric.com,https://www.cocometric.com,http://localhost:4321,http://127.0.0.1:4321,http://localhost:4322,http://127.0.0.1:4322,http://localhost:4323,http://127.0.0.1:4323,http://localhost:4324,http://127.0.0.1:4324"
 GENERATION_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8"
 JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"
+ROUTER_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"
 AI_SEARCH_INSTANCE = "burton-portfolio"
-QUOTA_NAMESPACE = "2026-07-14-counter-reset-02"
+QUOTA_NAMESPACE = "2026-07-18-home-router-01"
 PER_CLIENT_ANALYSIS_LIMIT = "10"
 GLOBAL_ANALYSIS_LIMIT = "100"
 PER_CLIENT_CHAT_LIMIT = "5"
 GLOBAL_CHAT_LIMIT = "50"
+PER_CLIENT_ROUTE_LIMIT = "10"
+GLOBAL_ROUTE_LIMIT = "100"
