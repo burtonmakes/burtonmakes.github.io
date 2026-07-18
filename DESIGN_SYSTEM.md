@@ -1,6 +1,6 @@
 # Burton Makes design system
 
-Burton Makes uses a dark, laboratory-inspired interface to frame technical work without competing with it. The near-black background creates depth, blue and cyan identify system information, and a restrained amber-to-coral treatment makes primary actions easy to find.
+Burton Makes uses a dark, laboratory-inspired interface to frame technical work without competing with it. The near-black background creates depth, teal and mint identify system information, and a restrained amber-to-coral treatment makes primary actions easy to find.
 
 `DESIGN_SYSTEM_VISUAL.html` is a standalone preview of the core palette, cards, panels, tags, and primary action.
 
@@ -12,29 +12,31 @@ Burton Makes uses a dark, laboratory-inspired interface to frame technical work 
 | Dark with readable contrast | Near-black page, nearly opaque panels, bright body copy | Keeps long case studies comfortable to scan. |
 | Evidence has hierarchy | Large outcomes, compact metadata, grouped proof cards | Lets visitors move from a claim to supporting detail. |
 | Warm actions are rare | Amber and coral appear on the main call to action or selected state | Makes an action visible without turning the whole interface orange. |
+| Cool state is consistent | Teal and mint identify system status, focus, and technical relationships | Creates a recognizable interface language across the router and evidence pages. |
 | Motion explains structure | Reveals, transitions, and 3D component highlights | Adds context to relationships rather than decorating every element. |
+| Entry pages stay minimal | The homepage exposes one CLI and one hidden direct-navigation control | Lets visitors choose their path without reading a conventional landing page. |
 
 ## Core color tokens
 
-The shared values are defined in `src/styles/global.css` and reinforced by `src/layouts/BaseLayout.astro`.
+The shared values are reinforced by `src/layouts/BaseLayout.astro`. Feature pages may define the same values locally when they do not use the shared layout.
 
 ```css
 :root {
   --bg: #000000;
-  --bg-2: #010102;
-  --surface-window: rgba(1, 5, 10, 0.999);
-  --surface-window-strong: rgba(3, 9, 16, 0.999);
+  --bg-2: #010203;
+  --surface-window: rgba(1, 7, 11, 0.999);
+  --surface-window-strong: rgba(3, 13, 19, 0.999);
   --text: #f6faff;
-  --muted: #a9bcd7;
-  --muted-2: #e6eef8;
+  --muted: #9fb5c4;
+  --muted-2: #e8f0f5;
   --line: rgba(255, 255, 255, 0.16);
   --line-soft: rgba(255, 255, 255, 0.10);
-  --accent: #4c8dff;
-  --accent-2: #6fd3ff;
-  --cta-1: #e2b869;
-  --cta-2: #e86f4e;
-  --blue-glow: rgba(32, 64, 120, 0.27);
-  --coral-glow: rgba(92, 40, 28, 0.22);
+  --accent: #54d3bd;
+  --accent-2: #85ead8;
+  --cta-1: #f0b35b;
+  --cta-2: #f06b43;
+  --blue-glow: rgba(28, 105, 92, 0.25);
+  --coral-glow: rgba(112, 47, 30, 0.22);
 }
 ```
 
@@ -43,7 +45,7 @@ The shared values are defined in `src/styles/global.css` and reinforced by `src/
 - `--text` carries headings and high-priority labels.
 - `--muted-2` carries normal body copy.
 - `--muted` carries metadata, inactive navigation, and supporting labels.
-- `--accent` and `--accent-2` mark technical relationships and interactive focus.
+- `--accent` and `--accent-2` mark technical relationships, online state, and interactive focus.
 - `--cta-1` and `--cta-2` identify the primary action or emphasized state.
 - `--line` and `--line-soft` separate surfaces without creating bright boxes.
 
@@ -54,9 +56,9 @@ The page background combines three restrained radial glows with a black vertical
 ```css
 body {
   background:
-    radial-gradient(circle at 18% 12%, rgba(32, 64, 120, 0.27), transparent 28%),
-    radial-gradient(circle at 82% 24%, rgba(38, 85, 112, 0.22), transparent 30%),
-    radial-gradient(circle at 76% 82%, rgba(92, 40, 28, 0.12), transparent 24%),
+    radial-gradient(circle at 18% 12%, rgba(28, 105, 92, 0.25), transparent 28%),
+    radial-gradient(circle at 82% 24%, rgba(51, 112, 105, 0.18), transparent 30%),
+    radial-gradient(circle at 76% 82%, rgba(112, 47, 30, 0.12), transparent 24%),
     linear-gradient(180deg, var(--bg), var(--bg-2) 45%, var(--bg));
 }
 ```
@@ -86,7 +88,7 @@ Feature pages can introduce new layouts while retaining the same contrast, borde
 
 ## Typography
 
-The portfolio uses Geist with a system-font fallback. Large headings use tight line height and tracking, while body text keeps a wider line height for technical descriptions. Eyebrows and metadata use smaller type, stronger weight, and increased letter spacing to distinguish structure from narrative content.
+The portfolio uses Geist with a system-font fallback. Large headings use tight line height and tracking, while body text keeps a wider line height for technical descriptions. Eyebrows and metadata use smaller type, stronger weight, and increased letter spacing to distinguish structure from narrative content. CLI and system-state text use the native monospace stack rather than loading another font.
 
 The visual hierarchy is:
 
@@ -110,19 +112,37 @@ The primary action uses the warm gradient:
 
 Secondary, tertiary, and text links rely on borders, cool accents, or plain text. This keeps the warm treatment meaningful. Entire work and project cards are links when the full card represents one destination; tags describe the item and are not separate navigation targets.
 
+The homepage Direct path menu is an exception built for fast routing: the active destination uses coral on the left, while its concise explanation uses a dark teal surface on the right.
+
+## Homepage router
+
+The production homepage is a single-purpose routing surface:
+
+- the logo and current location sit in the upper-left;
+- only `Direct path` is visible in the upper-right;
+- the center contains one short heading and one CLI;
+- known commands route locally without an AI request;
+- ambiguous natural language is limited to 320 characters and sent to a small classifier;
+- classifier output is limited to one route and one short sentence;
+- the previous long-form homepage remains available at `/deprecated-home/`.
+
+The router should not become a general chatbot. Its purpose is to identify the closest site destination and move the visitor there with minimal copy and minimal token use.
+
 ## Motion and interaction
 
-`GlobalEffects.jsx` supplies short reveal motion, counters, navigation behavior, and page-transition support. `BackgroundEffects.jsx` supplies ambient motion and pointer response. The Cocometric route uses scroll position to explain the spatial relationship between hardware layers.
+`GlobalEffects.jsx` supplies short reveal motion, counters, navigation behavior, and page-transition support. `BackgroundEffects.jsx` supplies ambient motion and pointer response. The Cocometric route uses scroll position to explain the spatial relationship between hardware layers. The homepage boot sequence can be skipped immediately and is removed for reduced-motion preferences.
 
 Motion follows three rules:
 
 - it communicates entry, focus, or spatial relationship;
-- it does not delay access to content;
+- it does not block access when a visitor chooses to skip it;
 - reduced-motion preferences receive a quieter experience.
 
 ## Responsive behavior
 
 The main layout moves from multi-column grids to one-column reading order as space narrows. Navigation changes to a menu button, controls remain large enough for touch, and the background scene reduces its particle and node counts on smaller screens.
+
+The homepage Direct path panel moves from a split menu-and-summary layout to a stacked touch layout. The CLI remains the primary interaction and its input grows vertically on phone screens.
 
 The Cocometric page has separate desktop and mobile styles because its camera framing, fixed copy, stage controls, and final service section depend on viewport geometry.
 
@@ -134,6 +154,7 @@ The Cocometric page has separate desktop and mobile styles because its camera fr
 - Body text uses the brighter muted token rather than low-contrast gray.
 - Content remains in the document even when animation or WebGL is unavailable.
 - Motion code checks `prefers-reduced-motion`.
+- The homepage routes remain normal links even when the classifier is unavailable.
 
 ## Applying the system to a new component
 
@@ -147,4 +168,5 @@ Before merging a visual change, review:
 - reduced-motion behavior;
 - consistency with existing card radius, border, and spacing;
 - whether the background remains visible around, rather than through, content;
-- whether the primary action is still visually unique.
+- whether the primary action is still visually unique;
+- whether visible text is necessary for the visitor's current decision.
