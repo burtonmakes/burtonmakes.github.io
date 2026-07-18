@@ -1,0 +1,49 @@
+name: Deploy recruiter and router Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "workers/recruiter-match/**"
+      - "scripts/deploy-recruiter-worker.mjs"
+      - ".github/workflows/deploy-worker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recruiter-router-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate Worker contract
+        run: npm run validate:recruiter
+
+      - name: Compile Worker
+        run: npx wrangler deploy --dry-run --config workers/recruiter-match/wrangler.toml
+
+      - name: Deploy Worker when Cloudflare credentials are configured
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::warning::Cloudflare Worker deployment skipped because CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID is not configured."
+            exit 0
+          fi
+          npm run worker:deploy
