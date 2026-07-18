@@ -25,9 +25,12 @@ const forbidText = (content, path, values) => {
   });
 };
 
+const routerHomePath = "src/pages/index.astro";
+const deprecatedHomePath = "src/pages/deprecated-home.astro";
 const recruiterPagePath = "src/pages/recruiter/index.astro";
 const recruiterStartPath = "src/pages/recruiter/start.astro";
 const workerEntryPath = "workers/recruiter-match/src/index.ts";
+const workerRouterPath = "workers/recruiter-match/src/index-router.ts";
 const workerCorePath = "workers/recruiter-match/src/index-v2.ts";
 const wranglerPath = "workers/recruiter-match/wrangler.toml";
 const stateBridgePath = "public/recruiter-state-bridge.js";
@@ -36,9 +39,12 @@ const baseLayoutPath = "src/layouts/BaseLayout.astro";
 const workflowDocPath = "docs/RECRUITER_ASSISTANT_WORKFLOW.md";
 const workerDeployScriptPath = "scripts/deploy-recruiter-worker.mjs";
 
+const routerHome = read(routerHomePath);
+const deprecatedHome = read(deprecatedHomePath);
 const recruiterPage = read(recruiterPagePath);
 const recruiterStart = read(recruiterStartPath);
 const workerEntry = read(workerEntryPath);
+const workerRouter = read(workerRouterPath);
 const workerCore = read(workerCorePath);
 const wrangler = read(wranglerPath);
 const stateBridge = read(stateBridgePath);
@@ -46,6 +52,33 @@ const responseGuard = read(responseGuardPath);
 const baseLayout = read(baseLayoutPath);
 const workflowDoc = read(workflowDocPath);
 const workerDeployScript = read(workerDeployScriptPath);
+
+requireText(routerHome, routerHomePath, [
+  "data-router-home",
+  "data-direct-shell",
+  "Direct path",
+  "data-router-command",
+  'maxlength="320"',
+  'action: "route"',
+  "Replay / reboot",
+  "Choose your",
+  "/recruiter/start/",
+  "/cocometric/",
+]);
+
+forbidText(routerHome, routerHomePath, [
+  "ghost-routes",
+  "Quick search",
+  "CocoaRouter",
+  "Evidence systems",
+]);
+
+requireText(deprecatedHome, deprecatedHomePath, [
+  "Biomedical sensing",
+  "Capabilities",
+  "Selected work",
+  "Reach out about a role",
+]);
 
 requireText(recruiterStart, recruiterStartPath, [
   "data-entry-name",
@@ -73,6 +106,22 @@ forbidText(recruiterPage, recruiterPagePath, [
   "Common match score",
 ]);
 
+requireText(workerRouter, workerRouterPath, [
+  "deterministicRoute",
+  "MAX_ROUTE_TEXT_LENGTH = 320",
+  "PER_CLIENT_ROUTE_LIMIT",
+  "GLOBAL_ROUTE_LIMIT",
+  "DEFAULT_ROUTE_MODEL",
+  'max_tokens: 100',
+  'action: "route"',
+  'route: "unknown"',
+  '"recruiter"',
+  '"services"',
+  '"work"',
+  '"projects"',
+  '"contact"',
+]);
+
 requireText(workerCore, workerCorePath, [
   "handleAnalyze",
   "handleChat",
@@ -91,7 +140,7 @@ requireText(workerCore, workerCorePath, [
   "Never open with a negative statement about Alex",
   "Relevant documented evidence is listed below",
   "Do not infer AI integration from generic hardware",
-  "action: \"usage\"",
+  'action: "usage"',
   "chatRetrievalQuery",
   "optical sensing photometry",
   '"evidence"',
@@ -118,14 +167,17 @@ forbidText(workerEntry, workerEntryPath, [
 ]);
 
 requireText(wrangler, wranglerPath, [
-  'main = "src/index.ts"',
+  'main = "src/index-router.ts"',
   'binding = "AI_SEARCH"',
   'name = "RATE_LIMITER"',
   'GENERATION_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8"',
   'JSON_REPAIR_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"',
+  'ROUTER_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"',
   'PER_CLIENT_ANALYSIS_LIMIT = "10"',
   'PER_CLIENT_CHAT_LIMIT = "5"',
-  'QUOTA_NAMESPACE = "2026-07-14-counter-reset-02"',
+  'PER_CLIENT_ROUTE_LIMIT = "10"',
+  'GLOBAL_ROUTE_LIMIT = "100"',
+  'QUOTA_NAMESPACE = "2026-07-18-home-router-01"',
 ]);
 
 requireText(stateBridge, stateBridgePath, [
